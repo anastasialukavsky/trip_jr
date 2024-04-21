@@ -34,6 +34,7 @@ dependencies {
     implementation("org.jooq:jooq:3.19.7")
     implementation("org.jooq:jooq-meta:3.19.7")
     implementation("org.jooq:jooq-codegen:3.19.7")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("org.postgresql:postgresql:42.6.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
