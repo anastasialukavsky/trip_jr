@@ -3,12 +3,12 @@ package com.trip_jr.tripJr.dto.hotel
 import java.util.UUID
 
 data class LocationDTO(
-    val locationId: UUID = UUID.randomUUID(),
+    val locationId: UUID? =null,
     var phoneNumber: String = "",
     var address: String = "",
     var city: String = "",
     var state:String = "",
-    var zipCode: String = "",
+    var zip: String = "",
     var latitude: Double = 0.0,
     val longitude: Double = 0.0,
 )
