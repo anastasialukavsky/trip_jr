@@ -11,19 +11,36 @@ plugins {
     kotlin("jvm") version "1.9.23"
     kotlin("plugin.spring") version "1.9.23"
     id("org.jooq.jooq-codegen-gradle") version "3.19.7"
+    id("application")
 }
 
 group = "com.trip_jr"
 version = "0.0.1-SNAPSHOT"
 
+application {
+    mainClass.set("com.trip_jr.tripJr.TripJrApplicationKt")
+}
+
 java {
     sourceCompatibility = JavaVersion.VERSION_21
 }
 
-repositories {
-    mavenCentral()
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.postgresql:postgresql:42.6.2")
+        classpath("org.jooq:jooq-codegen:3.19.7")
+    }
 }
 
+repositories {
+    mavenCentral()
+    maven { url = uri("https://repo.spring.io/milestone") }
+}
+
+extra["springAiVersion"] = "0.8.1"
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-graphql")
     implementation("org.springframework.boot:spring-boot-starter-jooq")
@@ -31,6 +48,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 //    implementation("org.liquibase:liquibase-core")
+    implementation("org.postgresql:postgresql:42.6.2")
     implementation("org.jooq:jooq:3.19.7")
     implementation("org.jooq:jooq-meta:3.19.7")
     implementation("org.jooq:jooq-codegen:3.19.7")
