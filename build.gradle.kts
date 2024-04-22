@@ -1,7 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jooq.codegen.GenerationTool
 import org.jooq.meta.jaxb.Target
-
 import org.jooq.meta.jaxb.*
 
 plugins {
@@ -47,6 +46,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    //TODO configure liquibase
 //    implementation("org.liquibase:liquibase-core")
     implementation("org.postgresql:postgresql:42.6.2")
     implementation("org.jooq:jooq:3.19.7")
@@ -77,16 +77,17 @@ tasks.generateJava {
     generateClient = true
 }
 
+
 tasks.register("jooqGenerate") {
     doLast {
-        // Define database connection details
+        println("Generating jOOQ code...")
         val jdbcUrl = "jdbc:postgresql://localhost:5432/tripjr"
         val username = "postgres"
         val password = "postrespass"
         val packageName = "com.trip_jr.tripJr.jooq"
         val outputDirectory = "src/main/kotlin/com/trip_jr/tripJr/jooq"
 
-        // Configure jOOQ generation
+
         val jooqConfiguration = Configuration()
             .withJdbc(
                 Jdbc()
@@ -100,18 +101,23 @@ tasks.register("jooqGenerate") {
                     .withName("org.jooq.codegen.KotlinGenerator")
                     .withDatabase(
                         Database()
+                            .withIncludePrimaryKeys(true)
                             .withName("org.jooq.meta.postgres.PostgresDatabase")
+                            .withInputSchema("public")
                             .withIncludes(".*")
                             .withExcludes("databasechangelog|databasechangeloglock")
+
                     )
                     .withTarget(
                         Target()
                             .withPackageName(packageName)
                             .withDirectory(outputDirectory)
                     )
+
             )
 
-        // Generate jOOQ code
+
         GenerationTool.generate(jooqConfiguration)
+        println("jOOQ generation completed.")
     }
 }
