@@ -8,7 +8,10 @@ import com.trip_jr.tripJr.jooq.Public
 import com.trip_jr.tripJr.jooq.keys.HOTEL_LOCATION_ID_KEY
 import com.trip_jr.tripJr.jooq.keys.HOTEL_PKEY
 import com.trip_jr.tripJr.jooq.keys.HOTEL__FK_LOCATION
+import com.trip_jr.tripJr.jooq.keys.RATE__FK_HOTEL
+import com.trip_jr.tripJr.jooq.keys.RATE__RATE_HOTEL_ID_FKEY
 import com.trip_jr.tripJr.jooq.tables.Location.LocationPath
+import com.trip_jr.tripJr.jooq.tables.Rate.RatePath
 import com.trip_jr.tripJr.jooq.tables.records.HotelRecord
 
 import java.util.UUID
@@ -79,7 +82,7 @@ open class Hotel(
     /**
      * The column <code>public.hotel.hotel_id</code>.
      */
-    val HOTEL_ID: TableField<HotelRecord, UUID?> = createField(DSL.name("hotel_id"), SQLDataType.UUID.nullable(false).defaultValue(DSL.field(DSL.raw("uuid_generate_v4()"), SQLDataType.UUID)), this, "")
+    val HOTEL_ID: TableField<HotelRecord, UUID?> = createField(DSL.name("hotel_id"), SQLDataType.UUID.nullable(false), this, "")
 
     /**
      * The column <code>public.hotel.name</code>.
@@ -141,6 +144,38 @@ open class Hotel(
 
     val location: LocationPath
         get(): LocationPath = location()
+
+    private lateinit var _fkHotel: RatePath
+
+    /**
+     * Get the implicit to-many join path to the <code>public.rate</code> table,
+     * via the <code>fk_hotel</code> key
+     */
+    fun fkHotel(): RatePath {
+        if (!this::_fkHotel.isInitialized)
+            _fkHotel = RatePath(this, null, RATE__FK_HOTEL.inverseKey)
+
+        return _fkHotel;
+    }
+
+    val fkHotel: RatePath
+        get(): RatePath = fkHotel()
+
+    private lateinit var _rateHotelIdFkey: RatePath
+
+    /**
+     * Get the implicit to-many join path to the <code>public.rate</code> table,
+     * via the <code>rate_hotel_id_fkey</code> key
+     */
+    fun rateHotelIdFkey(): RatePath {
+        if (!this::_rateHotelIdFkey.isInitialized)
+            _rateHotelIdFkey = RatePath(this, null, RATE__RATE_HOTEL_ID_FKEY.inverseKey)
+
+        return _rateHotelIdFkey;
+    }
+
+    val rateHotelIdFkey: RatePath
+        get(): RatePath = rateHotelIdFkey()
     override fun `as`(alias: String): Hotel = Hotel(DSL.name(alias), this)
     override fun `as`(alias: Name): Hotel = Hotel(alias, this)
     override fun `as`(alias: Table<*>): Hotel = Hotel(alias.qualifiedName, this)

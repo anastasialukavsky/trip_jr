@@ -6,6 +6,7 @@ package com.trip_jr.tripJr.jooq
 
 import com.trip_jr.tripJr.jooq.tables.Hotel
 import com.trip_jr.tripJr.jooq.tables.Location
+import com.trip_jr.tripJr.jooq.tables.Rate
 
 import kotlin.collections.List
 
@@ -37,10 +38,16 @@ open class Public : SchemaImpl("public", DefaultCatalog.DEFAULT_CATALOG) {
      */
     val LOCATION: Location get() = Location.LOCATION
 
+    /**
+     * The table <code>public.rate</code>.
+     */
+    val RATE: Rate get() = Rate.RATE
+
     override fun getCatalog(): Catalog = DefaultCatalog.DEFAULT_CATALOG
 
     override fun getTables(): List<Table<*>> = listOf(
         Hotel.HOTEL,
-        Location.LOCATION
+        Location.LOCATION,
+        Rate.RATE
     )
 }

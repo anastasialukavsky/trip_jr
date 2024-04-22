@@ -6,6 +6,7 @@ package com.trip_jr.tripJr.jooq.tables.references
 
 import com.trip_jr.tripJr.jooq.tables.Hotel
 import com.trip_jr.tripJr.jooq.tables.Location
+import com.trip_jr.tripJr.jooq.tables.Rate
 
 
 
@@ -18,3 +19,8 @@ val HOTEL: Hotel = Hotel.HOTEL
  * The table <code>public.location</code>.
  */
 val LOCATION: Location = Location.LOCATION
+
+/**
+ * The table <code>public.rate</code>.
+ */
+val RATE: Rate = Rate.RATE
