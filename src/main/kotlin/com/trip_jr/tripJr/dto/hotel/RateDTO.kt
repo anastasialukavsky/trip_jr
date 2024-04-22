@@ -4,7 +4,7 @@ import java.util.UUID
 
 data class RateDTO(
     val rateId: UUID? = null,
-    val hotelId: UUID? =null,
+    val hotelId: UUID?,
     val rate: Double,
     val month: Int,
     val defaultRate:Double
