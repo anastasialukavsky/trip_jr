@@ -77,7 +77,7 @@ open class Location(
     /**
      * The column <code>public.location.location_id</code>.
      */
-    val LOCATION_ID: TableField<LocationRecord, UUID?> = createField(DSL.name("location_id"), SQLDataType.UUID.nullable(false).defaultValue(DSL.field(DSL.raw("uuid_generate_v4()"), SQLDataType.UUID)), this, "")
+    val LOCATION_ID: TableField<LocationRecord, UUID?> = createField(DSL.name("location_id"), SQLDataType.UUID.nullable(false), this, "")
 
     /**
      * The column <code>public.location.phone_number</code>.
