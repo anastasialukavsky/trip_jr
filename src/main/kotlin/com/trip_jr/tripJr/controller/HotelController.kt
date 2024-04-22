@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.util.*
 
 @RestController
 @RequestMapping("api/hotels")
@@ -23,10 +24,11 @@ class HotelController {
         return hotelService.getAllHotels()
     }
 
-//    @GetMapping("/{id}")
-//    fun getHotelById(@PathVariable("id") hotelId: UUID): Hotel {
-//        return hotelService.getHotelById(id)
-//    }
+    @GetMapping("/{id}")
+    fun getHotelById(@PathVariable("id") hotelId: UUID):  ResponseEntity<HotelDTO> {
+        val hotel =  hotelService.getHotelById(hotelId)
+        return ResponseEntity.status(HttpStatus.OK).body(hotel)
+    }
 
     @PostMapping("")
     fun createHotel(@Valid @RequestBody hotel: HotelDTO): ResponseEntity<HotelDTO> {
