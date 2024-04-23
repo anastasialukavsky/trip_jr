@@ -1,9 +1,11 @@
 package com.trip_jr.tripJr.service.hotel
 
+import com.trip_jr.tripJr.dto.hotel.AmenityDTO
 import com.trip_jr.tripJr.dto.hotel.HotelDTO
 import com.trip_jr.tripJr.dto.hotel.LocationDTO
 import com.trip_jr.tripJr.dto.hotel.RateDTO
 import com.trip_jr.tripJr.jooq.tables.Hotel
+import com.trip_jr.tripJr.jooq.tables.references.AMENITY
 import com.trip_jr.tripJr.jooq.tables.references.HOTEL
 import com.trip_jr.tripJr.jooq.tables.references.LOCATION
 import com.trip_jr.tripJr.jooq.tables.references.RATE
@@ -21,6 +23,8 @@ class HotelService {
 
     private val logger = LoggerFactory.getLogger(HotelService::class.java)
 
+
+    //TODO write custom mapper to map every entity present on hotel
     fun getAllHotels(): List<Hotel> {
         val hotels = dslContext.select().from(HOTEL).fetch()
         return hotels.map { hotel -> hotel.into(Hotel::class.java) }
@@ -38,17 +42,24 @@ class HotelService {
                 .where(RATE.HOTEL_ID.eq(id))
                 .fetchInto(RateDTO::class.java)
 
+            val amenities = dslContext.select()
+                .from(AMENITY)
+                .where(AMENITY.HOTEL_ID.eq(id))
+                .fetchInto(AmenityDTO::class.java)
+
             return record?.let {
                 val location = dslContext.select()
                     .from(LOCATION)
                     .where(LOCATION.LOCATION_ID.eq(it[HOTEL.LOCATION_ID]))
                     .fetchOneInto(LocationDTO::class.java)
+
                 it[HOTEL.NAME]?.let { name ->
                     HotelDTO(
                         hotelId = it[HOTEL.HOTEL_ID],
                         name = name,
                         location = location ?: throw NoSuchElementException("Location not found"),
-                        rates = rates
+                        rates = rates,
+                        amenities = amenities
                     )
                 } ?: throw NoSuchElementException("Hotel name not found")
             } ?: throw NoSuchElementException("Hotel with id $id not found")
@@ -117,6 +128,20 @@ class HotelService {
 
             }
 
+            val amenitiesRecords = hotel.amenities.map { amenity ->
+                val amenityId = amenity.amenityId ?: generateUniqueUUID()
+                dslContext.insertInto(AMENITY)
+                    .columns(AMENITY.AMENITY_ID, AMENITY.AMENITY_NAME, AMENITY.HOTEL_ID)
+                    .values(
+                        amenityId,
+                        amenity.amenityName,
+                        hotelId
+                    )
+                    .execute()
+                amenity.copy(amenityId = amenityId, hotelId = hotelId)
+            }
+
+
             return HotelDTO(
                 hotelId = hotelRecord.get(HOTEL.HOTEL_ID),
                 name = hotel.name,
@@ -130,7 +155,8 @@ class HotelService {
                     latitude = hotel.location.latitude,
                     longitude = hotel.location.longitude
                 ),
-                rates = ratesRecords
+                rates = ratesRecords,
+                amenities = amenitiesRecords
 
             )
 
