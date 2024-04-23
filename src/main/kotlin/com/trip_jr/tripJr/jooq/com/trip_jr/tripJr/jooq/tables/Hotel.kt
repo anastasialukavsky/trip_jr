@@ -5,11 +5,13 @@ package com.trip_jr.tripJr.jooq.tables
 
 
 import com.trip_jr.tripJr.jooq.Public
+import com.trip_jr.tripJr.jooq.keys.AMENITY__AMENITY_HOTEL_ID_FKEY
 import com.trip_jr.tripJr.jooq.keys.HOTEL_LOCATION_ID_KEY
 import com.trip_jr.tripJr.jooq.keys.HOTEL_PKEY
 import com.trip_jr.tripJr.jooq.keys.HOTEL__FK_LOCATION
 import com.trip_jr.tripJr.jooq.keys.RATE__FK_HOTEL
 import com.trip_jr.tripJr.jooq.keys.RATE__RATE_HOTEL_ID_FKEY
+import com.trip_jr.tripJr.jooq.tables.Amenity.AmenityPath
 import com.trip_jr.tripJr.jooq.tables.Location.LocationPath
 import com.trip_jr.tripJr.jooq.tables.Rate.RatePath
 import com.trip_jr.tripJr.jooq.tables.records.HotelRecord
@@ -144,6 +146,22 @@ open class Hotel(
 
     val location: LocationPath
         get(): LocationPath = location()
+
+    private lateinit var _amenity: AmenityPath
+
+    /**
+     * Get the implicit to-many join path to the <code>public.amenity</code>
+     * table
+     */
+    fun amenity(): AmenityPath {
+        if (!this::_amenity.isInitialized)
+            _amenity = AmenityPath(this, null, AMENITY__AMENITY_HOTEL_ID_FKEY.inverseKey)
+
+        return _amenity;
+    }
+
+    val amenity: AmenityPath
+        get(): AmenityPath = amenity()
 
     private lateinit var _fkHotel: RatePath
 
