@@ -19,7 +19,7 @@ class HotelController {
     private lateinit var hotelService: HotelService
 
 
-    @GetMapping("/")
+    @GetMapping("")
     fun getAllHotels(): List<Hotel> {
         return hotelService.getAllHotels()
     }
