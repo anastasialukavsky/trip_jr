@@ -4,6 +4,7 @@
 package com.trip_jr.tripJr.jooq
 
 
+import com.trip_jr.tripJr.jooq.tables.Amenity
 import com.trip_jr.tripJr.jooq.tables.Hotel
 import com.trip_jr.tripJr.jooq.tables.Location
 import com.trip_jr.tripJr.jooq.tables.Rate
@@ -29,6 +30,11 @@ open class Public : SchemaImpl("public", DefaultCatalog.DEFAULT_CATALOG) {
     }
 
     /**
+     * The table <code>public.amenity</code>.
+     */
+    val AMENITY: Amenity get() = Amenity.AMENITY
+
+    /**
      * The table <code>public.hotel</code>.
      */
     val HOTEL: Hotel get() = Hotel.HOTEL
@@ -46,6 +52,7 @@ open class Public : SchemaImpl("public", DefaultCatalog.DEFAULT_CATALOG) {
     override fun getCatalog(): Catalog = DefaultCatalog.DEFAULT_CATALOG
 
     override fun getTables(): List<Table<*>> = listOf(
+        Amenity.AMENITY,
         Hotel.HOTEL,
         Location.LOCATION,
         Rate.RATE

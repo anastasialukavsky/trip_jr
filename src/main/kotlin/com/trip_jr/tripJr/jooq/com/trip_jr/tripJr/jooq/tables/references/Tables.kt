@@ -4,11 +4,17 @@
 package com.trip_jr.tripJr.jooq.tables.references
 
 
+import com.trip_jr.tripJr.jooq.tables.Amenity
 import com.trip_jr.tripJr.jooq.tables.Hotel
 import com.trip_jr.tripJr.jooq.tables.Location
 import com.trip_jr.tripJr.jooq.tables.Rate
 
 
+
+/**
+ * The table <code>public.amenity</code>.
+ */
+val AMENITY: Amenity = Amenity.AMENITY
 
 /**
  * The table <code>public.hotel</code>.
