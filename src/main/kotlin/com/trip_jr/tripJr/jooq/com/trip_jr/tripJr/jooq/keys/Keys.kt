@@ -8,10 +8,12 @@ import com.trip_jr.tripJr.jooq.tables.Amenity
 import com.trip_jr.tripJr.jooq.tables.Hotel
 import com.trip_jr.tripJr.jooq.tables.Location
 import com.trip_jr.tripJr.jooq.tables.Rate
+import com.trip_jr.tripJr.jooq.tables.Users
 import com.trip_jr.tripJr.jooq.tables.records.AmenityRecord
 import com.trip_jr.tripJr.jooq.tables.records.HotelRecord
 import com.trip_jr.tripJr.jooq.tables.records.LocationRecord
 import com.trip_jr.tripJr.jooq.tables.records.RateRecord
+import com.trip_jr.tripJr.jooq.tables.records.UsersRecord
 
 import org.jooq.ForeignKey
 import org.jooq.UniqueKey
@@ -29,6 +31,8 @@ val HOTEL_LOCATION_ID_KEY: UniqueKey<HotelRecord> = Internal.createUniqueKey(Hot
 val HOTEL_PKEY: UniqueKey<HotelRecord> = Internal.createUniqueKey(Hotel.HOTEL, DSL.name("hotel_pkey"), arrayOf(Hotel.HOTEL.HOTEL_ID), true)
 val LOCATION_PKEY: UniqueKey<LocationRecord> = Internal.createUniqueKey(Location.LOCATION, DSL.name("location_pkey"), arrayOf(Location.LOCATION.LOCATION_ID), true)
 val RATE_PKEY: UniqueKey<RateRecord> = Internal.createUniqueKey(Rate.RATE, DSL.name("rate_pkey"), arrayOf(Rate.RATE.RATE_ID), true)
+val USERS_EMAIL_KEY: UniqueKey<UsersRecord> = Internal.createUniqueKey(Users.USERS, DSL.name("users_email_key"), arrayOf(Users.USERS.EMAIL), true)
+val USERS_PKEY: UniqueKey<UsersRecord> = Internal.createUniqueKey(Users.USERS, DSL.name("users_pkey"), arrayOf(Users.USERS.USER_ID), true)
 
 // -------------------------------------------------------------------------
 // FOREIGN KEY definitions

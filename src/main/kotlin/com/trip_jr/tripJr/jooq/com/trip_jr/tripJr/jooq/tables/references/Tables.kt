@@ -8,6 +8,7 @@ import com.trip_jr.tripJr.jooq.tables.Amenity
 import com.trip_jr.tripJr.jooq.tables.Hotel
 import com.trip_jr.tripJr.jooq.tables.Location
 import com.trip_jr.tripJr.jooq.tables.Rate
+import com.trip_jr.tripJr.jooq.tables.Users
 
 
 
@@ -30,3 +31,8 @@ val LOCATION: Location = Location.LOCATION
  * The table <code>public.rate</code>.
  */
 val RATE: Rate = Rate.RATE
+
+/**
+ * The table <code>public.users</code>.
+ */
+val USERS: Users = Users.USERS
