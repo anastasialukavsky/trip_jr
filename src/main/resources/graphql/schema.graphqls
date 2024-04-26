@@ -1,0 +1,130 @@
+scalar UUID
+scalar Date
+
+type Query {
+    hotels: [HotelDTO!]!
+    hotelById(id: UUID!): HotelDTO
+}
+
+
+type HotelDTO {
+    hotelId: UUID
+    name: String!
+    location: LocationDTO!
+    rates: [RateDTO!]!
+    amenities: [AmenityDTO!]!
+}
+
+type LocationDTO {
+    locationId: UUID
+    phoneNumber: String!
+    address: String!
+    city: String!
+    state: String!
+    zip: String!
+    latitude: Float!
+    longitude: Float!
+}
+
+type RateDTO {
+    rateId: UUID
+    hotelId: UUID
+    rate: Float!
+    month: Int!
+    defaultRate: Float!
+}
+
+type AmenityDTO {
+    amenityId: UUID
+    amenityName: String!
+    hotelId: UUID
+}
+
+
+input HotelInput {
+    #    hotelId:UUID
+    name: String!
+    location: LocationInput!
+    rates: [RateInput!]!
+    amenities: [AmenityInput!]!
+}
+
+input LocationInput {
+    #    locationId: UUID
+    #    hotelId: UUID
+    phoneNumber: String!
+    address: String!
+    city: String!
+    state: String!
+    zip: String!
+    latitude: Float!
+    longitude: Float!
+}
+
+input RateInput {
+    #    hotelId: UUID
+    #    rateId: UUID
+    rate: Float!
+    month: Int!
+    defaultRate: Float!
+}
+
+input AmenityInput {
+    amenityName: String!
+    #    hotelId: UUID
+    #    amenityId: UUID
+}
+
+#enum UserRole {
+#    ADMIN
+#    USER
+#    OWNER
+#}
+
+type UserDTO {
+    userId: UUID!
+    email: String!
+    firstName: String
+    lastName: String
+    passwordHash: String!
+}
+
+input UserInput {
+    email: String!
+    firstName: String
+    lastName: String
+    passwordHash: String
+}
+
+type ReviewDTO {
+    reviewId: UUID!
+    userId: UUID!
+    hotelId: UUID!
+    rating: Int
+    reviewTitle: String
+    reviewBody: String
+}
+
+input ReviewInput {
+    userId: UUID
+    hotelId: UUID
+    rating: Int
+    reviewTitle: String
+    reviewBody: String
+}
+
+type BookingDTO {
+    bookingId: UUID!
+    userId: UUID!
+    hotel_id: UUID!
+    check_in_date: Date!
+    checkOutDate: Date!
+    totalCost: Float!
+}
+
+
+type Mutation {
+    createHotel(hotel: HotelInput) : HotelDTO
+    createUser(user: UserInput) : UserDTO
+    createReview(review: ReviewInput): ReviewDTO
+}
