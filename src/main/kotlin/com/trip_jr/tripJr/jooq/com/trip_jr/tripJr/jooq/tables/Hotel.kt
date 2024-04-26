@@ -6,14 +6,18 @@ package com.trip_jr.tripJr.jooq.tables
 
 import com.trip_jr.tripJr.jooq.Public
 import com.trip_jr.tripJr.jooq.keys.AMENITY__AMENITY_HOTEL_ID_FKEY
+import com.trip_jr.tripJr.jooq.keys.BOOKING__BOOKING_HOTEL_ID_FKEY
 import com.trip_jr.tripJr.jooq.keys.HOTEL_LOCATION_ID_KEY
 import com.trip_jr.tripJr.jooq.keys.HOTEL_PKEY
 import com.trip_jr.tripJr.jooq.keys.HOTEL__FK_LOCATION
 import com.trip_jr.tripJr.jooq.keys.RATE__FK_HOTEL
 import com.trip_jr.tripJr.jooq.keys.RATE__RATE_HOTEL_ID_FKEY
+import com.trip_jr.tripJr.jooq.keys.REVIEW__REVIEW_HOTEL_ID_FKEY
 import com.trip_jr.tripJr.jooq.tables.Amenity.AmenityPath
+import com.trip_jr.tripJr.jooq.tables.Booking.BookingPath
 import com.trip_jr.tripJr.jooq.tables.Location.LocationPath
 import com.trip_jr.tripJr.jooq.tables.Rate.RatePath
+import com.trip_jr.tripJr.jooq.tables.Review.ReviewPath
 import com.trip_jr.tripJr.jooq.tables.records.HotelRecord
 
 import java.util.UUID
@@ -163,6 +167,22 @@ open class Hotel(
     val amenity: AmenityPath
         get(): AmenityPath = amenity()
 
+    private lateinit var _booking: BookingPath
+
+    /**
+     * Get the implicit to-many join path to the <code>public.booking</code>
+     * table
+     */
+    fun booking(): BookingPath {
+        if (!this::_booking.isInitialized)
+            _booking = BookingPath(this, null, BOOKING__BOOKING_HOTEL_ID_FKEY.inverseKey)
+
+        return _booking;
+    }
+
+    val booking: BookingPath
+        get(): BookingPath = booking()
+
     private lateinit var _fkHotel: RatePath
 
     /**
@@ -194,6 +214,22 @@ open class Hotel(
 
     val rateHotelIdFkey: RatePath
         get(): RatePath = rateHotelIdFkey()
+
+    private lateinit var _review: ReviewPath
+
+    /**
+     * Get the implicit to-many join path to the <code>public.review</code>
+     * table
+     */
+    fun review(): ReviewPath {
+        if (!this::_review.isInitialized)
+            _review = ReviewPath(this, null, REVIEW__REVIEW_HOTEL_ID_FKEY.inverseKey)
+
+        return _review;
+    }
+
+    val review: ReviewPath
+        get(): ReviewPath = review()
     override fun `as`(alias: String): Hotel = Hotel(DSL.name(alias), this)
     override fun `as`(alias: Name): Hotel = Hotel(alias, this)
     override fun `as`(alias: Table<*>): Hotel = Hotel(alias.qualifiedName, this)

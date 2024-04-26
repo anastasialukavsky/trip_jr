@@ -5,9 +5,12 @@ package com.trip_jr.tripJr.jooq.tables
 
 
 import com.trip_jr.tripJr.jooq.Public
-import com.trip_jr.tripJr.jooq.enums.UserRole
+import com.trip_jr.tripJr.jooq.keys.BOOKING__BOOKING_USER_ID_FKEY
+import com.trip_jr.tripJr.jooq.keys.REVIEW__REVIEW_USER_ID_FKEY
 import com.trip_jr.tripJr.jooq.keys.USERS_EMAIL_KEY
 import com.trip_jr.tripJr.jooq.keys.USERS_PKEY
+import com.trip_jr.tripJr.jooq.tables.Booking.BookingPath
+import com.trip_jr.tripJr.jooq.tables.Review.ReviewPath
 import com.trip_jr.tripJr.jooq.tables.records.UsersRecord
 
 import java.util.UUID
@@ -20,6 +23,7 @@ import org.jooq.Field
 import org.jooq.ForeignKey
 import org.jooq.InverseForeignKey
 import org.jooq.Name
+import org.jooq.Path
 import org.jooq.PlainSQL
 import org.jooq.QueryPart
 import org.jooq.Record
@@ -32,6 +36,7 @@ import org.jooq.TableField
 import org.jooq.TableOptions
 import org.jooq.UniqueKey
 import org.jooq.impl.DSL
+import org.jooq.impl.Internal
 import org.jooq.impl.SQLDataType
 import org.jooq.impl.TableImpl
 
@@ -98,11 +103,6 @@ open class Users(
      */
     val PASSWORD_HASH: TableField<UsersRecord, String?> = createField(DSL.name("password_hash"), SQLDataType.VARCHAR(255).nullable(false), this, "")
 
-    /**
-     * The column <code>public.users.role</code>.
-     */
-    val ROLE: TableField<UsersRecord, UserRole?> = createField(DSL.name("role"), SQLDataType.VARCHAR.asEnumDataType(UserRole::class.java), this, "")
-
     private constructor(alias: Name, aliased: Table<UsersRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<UsersRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
     private constructor(alias: Name, aliased: Table<UsersRecord>?, where: Condition?): this(alias, null, null, null, aliased, null, where)
@@ -121,9 +121,54 @@ open class Users(
      * Create a <code>public.users</code> table reference
      */
     constructor(): this(DSL.name("users"), null)
+
+    constructor(path: Table<out Record>, childPath: ForeignKey<out Record, UsersRecord>?, parentPath: InverseForeignKey<out Record, UsersRecord>?): this(Internal.createPathAlias(path, childPath, parentPath), path, childPath, parentPath, USERS, null, null)
+
+    /**
+     * A subtype implementing {@link Path} for simplified path-based joins.
+     */
+    open class UsersPath : Users, Path<UsersRecord> {
+        constructor(path: Table<out Record>, childPath: ForeignKey<out Record, UsersRecord>?, parentPath: InverseForeignKey<out Record, UsersRecord>?): super(path, childPath, parentPath)
+        private constructor(alias: Name, aliased: Table<UsersRecord>): super(alias, aliased)
+        override fun `as`(alias: String): UsersPath = UsersPath(DSL.name(alias), this)
+        override fun `as`(alias: Name): UsersPath = UsersPath(alias, this)
+        override fun `as`(alias: Table<*>): UsersPath = UsersPath(alias.qualifiedName, this)
+    }
     override fun getSchema(): Schema? = if (aliased()) null else Public.PUBLIC
     override fun getPrimaryKey(): UniqueKey<UsersRecord> = USERS_PKEY
     override fun getUniqueKeys(): List<UniqueKey<UsersRecord>> = listOf(USERS_EMAIL_KEY)
+
+    private lateinit var _booking: BookingPath
+
+    /**
+     * Get the implicit to-many join path to the <code>public.booking</code>
+     * table
+     */
+    fun booking(): BookingPath {
+        if (!this::_booking.isInitialized)
+            _booking = BookingPath(this, null, BOOKING__BOOKING_USER_ID_FKEY.inverseKey)
+
+        return _booking;
+    }
+
+    val booking: BookingPath
+        get(): BookingPath = booking()
+
+    private lateinit var _review: ReviewPath
+
+    /**
+     * Get the implicit to-many join path to the <code>public.review</code>
+     * table
+     */
+    fun review(): ReviewPath {
+        if (!this::_review.isInitialized)
+            _review = ReviewPath(this, null, REVIEW__REVIEW_USER_ID_FKEY.inverseKey)
+
+        return _review;
+    }
+
+    val review: ReviewPath
+        get(): ReviewPath = review()
     override fun `as`(alias: String): Users = Users(DSL.name(alias), this)
     override fun `as`(alias: Name): Users = Users(alias, this)
     override fun `as`(alias: Table<*>): Users = Users(alias.qualifiedName, this)
