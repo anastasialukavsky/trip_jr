@@ -1,5 +1,5 @@
 scalar UUID
-scalar Date
+#scalar Date
 
 type Query {
     hotels: [HotelDTO!]!
@@ -113,12 +113,12 @@ input ReviewInput {
     reviewBody: String
 }
 
+
 type BookingDTO {
     bookingId: UUID!
     userId: UUID!
     hotel_id: UUID!
-    check_in_date: Date!
-    checkOutDate: Date!
+#    check_in_date
     totalCost: Float!
 }
 
