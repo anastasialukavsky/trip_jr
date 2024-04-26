@@ -8,8 +8,17 @@ import org.springframework.graphql.execution.RuntimeWiringConfigurer
 
 
 
+
 @Configuration
 class GraphQLConfig {
+
+//    @Bean
+//    fun schemaParserOptions(): SchemaParserOptions {
+//        return SchemaParserOptions.newOptions()
+//            .scalars(ExtendedScalars.UUID) // Register UUID scalar globally
+//            .build()
+//    }
+
     @Bean
     fun uuidScalarConfig(): UUIDScalarConfig {
         return UUIDScalarConfig()
@@ -20,4 +29,5 @@ class GraphQLConfig {
             wiringBuilder.scalar(uuidScalar)
         }
     }
+
 }
