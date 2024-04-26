@@ -5,9 +5,11 @@ package com.trip_jr.tripJr.jooq.tables.references
 
 
 import com.trip_jr.tripJr.jooq.tables.Amenity
+import com.trip_jr.tripJr.jooq.tables.Booking
 import com.trip_jr.tripJr.jooq.tables.Hotel
 import com.trip_jr.tripJr.jooq.tables.Location
 import com.trip_jr.tripJr.jooq.tables.Rate
+import com.trip_jr.tripJr.jooq.tables.Review
 import com.trip_jr.tripJr.jooq.tables.Users
 
 
@@ -16,6 +18,11 @@ import com.trip_jr.tripJr.jooq.tables.Users
  * The table <code>public.amenity</code>.
  */
 val AMENITY: Amenity = Amenity.AMENITY
+
+/**
+ * The table <code>public.booking</code>.
+ */
+val BOOKING: Booking = Booking.BOOKING
 
 /**
  * The table <code>public.hotel</code>.
@@ -31,6 +38,11 @@ val LOCATION: Location = Location.LOCATION
  * The table <code>public.rate</code>.
  */
 val RATE: Rate = Rate.RATE
+
+/**
+ * The table <code>public.review</code>.
+ */
+val REVIEW: Review = Review.REVIEW
 
 /**
  * The table <code>public.users</code>.
