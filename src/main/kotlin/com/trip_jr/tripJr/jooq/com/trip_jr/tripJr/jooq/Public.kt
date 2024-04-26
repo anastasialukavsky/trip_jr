@@ -5,9 +5,11 @@ package com.trip_jr.tripJr.jooq
 
 
 import com.trip_jr.tripJr.jooq.tables.Amenity
+import com.trip_jr.tripJr.jooq.tables.Booking
 import com.trip_jr.tripJr.jooq.tables.Hotel
 import com.trip_jr.tripJr.jooq.tables.Location
 import com.trip_jr.tripJr.jooq.tables.Rate
+import com.trip_jr.tripJr.jooq.tables.Review
 import com.trip_jr.tripJr.jooq.tables.Users
 
 import kotlin.collections.List
@@ -36,6 +38,11 @@ open class Public : SchemaImpl("public", DefaultCatalog.DEFAULT_CATALOG) {
     val AMENITY: Amenity get() = Amenity.AMENITY
 
     /**
+     * The table <code>public.booking</code>.
+     */
+    val BOOKING: Booking get() = Booking.BOOKING
+
+    /**
      * The table <code>public.hotel</code>.
      */
     val HOTEL: Hotel get() = Hotel.HOTEL
@@ -51,6 +58,11 @@ open class Public : SchemaImpl("public", DefaultCatalog.DEFAULT_CATALOG) {
     val RATE: Rate get() = Rate.RATE
 
     /**
+     * The table <code>public.review</code>.
+     */
+    val REVIEW: Review get() = Review.REVIEW
+
+    /**
      * The table <code>public.users</code>.
      */
     val USERS: Users get() = Users.USERS
@@ -59,9 +71,11 @@ open class Public : SchemaImpl("public", DefaultCatalog.DEFAULT_CATALOG) {
 
     override fun getTables(): List<Table<*>> = listOf(
         Amenity.AMENITY,
+        Booking.BOOKING,
         Hotel.HOTEL,
         Location.LOCATION,
         Rate.RATE,
+        Review.REVIEW,
         Users.USERS
     )
 }
