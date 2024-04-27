@@ -24,9 +24,10 @@ class GraphQLConfig {
         return UUIDScalarConfig()
     }
     @Bean
-    fun runtimeWiringConfigurer(uuidScalar: GraphQLScalarType): RuntimeWiringConfigurer {
+    fun runtimeWiringConfigurer(uuidScalar: GraphQLScalarType, dateScalar: GraphQLScalarType): RuntimeWiringConfigurer {
         return RuntimeWiringConfigurer { wiringBuilder: RuntimeWiring.Builder ->
             wiringBuilder.scalar(uuidScalar)
+            wiringBuilder.scalar(dateScalar).build()
         }
     }
 
