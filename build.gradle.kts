@@ -46,6 +46,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.mindrot:jbcrypt:0.4")
+
     //TODO configure liquibase
 //    implementation("org.liquibase:liquibase-core")
     implementation("org.postgresql:postgresql:42.6.2")
