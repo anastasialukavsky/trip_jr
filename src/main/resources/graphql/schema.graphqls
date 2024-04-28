@@ -93,7 +93,7 @@ input UserInput {
 }
 
 type ReviewDTO {
-    reviewId: UUID!
+    reviewId: UUID
     userId: UUID!
     hotelId: UUID!
     rating: Int
@@ -111,7 +111,7 @@ input ReviewInput {
 
 
 type BookingDTO {
-    bookingId: UUID!
+    bookingId: UUID
     userId: UUID!
     hotelId: UUID!
     checkInDate: Date!
@@ -121,8 +121,8 @@ type BookingDTO {
 
 
 input BookingInput {
-    userId: UUID,
-    hotelId: UUID,
+    userId: UUID
+    hotelId: UUID
     checkInDate: Date!
     checkOutDate: Date!
     totalCost: Float!
