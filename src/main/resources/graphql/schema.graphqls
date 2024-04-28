@@ -4,6 +4,7 @@ scalar Date
 type Query {
     hotels: [HotelDTO!]!
     hotelById(id: UUID!): HotelDTO
+    userById(id: UUID!): UserDTO
 }
 
 
@@ -42,7 +43,6 @@ type AmenityDTO {
 
 
 input HotelInput {
-    #    hotelId:UUID
     name: String!
     location: LocationInput!
     rates: [RateInput!]!
@@ -50,8 +50,6 @@ input HotelInput {
 }
 
 input LocationInput {
-    #    locationId: UUID
-    #    hotelId: UUID
     phoneNumber: String!
     address: String!
     city: String!
@@ -62,8 +60,6 @@ input LocationInput {
 }
 
 input RateInput {
-    #    hotelId: UUID
-    #    rateId: UUID
     rate: Float!
     month: Int!
     defaultRate: Float!
@@ -71,8 +67,6 @@ input RateInput {
 
 input AmenityInput {
     amenityName: String!
-    #    hotelId: UUID
-    #    amenityId: UUID
 }
 
 #enum UserRole {
@@ -87,6 +81,8 @@ type UserDTO {
     firstName: String
     lastName: String
     passwordHash: String!
+    reviews: [ReviewDTO]
+    bookings: [BookingDTO]
 }
 
 input UserInput {
