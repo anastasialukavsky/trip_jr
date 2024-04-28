@@ -4,15 +4,21 @@ import com.trip_jr.tripJr.dto.user.UserDTO
 //import com.trip_jr.tripJr.dto.user.UserRole
 //import com.trip_jr.tripJr.jooq.enums.UserRole
 import com.trip_jr.tripJr.jooq.tables.Users
+import com.trip_jr.tripJr.jooq.tables.references.BOOKING
+import com.trip_jr.tripJr.jooq.tables.references.REVIEW
 import com.trip_jr.tripJr.jooq.tables.references.USERS
 import com.trip_jr.tripJr.service.utils.PasswordUtils
+import com.trip_jr.tripJr.service.utils.UUIDUtils
+import com.trip_jr.tripJr.service.utils.UserUtils
 import org.slf4j.LoggerFactory
 import org.jooq.DSLContext
 import org.jooq.impl.DSL
 import org.jooq.impl.SQLDataType
 import org.mindrot.jbcrypt.BCrypt
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.dao.DuplicateKeyException
 import org.springframework.stereotype.Service
+import org.springframework.web.client.RestTemplate
 import java.lang.reflect.Field
 import java.util.*
 
@@ -22,17 +28,60 @@ class UserService {
     @Autowired
     lateinit var dslContext: DSLContext
 
-
     @Autowired
     private lateinit var passwordUtils: PasswordUtils
 
-    private val logger = LoggerFactory.getLogger(UserService::class.java)
+    @Autowired
+    private lateinit var UUIDUtils: UUIDUtils
+
+    @Autowired
+    private lateinit var userUtils: UserUtils
+
+    fun getUserById(id: UUID): UserDTO? {
+        try {
+//            val userRecord = dslContext.select().from(USERS).where(USERS.USER_ID.eq(id)).fetchOne() ?: throw NoSuchElementException("User with ID $id not found")
+//
+//            val bookingRecord = dslContext.select()
+//                .from(BOOKING)
+//                .where(BOOKING.USER_ID.eq(id))
+//                .fetchOne()
+//
+//            val reviewsRecord = dslContext.select()
+//                .from(REVIEW)
+//                .where(REVIEW.USER_ID.eq(id))
+//                .fetchOne()
+//
+//
+//            return userRecord?.let {
+//                it.get(USERS.EMAIL)?.let { it1 ->
+//                    UserDTO(
+//                        userId = it.get(USERS.USER_ID),
+//                        email = it1,
+//                        firstName = it.get(USERS.FIRST_NAME),
+//                        lastName = it.get(USERS.LAST_NAME),
+//                        passwordHash = it.get(USERS.PASSWORD_HASH)!!
+//                    )
+//                }
+//            } ?: throw NoSuchElementException("User with ID $id not found")
+
+            val userRecord = userUtils.getUserById(id)
+            val bookingRecords =  userUtils.fetchUserBookings(id)
+            val reviewRecords = userUtils.fetchUserReviews(id)
+            if (userRecord?.bookings != null) {
+//                userRecord.copy(bookings = bookings, reviews = reviews)
+                userRecord.copy(bookings = bookingRecords)
+            }
+
+//            if (userRecord?.reviews != null) {
+//                userRecord.copy(reviews = reviewRecords)
+//            }
 
 
-    fun generateUniqueUUID(): UUID {
-        return UUID.randomUUID()
+            return userRecord
+        } catch (e: Exception) {
+            throw e
+        }
     }
-
 
     fun createUser(user: UserDTO): UserDTO {
         try {
@@ -40,7 +89,7 @@ class UserService {
             val hashPassword = passwordUtils.hashPassword(user.passwordHash)
             val userWithHashedPassword = user.copy(passwordHash = hashPassword)
 
-            val userId = user.userId ?: generateUniqueUUID()
+            val userId = user.userId ?: UUIDUtils.generateUUID()
 
             val userRecord = dslContext.insertInto(USERS)
                 .set(USERS.USER_ID, userId)
@@ -51,15 +100,13 @@ class UserService {
                 .returningResult(USERS.USER_ID)
                 .fetchOne()
 
-            userRecord ?: throw NullPointerException("User record was null.")
+            userRecord ?: throw NullPointerException("User record cannot be null")
 
             return userWithHashedPassword.copy(userId = userRecord.get(USERS.USER_ID))
 
         } catch (e: NullPointerException) {
-            logger.error("NULL POINTER", e)
             throw e
         } catch (e: Exception) {
-            logger.error("failed to create user", e)
             throw e
         }
     }
