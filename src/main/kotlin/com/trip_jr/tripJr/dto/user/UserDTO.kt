@@ -1,5 +1,7 @@
 package com.trip_jr.tripJr.dto.user
 
+import com.trip_jr.tripJr.dto.booking.BookingDTO
+import com.trip_jr.tripJr.dto.review.ReviewDTO
 import java.util.UUID
 
 data class UserDTO(
@@ -8,6 +10,8 @@ data class UserDTO(
     val firstName: String?,
     val lastName : String?,
     val passwordHash: String = "",
+    val bookings: List<BookingDTO>? = listOf(),
+    val reviews: List<ReviewDTO>? = listOf()
 )
 
 //enum class UserRole(val literal: String) {
