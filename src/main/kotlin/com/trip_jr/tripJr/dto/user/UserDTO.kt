@@ -10,8 +10,8 @@ data class UserDTO(
     val firstName: String?,
     val lastName : String?,
     val passwordHash: String = "",
-    val bookings: List<BookingDTO>? = listOf(),
-    val reviews: List<ReviewDTO>? = listOf()
+    val bookings: List<MutableList<BookingDTO>>? = listOf(),
+    val reviews: List<MutableList<ReviewDTO>>? = listOf()
 )
 
 //enum class UserRole(val literal: String) {
