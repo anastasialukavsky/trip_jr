@@ -12,6 +12,7 @@ import com.trip_jr.tripJr.service.utils.UUIDUtils
 import com.trip_jr.tripJr.service.utils.UserUtils
 import org.slf4j.LoggerFactory
 import org.jooq.DSLContext
+import org.jooq.User
 import org.jooq.impl.DSL
 import org.jooq.impl.SQLDataType
 import org.mindrot.jbcrypt.BCrypt
@@ -39,45 +40,25 @@ class UserService {
 
     fun getUserById(id: UUID): UserDTO? {
         try {
-//            val userRecord = dslContext.select().from(USERS).where(USERS.USER_ID.eq(id)).fetchOne() ?: throw NoSuchElementException("User with ID $id not found")
-//
-//            val bookingRecord = dslContext.select()
-//                .from(BOOKING)
-//                .where(BOOKING.USER_ID.eq(id))
-//                .fetchOne()
-//
-//            val reviewsRecord = dslContext.select()
-//                .from(REVIEW)
-//                .where(REVIEW.USER_ID.eq(id))
-//                .fetchOne()
-//
-//
-//            return userRecord?.let {
-//                it.get(USERS.EMAIL)?.let { it1 ->
-//                    UserDTO(
-//                        userId = it.get(USERS.USER_ID),
-//                        email = it1,
-//                        firstName = it.get(USERS.FIRST_NAME),
-//                        lastName = it.get(USERS.LAST_NAME),
-//                        passwordHash = it.get(USERS.PASSWORD_HASH)!!
-//                    )
-//                }
-//            } ?: throw NoSuchElementException("User with ID $id not found")
 
             val userRecord = userUtils.getUserById(id)
             val bookingRecords =  userUtils.fetchUserBookings(id)
             val reviewRecords = userUtils.fetchUserReviews(id)
-            if (userRecord?.bookings != null) {
-//                userRecord.copy(bookings = bookings, reviews = reviews)
-                userRecord.copy(bookings = bookingRecords)
+
+
+            return userRecord?.let { usersRecord ->
+                UserDTO(
+                    userId = usersRecord.userId,
+                    email = usersRecord.email,
+                    firstName = usersRecord.firstName,
+                    lastName = usersRecord.lastName,
+                    passwordHash = usersRecord.passwordHash,
+                    bookings = bookingRecords,
+                    reviews = reviewRecords
+                )
             }
 
-//            if (userRecord?.reviews != null) {
-//                userRecord.copy(reviews = reviewRecords)
-//            }
 
-
-            return userRecord
         } catch (e: Exception) {
             throw e
         }
