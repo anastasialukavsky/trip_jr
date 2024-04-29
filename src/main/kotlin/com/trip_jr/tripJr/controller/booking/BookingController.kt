@@ -16,19 +16,19 @@ class BookingController {
     @Autowired
     lateinit var bookingService: BookingService
 
-    @MutationMapping(name= "createBooking")
-    fun createBooking(@Argument(name="booking") booking: BookingDTO): BookingDTO {
-        val bookingId = UUID.randomUUID()
-
-        val newBooking = BookingDTO(
-            bookingId = bookingId,
-            userId = booking.userId,
-            hotelId = booking.hotelId,
-            checkInDate = booking.checkInDate,
-            checkOutDate = booking.checkOutDate,
-            totalCost = booking.totalCost
-        )
-
-        return bookingService.createBooking(newBooking)
-    }
+//    @MutationMapping(name= "createBooking")
+//    fun createBooking(@Argument(name="booking") booking: BookingDTO): BookingDTO {
+//        val bookingId = UUID.randomUUID()
+//
+//        val newBooking = BookingDTO(
+//            bookingId = bookingId,
+//            userId = booking.userId,
+//            hotelId = booking.hotelId,
+//            checkInDate = booking.checkInDate,
+//            checkOutDate = booking.checkOutDate,
+//            totalCost = booking.totalCost
+//        )
+//
+//        return bookingService.createBooking(newBooking)
+//    }
 }
