@@ -22,14 +22,19 @@ class HotelController {
     private lateinit var hotelService: HotelService
 
 
+    @QueryMapping(name="hotels")
+    fun hotels() : List<HotelDTO> {
+        return hotelService.getAllHotels()
+    }
+
     @QueryMapping
     fun hotelById(@Argument id: UUID): HotelDTO {
         return hotelService.getHotelById(id)
     }
 
 
-    @MutationMapping
-    fun createHotel(@Argument hotel: HotelDTO): ResponseEntity<HotelDTO> {
+    @MutationMapping(name="createHotel")
+    fun createHotel(@Argument(name="hotel") hotel: HotelDTO): ResponseEntity<HotelDTO> {
         val createdHotel = hotelService.createHotel(hotel)
         return ResponseEntity.status(HttpStatus.CREATED).body(createdHotel)
     }
