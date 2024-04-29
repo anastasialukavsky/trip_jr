@@ -28,12 +28,9 @@ class HotelService {
     private val logger = LoggerFactory.getLogger(HotelService::class.java)
 
 
-    //TODO write custom mapper to map every entity present on hotel
     fun getAllHotels(): List<HotelDTO> {
         val hotels = dslContext.select()
-            .from(
-                HOTEL
-            )
+            .from(HOTEL)
             .join(LOCATION).on(HOTEL.LOCATION_ID.eq(LOCATION.LOCATION_ID))
             .join(RATE).on(RATE.HOTEL_ID.eq(HOTEL.HOTEL_ID))
             .join(AMENITY).on(AMENITY.HOTEL_ID.eq(HOTEL.HOTEL_ID))
@@ -62,6 +59,7 @@ class HotelService {
                     }
                 }
             }
+
             val rates = mutableListOf<RateDTO>()
             if (record[RATE.RATE_ID] != null && record[RATE.RATE_] != null && record[RATE.MONTH] != null && record[RATE.DEFAULT_RATE] != null) {
                 val rate = record[RATE.RATE_]?.let {
@@ -178,7 +176,6 @@ class HotelService {
             if (hotelRecord == null) {
                 throw Exception("Failed to create hotel")
             }
-
 
             val ratesRecords = hotel.rates.map { rate ->
                 val rateId = rate.rateId ?: generateUniqueUUID()
