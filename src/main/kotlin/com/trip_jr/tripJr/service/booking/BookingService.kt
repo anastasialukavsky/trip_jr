@@ -18,29 +18,29 @@ class BookingService {
     lateinit var dslContext: DSLContext
 
 
-    fun createBooking(booking: BookingDTO): BookingDTO {
-        try {
-            val totalCostBigDecimal = BigDecimal.valueOf(booking.totalCost)
-
-            val bookingRecord = dslContext.insertInto(BOOKING)
-                .set(BOOKING.BOOKING_ID, booking.bookingId)
-                .set(BOOKING.USER_ID, booking.userId)
-                .set(BOOKING.HOTEL_ID, booking.hotelId)
-                .set(BOOKING.CHECK_IN_DATE, booking.checkInDate)
-                .set(BOOKING.CHECK_OUT_DATE, booking.checkOutDate)
-                .set(BOOKING.TOTAL_COST, totalCostBigDecimal)
-                .returningResult(BOOKING.BOOKING_ID)
-                .fetchOne()
-
-            bookingRecord ?: throw NullPointerException("Failed to create booking record!")
-
-
-
-            return booking.copy(bookingId = bookingRecord.get(BOOKING.BOOKING_ID))
-
-
-        } catch (e: Exception) {
-            throw e
-        }
-    }
+//    fun createBooking(booking: BookingDTO): BookingDTO {
+//        try {
+//            val totalCostBigDecimal = BigDecimal.valueOf(booking.totalCost)
+//
+//            val bookingRecord = dslContext.insertInto(BOOKING)
+//                .set(BOOKING.BOOKING_ID, booking.bookingId)
+//                .set(BOOKING.USER_ID, booking.userId)
+//                .set(BOOKING.HOTEL_ID, booking.hotelId)
+//                .set(BOOKING.CHECK_IN_DATE, booking.checkInDate)
+//                .set(BOOKING.CHECK_OUT_DATE, booking.checkOutDate)
+//                .set(BOOKING.TOTAL_COST, totalCostBigDecimal)
+//                .returningResult(BOOKING.BOOKING_ID)
+//                .fetchOne()
+//
+//            bookingRecord ?: throw NullPointerException("Failed to create booking record!")
+//
+//
+//
+//            return booking.copy(bookingId = bookingRecord.get(BOOKING.BOOKING_ID))
+//
+//
+//        } catch (e: Exception) {
+//            throw e
+//        }
+//    }
 }
