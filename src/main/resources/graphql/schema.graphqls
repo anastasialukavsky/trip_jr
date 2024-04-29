@@ -2,7 +2,8 @@ scalar UUID
 scalar Date
 
 type Query {
-    hotels: [HotelDTO!]!
+    hotels: [HotelDTO]
+    users: [UserDTO!]!
     hotelById(id: UUID!): HotelDTO
     userById(id: UUID!): UserDTO
 }
@@ -10,21 +11,21 @@ type Query {
 
 type HotelDTO {
     hotelId: UUID
-    name: String!
+    name: String
     location: LocationDTO!
     rates: [RateDTO!]!
-    amenities: [AmenityDTO!]!
+    amenities: [AmenityDTO]
 }
 
 type LocationDTO {
     locationId: UUID
-    phoneNumber: String!
-    address: String!
-    city: String!
-    state: String!
-    zip: String!
-    latitude: Float!
-    longitude: Float!
+    phoneNumber: String
+    address: String
+    city: String
+    state: String
+    zip: String
+    latitude: Float
+    longitude: Float
 }
 
 type RateDTO {
@@ -44,19 +45,19 @@ type AmenityDTO {
 
 input HotelInput {
     name: String!
-    location: LocationInput!
-    rates: [RateInput!]!
-    amenities: [AmenityInput!]!
+    location: LocationInput
+    rates: [RateInput]
+    amenities: [AmenityInput]
 }
 
 input LocationInput {
-    phoneNumber: String!
-    address: String!
-    city: String!
-    state: String!
-    zip: String!
-    latitude: Float!
-    longitude: Float!
+    phoneNumber: String
+    address: String
+    city: String
+    state: String
+    zip: String
+    latitude: Float
+    longitude: Float
 }
 
 input RateInput {
@@ -94,8 +95,8 @@ input UserInput {
 
 type ReviewDTO {
     reviewId: UUID
-    userId: UUID!
-    hotelId: UUID!
+    userId: UUID
+    hotelId: UUID
     rating: Int
     reviewTitle: String
     reviewBody: String
@@ -112,11 +113,11 @@ input ReviewInput {
 
 type BookingDTO {
     bookingId: UUID
-    userId: UUID!
-    hotelId: UUID!
-    checkInDate: Date!
-    checkOutDate: Date!
-    totalCost: Float!
+    userId: UUID
+    hotelId: UUID
+    checkInDate: Date
+    checkOutDate: Date
+    totalCost: Float
 }
 
 
