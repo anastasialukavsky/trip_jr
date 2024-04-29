@@ -1,5 +1,7 @@
 package com.trip_jr.tripJr.service.user
 
+import com.trip_jr.tripJr.dto.booking.BookingDTO
+import com.trip_jr.tripJr.dto.review.ReviewDTO
 import com.trip_jr.tripJr.dto.user.UserDTO
 //import com.trip_jr.tripJr.dto.user.UserRole
 //import com.trip_jr.tripJr.jooq.enums.UserRole
@@ -37,6 +39,32 @@ class UserService {
 
     @Autowired
     private lateinit var userUtils: UserUtils
+
+
+    fun getAllUsers(): List<UserDTO> {
+        try {
+            val users = dslContext.select()
+                .from(USERS)
+                .fetch()
+
+            return users.map { record ->
+                val userId = record[USERS.USER_ID]
+                val email = record[USERS.EMAIL]
+                val firstName = record[USERS.FIRST_NAME]
+                val lastName = record[USERS.LAST_NAME]
+                val passwordHash = record[USERS.PASSWORD_HASH]
+
+                val userBookings = userId?.let { userUtils.fetchUserBookings(it) }
+                val userReviews = userId?.let { userUtils.fetchUserReviews(it) }
+
+                UserDTO(userId, email!!, firstName, lastName, passwordHash!!, userBookings, userReviews)
+            }
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+
 
     fun getUserById(id: UUID): UserDTO? {
         try {
