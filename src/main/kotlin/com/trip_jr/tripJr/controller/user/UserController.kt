@@ -21,6 +21,11 @@ class UserController {
     private lateinit var userService: UserService
 
 
+    @QueryMapping(name="users")
+    fun users(): List<UserDTO> {
+        return userService.getAllUsers()
+    }
+
     @QueryMapping(name="userById")
     fun userById(@Argument(name="id") id: UUID) : UserDTO? {
         return userService.getUserById(id)
