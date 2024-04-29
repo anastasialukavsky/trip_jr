@@ -26,41 +26,42 @@ class UserUtils {
         return userRecord?.into(UserDTO::class.java)
     }
 
-    fun fetchUserBookings(id: UUID): List<MutableList<BookingDTO>>? {
+    fun fetchUserBookings(id: UUID): MutableList<BookingDTO> {
         try {
-            val bookingsRecord = dslContext.select()
+            val bookingsRecords = dslContext.select()
                 .from(BOOKING)
                 .where(BOOKING.USER_ID.eq(id))
                 .fetch()
-//                ?: throw NoSuchElementException("Booking records for user with ID $id not found")
 
-            return if (bookingsRecord.isNotEmpty) {
-                listOf(bookingsRecord.into(BookingDTO::class.java))
+            val bookings: MutableList<BookingDTO> = mutableListOf()
 
-            } else {
-                ArrayList()
+            for (record in bookingsRecords) {
+                bookings.add(record.into(BookingDTO::class.java))
             }
+
+            return bookings
         } catch (e: Exception) {
             throw e
         }
     }
 
-    fun fetchUserReviews(id: UUID): List<MutableList<ReviewDTO>>? {
+    fun fetchUserReviews(id: UUID): MutableList<ReviewDTO> {
         try {
-            val reviewsRecord = dslContext.select()
+            val reviewsRecords = dslContext.select()
                 .from(REVIEW)
                 .where(REVIEW.USER_ID.eq(id))
                 .fetch()
-//                ?: throw NoSuchElementException("Booking records for user with ID $id not found")
 
-            return if (reviewsRecord.isNotEmpty) {
-                listOf(reviewsRecord.into(ReviewDTO::class.java))
-            } else {
-                ArrayList()
+            val reviews: MutableList<ReviewDTO> = mutableListOf()
+
+            for (record in reviewsRecords) {
+                reviews.add(record.into(ReviewDTO::class.java))
             }
-//            return listOf(reviewsRecord.into(ReviewDTO::class.java))
+
+            return reviews
         } catch (e: Exception) {
             throw e
         }
     }
+
 }
