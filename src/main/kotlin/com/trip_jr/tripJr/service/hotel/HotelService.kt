@@ -1,5 +1,6 @@
 package com.trip_jr.tripJr.service.hotel
 
+import com.trip_jr.tripJr.controller.review.ReviewController
 import com.trip_jr.tripJr.dto.hotel.AmenityDTO
 import com.trip_jr.tripJr.dto.hotel.HotelDTO
 import com.trip_jr.tripJr.dto.hotel.LocationDTO
@@ -10,6 +11,8 @@ import com.trip_jr.tripJr.jooq.tables.references.HOTEL
 import com.trip_jr.tripJr.jooq.tables.references.LOCATION
 import com.trip_jr.tripJr.jooq.tables.references.RATE
 import org.jooq.DSLContext
+import org.jooq.Record
+import org.jooq.Result
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
@@ -18,6 +21,7 @@ import org.slf4j.LoggerFactory
 @Service
 class HotelService {
 
+
     @Autowired
     lateinit var dslContext: DSLContext
 
@@ -25,9 +29,73 @@ class HotelService {
 
 
     //TODO write custom mapper to map every entity present on hotel
-    fun getAllHotels(): List<Hotel> {
-        val hotels = dslContext.select().from(HOTEL).fetch()
-        return hotels.map { hotel -> hotel.into(Hotel::class.java) }
+    fun getAllHotels(): List<HotelDTO> {
+        val hotels = dslContext.select()
+            .from(
+                HOTEL
+            )
+            .join(LOCATION).on(HOTEL.LOCATION_ID.eq(LOCATION.LOCATION_ID))
+            .join(RATE).on(RATE.HOTEL_ID.eq(HOTEL.HOTEL_ID))
+            .join(AMENITY).on(AMENITY.HOTEL_ID.eq(HOTEL.HOTEL_ID))
+            .fetch()
+        return hotels.map { record ->
+            val hotelId = record[HOTEL.HOTEL_ID]
+            val name = record[HOTEL.NAME]
+            val location = record[LOCATION.PHONE_NUMBER]?.let {
+                record[LOCATION.ADDRESS]?.let { it1 ->
+                    record[LOCATION.CITY]?.let { it2 ->
+                        record[LOCATION.STATE]?.let { it3 ->
+                            record[LOCATION.LATITUDE]?.let { it4 ->
+                                record[LOCATION.LONGITUDE]?.let { it5 ->
+                                    LocationDTO (
+                                        locationId = record[LOCATION.LOCATION_ID],
+                                        phoneNumber = it,
+                                        address = it1,
+                                        city = it2,
+                                        state = it3,
+                                        latitude = it4,
+                                        longitude = it5
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            val rates = mutableListOf<RateDTO>()
+            if (record[RATE.RATE_ID] != null && record[RATE.RATE_] != null && record[RATE.MONTH] != null && record[RATE.DEFAULT_RATE] != null) {
+                val rate = record[RATE.RATE_]?.let {
+                    record[RATE.MONTH]?.let { it1 ->
+                        record[RATE.DEFAULT_RATE]?.let { it2 ->
+                            RateDTO(
+                                rateId = record[RATE.RATE_ID],
+                                hotelId = record[RATE.HOTEL_ID],
+                                rate = it,
+                                month = it1,
+                                defaultRate = it2,
+                            )
+                        }
+                    }
+                }
+                if (rate != null) {
+                    rates.add(rate)
+                }
+            }
+            val amenities = mutableListOf<AmenityDTO>()
+            if (record[AMENITY.AMENITY_ID] != null && record[AMENITY.AMENITY_NAME] != null) {
+                val amenity = record[AMENITY.AMENITY_NAME]?.let {
+                    AmenityDTO(
+                        amenityId = record[AMENITY.AMENITY_ID],
+                        amenityName = it,
+                        hotelId = record[AMENITY.HOTEL_ID],
+                    )
+                }
+                if (amenity != null) {
+                    amenities.add(amenity)
+                }
+            }
+            HotelDTO(hotelId, name!!, location!!, rates, amenities)
+        }
     }
 
     fun getHotelById(id: UUID): HotelDTO {
