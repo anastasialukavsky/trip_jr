@@ -7,6 +7,8 @@ import com.trip_jr.tripJr.dto.hotel.LocationDTO
 import com.trip_jr.tripJr.dto.hotel.RateDTO
 import com.trip_jr.tripJr.dto.review.ReviewDTO
 import com.trip_jr.tripJr.jooq.tables.references.*
+import com.trip_jr.tripJr.service.utils.HotelByIdUitls
+import com.trip_jr.tripJr.service.utils.UUIDUtils
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -19,6 +21,12 @@ class HotelService {
 
     @Autowired
     lateinit var dslContext: DSLContext
+
+    @Autowired
+    lateinit var hotelByIdUtils: HotelByIdUitls
+
+    @Autowired
+    lateinit var uuidUtils: UUIDUtils
 
     private val logger = LoggerFactory.getLogger(HotelService::class.java)
 
@@ -141,15 +149,11 @@ class HotelService {
                 .where(HOTEL.HOTEL_ID.eq(id))
                 .fetchOne()
 
-            val rates = dslContext.select()
-                .from(RATE)
-                .where(RATE.HOTEL_ID.eq(id))
-                .fetchInto(RateDTO::class.java)
+            val rates = hotelByIdUtils.getHotelRates(id)
+            val amenities = hotelByIdUtils.getHotelAmenities(id)
+            val reviews = hotelByIdUtils.getHotelReviews(id)
+            val bookings = hotelByIdUtils.getHotelBookings(id)
 
-            val amenities = dslContext.select()
-                .from(AMENITY)
-                .where(AMENITY.HOTEL_ID.eq(id))
-                .fetchInto(AmenityDTO::class.java)
 
             val location = record?.let {
                 dslContext.select()
@@ -159,11 +163,6 @@ class HotelService {
             } ?: throw NoSuchElementException("Location not found")
 
 
-            val reviews = dslContext.select()
-                .from(REVIEW)
-                .where(REVIEW.HOTEL_ID.eq(id))
-                .fetchInto(ReviewDTO::class.java)
-
             return record.let {
                 it[HOTEL.NAME]?.let { name ->
                     HotelDTO(
@@ -172,26 +171,27 @@ class HotelService {
                         location = location,
                         rates = rates,
                         amenities = amenities,
-                        reviews = reviews
+                        reviews = reviews,
+                        bookings = bookings
                     )
                 } ?: throw NoSuchElementException("Hotel name not found")
-            } ?: throw NoSuchElementException("Hotel with id $id not found")
+            }
         } catch (e: Exception) {
             throw e
         }
     }
 
 
-    fun generateUniqueUUID(): UUID {
-        return UUID.randomUUID()
-    }
+//    fun generateUniqueUUID(): UUID {
+//        return UUID.randomUUID()
+//    }
 
     fun createHotel(hotel: HotelDTO): HotelDTO? {
         try {
 
-            val hotelId = generateUniqueUUID()
-            val locationId = generateUniqueUUID()
-            logger.debug("LOC ID", locationId)
+            val hotelId = uuidUtils.generateUUID()
+            val locationId = uuidUtils.generateUUID()
+//            logger.debug("LOC ID", locationId)
 
 
             val locationRecord = dslContext.insertInto(LOCATION)
@@ -218,9 +218,9 @@ class HotelService {
                 .returningResult(LOCATION.LOCATION_ID)
                 .fetchOne()
 
-            logger.debug("LOCATION RECORD", locationRecord)
+//            logger.debug("LOCATION RECORD", locationRecord)
 
-            logger.debug("LOC REC ", locationRecord?.get(LOCATION.LOCATION_ID))
+//            logger.debug("LOC REC ", locationRecord?.get(LOCATION.LOCATION_ID))
             val hotelRecord = dslContext.insertInto(HOTEL)
                 .columns(HOTEL.HOTEL_ID, HOTEL.NAME, HOTEL.LOCATION_ID)
                 .values(hotelId, hotel.name, locationRecord?.get(LOCATION.LOCATION_ID))
@@ -232,7 +232,7 @@ class HotelService {
             }
 
             val ratesRecords = hotel.rates.map { rate ->
-                val rateId = rate.rateId ?: generateUniqueUUID()
+                val rateId = rate.rateId ?: uuidUtils.generateUUID()
                 dslContext.insertInto(RATE)
                     .columns(RATE.RATE_ID, RATE.HOTEL_ID, RATE.RATE_, RATE.MONTH, RATE.DEFAULT_RATE)
                     .values(
@@ -248,7 +248,7 @@ class HotelService {
             }
 
             val amenitiesRecords = hotel.amenities.map { amenity ->
-                val amenityId = amenity.amenityId ?: generateUniqueUUID()
+                val amenityId = amenity.amenityId ?: uuidUtils.generateUUID()
                 dslContext.insertInto(AMENITY)
                     .columns(AMENITY.AMENITY_ID, AMENITY.AMENITY_NAME, AMENITY.HOTEL_ID)
                     .values(
