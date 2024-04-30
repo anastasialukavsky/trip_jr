@@ -5,11 +5,9 @@ import com.trip_jr.tripJr.dto.hotel.AmenityDTO
 import com.trip_jr.tripJr.dto.hotel.HotelDTO
 import com.trip_jr.tripJr.dto.hotel.LocationDTO
 import com.trip_jr.tripJr.dto.hotel.RateDTO
+import com.trip_jr.tripJr.dto.review.ReviewDTO
 import com.trip_jr.tripJr.jooq.tables.Hotel
-import com.trip_jr.tripJr.jooq.tables.references.AMENITY
-import com.trip_jr.tripJr.jooq.tables.references.HOTEL
-import com.trip_jr.tripJr.jooq.tables.references.LOCATION
-import com.trip_jr.tripJr.jooq.tables.references.RATE
+import com.trip_jr.tripJr.jooq.tables.references.*
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.Result
@@ -35,6 +33,7 @@ class HotelService {
             .join(RATE).on(RATE.HOTEL_ID.eq(HOTEL.HOTEL_ID))
             .join(AMENITY).on(AMENITY.HOTEL_ID.eq(HOTEL.HOTEL_ID))
             .fetch()
+
         return hotels.map { record ->
             val hotelId = record[HOTEL.HOTEL_ID]
             val name = record[HOTEL.NAME]
@@ -92,6 +91,8 @@ class HotelService {
                     amenities.add(amenity)
                 }
             }
+
+
             HotelDTO(hotelId, name!!, location!!, rates, amenities)
         }
     }
@@ -113,19 +114,28 @@ class HotelService {
                 .where(AMENITY.HOTEL_ID.eq(id))
                 .fetchInto(AmenityDTO::class.java)
 
-            return record?.let {
-                val location = dslContext.select()
+            val location = record?.let {
+                dslContext.select()
                     .from(LOCATION)
                     .where(LOCATION.LOCATION_ID.eq(it[HOTEL.LOCATION_ID]))
                     .fetchOneInto(LocationDTO::class.java)
+            } ?: throw NoSuchElementException("Location not found")
 
+            // Fetch reviews associated with the hotel
+            val reviews = dslContext.select()
+                .from(REVIEW)
+                .where(REVIEW.HOTEL_ID.eq(id))
+                .fetchInto(ReviewDTO::class.java)
+
+            return record.let {
                 it[HOTEL.NAME]?.let { name ->
                     HotelDTO(
                         hotelId = it[HOTEL.HOTEL_ID],
                         name = name,
-                        location = location ?: throw NoSuchElementException("Location not found"),
+                        location = location,
                         rates = rates,
-                        amenities = amenities
+                        amenities = amenities,
+                        reviews = reviews
                     )
                 } ?: throw NoSuchElementException("Hotel name not found")
             } ?: throw NoSuchElementException("Hotel with id $id not found")
@@ -133,6 +143,7 @@ class HotelService {
             throw e
         }
     }
+
 
     fun generateUniqueUUID(): UUID {
         return UUID.randomUUID()
@@ -142,6 +153,9 @@ class HotelService {
         try {
 
             val hotelId = generateUniqueUUID()
+            val locationId = generateUniqueUUID()
+            logger.debug("LOC ID", locationId)
+
 
             val locationRecord = dslContext.insertInto(LOCATION)
                 .columns(
@@ -167,6 +181,9 @@ class HotelService {
                 .returningResult(LOCATION.LOCATION_ID)
                 .fetchOne()
 
+            logger.debug("LOCATION RECORD", locationRecord)
+
+            logger.debug("LOC REC ", locationRecord?.get(LOCATION.LOCATION_ID))
             val hotelRecord = dslContext.insertInto(HOTEL)
                 .columns(HOTEL.HOTEL_ID, HOTEL.NAME, HOTEL.LOCATION_ID)
                 .values(hotelId, hotel.name, locationRecord?.get(LOCATION.LOCATION_ID))
