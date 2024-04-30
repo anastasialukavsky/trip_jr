@@ -1,8 +1,7 @@
-package com.trip_jr.tripJr.controller
+package com.trip_jr.tripJr.controller.hotel
 
 import com.trip_jr.tripJr.dto.hotel.HotelDTO
 import com.trip_jr.tripJr.service.hotel.HotelService
-import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.graphql.data.method.annotation.Argument
 import org.springframework.graphql.data.method.annotation.MutationMapping
@@ -10,7 +9,6 @@ import org.springframework.graphql.data.method.annotation.QueryMapping
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.RequestBody
 import java.util.*
 
 
