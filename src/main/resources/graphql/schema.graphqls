@@ -6,6 +6,8 @@ type Query {
     users: [UserDTO!]!
     hotelById(id: UUID!): HotelDTO
     userById(id: UUID!): UserDTO
+    bookingsByUserId(userId: UUID): [BookingDTO]
+    bookingByIdForUserById(userId: UUID, bookingID: UUID): BookingDTO
 }
 
 
@@ -95,6 +97,14 @@ input UserInput {
     passwordHash: String!
 }
 
+input UpdateUserInput {
+    email: String
+    firstName: String
+    lastName: String
+    passwordHash: String
+    #    reviews: [ReviewInput]
+}
+
 type ReviewDTO {
     reviewId: UUID
     userId: UUID
@@ -136,4 +146,5 @@ type Mutation {
     createUser(user: UserInput) : UserDTO
     createReview(review: ReviewInput): ReviewDTO
     createBooking(booking: BookingInput) : BookingDTO
+    updateUser(id: UUID, user: UpdateUserInput) : UserDTO
 }
