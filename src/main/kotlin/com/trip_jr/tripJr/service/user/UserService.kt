@@ -121,4 +121,33 @@ class UserService {
     }
 
 
+    fun updateUser(id: UUID, user: UserDTO): UserDTO {
+        try {
+            val userRecord  = userUtils.getUserById(id)
+
+            if (userRecord != null) {
+                val hashPassword = passwordUtils.hashPassword(user.passwordHash)
+                val updatedUser = user.copy(passwordHash = hashPassword)
+                val updatedRecord = dslContext.update(USERS)
+                    .set(USERS.EMAIL, updatedUser.email)
+                    .set(USERS.FIRST_NAME, updatedUser.firstName)
+                    .set(USERS.LAST_NAME, updatedUser.lastName)
+                    .set(USERS.PASSWORD_HASH, updatedUser.passwordHash)
+                    .where(USERS.USER_ID.eq(id))
+                    .execute()
+
+                if (updatedRecord == 1) {
+                    return updatedUser
+                } else {
+                    throw RuntimeException("Failed to update user")
+                }
+            } else {
+                throw RuntimeException("User record with ID $id not found")
+            }
+        }catch (e:Exception){
+            throw e
+        }
+    }
+
+
 }
