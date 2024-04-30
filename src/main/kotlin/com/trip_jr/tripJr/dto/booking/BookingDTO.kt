@@ -10,5 +10,5 @@ data class BookingDTO(
     val hotelId: UUID?,
     val checkInDate: LocalDate,
     val checkOutDate: LocalDate,
-    val totalCost: BigDecimal,
+    val totalCost: BigDecimal?,
 )
