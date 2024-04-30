@@ -21,20 +21,24 @@ class UserController {
     private lateinit var userService: UserService
 
 
-    @QueryMapping(name="users")
+    @QueryMapping(name = "users")
     fun users(): List<UserDTO> {
         return userService.getAllUsers()
     }
 
-    @QueryMapping(name="userById")
-    fun userById(@Argument(name="id") id: UUID) : UserDTO? {
+    @QueryMapping(name = "userById")
+    fun userById(@Argument(name = "id") id: UUID): UserDTO? {
         return userService.getUserById(id)
     }
 
     @MutationMapping(name = "createUser")
-    fun createUser(@Argument(name="user") user: UserDTO): UserDTO {
-
+    fun createUser(@Argument(name = "user") user: UserDTO): UserDTO {
         return userService.createUser(user)
+    }
+
+    @MutationMapping(name = "updateUser")
+    fun updateUser(@Argument(name = "id") id: UUID, @Argument(name = "user") user: UserDTO): UserDTO {
+        return userService.updateUser(id, user)
     }
 
 }
