@@ -7,7 +7,7 @@ type Query {
     hotelById(id: UUID!): HotelDTO
     userById(id: UUID!): UserDTO
     bookingsByUserId(userId: UUID): [BookingDTO]
-    bookingByIdForUserById(userId: UUID, bookingID: UUID): BookingDTO
+    bookingByIdForUserById(userId: UUID, bookingId: UUID): BookingDTO
 }
 
 

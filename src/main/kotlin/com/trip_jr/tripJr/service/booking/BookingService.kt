@@ -38,6 +38,21 @@ class BookingService {
         }
     }
 
+    fun getSingleBookingByUserId(userId: UUID, bookingId: UUID): BookingDTO? {
+        try {
+            val bookingRecord = dslContext
+                .select()
+                .from(BOOKING)
+                .where(BOOKING.USER_ID.eq(userId))
+                .and(BOOKING.BOOKING_ID.eq(bookingId))
+                .fetchOne()
+
+            return bookingRecord?.into(BookingDTO::class.java)
+        }catch(e: Exception) {
+            throw e
+        }
+    }
+
     fun createBooking(booking: BookingDTO): BookingDTO {
         try {
             val bookingId = booking.bookingId ?: uuidUtils.generateUUID()

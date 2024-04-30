@@ -15,13 +15,24 @@ class BookingController {
     @Autowired
     lateinit var bookingService: BookingService
 
-    @QueryMapping(name="bookingsByUserId")
+    @QueryMapping(name = "bookingsByUserId")
     fun bookingsByUserId(@Argument userId: UUID): List<BookingDTO> {
         return bookingService.getAllBookingsByUserId(userId)
     }
 
-    @MutationMapping(name= "createBooking")
-    fun createBooking(@Argument(name="booking") booking: BookingDTO): BookingDTO {
+    @QueryMapping(name = "bookingByIdForUserById")
+    fun bookingById(
+        @Argument(
+            name = "userId"
+        ) userId: UUID,
+        @Argument(name = "bookingId") bookingId: UUID
+    ): BookingDTO? {
+        return bookingService.getSingleBookingByUserId(userId, bookingId)
+    }
+
+
+    @MutationMapping(name = "createBooking")
+    fun createBooking(@Argument(name = "booking") booking: BookingDTO): BookingDTO {
         return bookingService.createBooking(booking)
     }
 }
