@@ -11,10 +11,12 @@ type Query {
 
 type HotelDTO {
     hotelId: UUID
-    name: String
-    location: LocationDTO!
-    rates: [RateDTO!]!
+    name: String!
+    location: LocationDTO
+    rates: [RateDTO!]
     amenities: [AmenityDTO]
+    reviews: [ReviewDTO]
+    bookings: [BookingDTO]
 }
 
 type LocationDTO {
