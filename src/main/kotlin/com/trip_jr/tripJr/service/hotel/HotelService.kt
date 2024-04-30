@@ -1,16 +1,13 @@
 package com.trip_jr.tripJr.service.hotel
 
-import com.trip_jr.tripJr.controller.review.ReviewController
+import com.trip_jr.tripJr.dto.booking.BookingDTO
 import com.trip_jr.tripJr.dto.hotel.AmenityDTO
 import com.trip_jr.tripJr.dto.hotel.HotelDTO
 import com.trip_jr.tripJr.dto.hotel.LocationDTO
 import com.trip_jr.tripJr.dto.hotel.RateDTO
 import com.trip_jr.tripJr.dto.review.ReviewDTO
-import com.trip_jr.tripJr.jooq.tables.Hotel
 import com.trip_jr.tripJr.jooq.tables.references.*
 import org.jooq.DSLContext
-import org.jooq.Record
-import org.jooq.Result
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
@@ -32,7 +29,10 @@ class HotelService {
             .join(LOCATION).on(HOTEL.LOCATION_ID.eq(LOCATION.LOCATION_ID))
             .join(RATE).on(RATE.HOTEL_ID.eq(HOTEL.HOTEL_ID))
             .join(AMENITY).on(AMENITY.HOTEL_ID.eq(HOTEL.HOTEL_ID))
+            .join(REVIEW).on(REVIEW.HOTEL_ID.eq(REVIEW.HOTEL_ID))
+            .join(BOOKING).on(BOOKING.HOTEL_ID.eq(BOOKING.HOTEL_ID))
             .fetch()
+
 
         return hotels.map { record ->
             val hotelId = record[HOTEL.HOTEL_ID]
@@ -43,7 +43,7 @@ class HotelService {
                         record[LOCATION.STATE]?.let { it3 ->
                             record[LOCATION.LATITUDE]?.let { it4 ->
                                 record[LOCATION.LONGITUDE]?.let { it5 ->
-                                    LocationDTO (
+                                    LocationDTO(
                                         locationId = record[LOCATION.LOCATION_ID],
                                         phoneNumber = it,
                                         address = it1,
@@ -93,7 +93,44 @@ class HotelService {
             }
 
 
-            HotelDTO(hotelId, name!!, location!!, rates, amenities)
+            val reviews = mutableListOf<ReviewDTO>()
+            val review = record[REVIEW.RATING]?.let {
+                record[REVIEW.REVIEW_TITLE]?.let { it1 ->
+                    record[REVIEW.REVIEW_BODY]?.let { it2 ->
+                        ReviewDTO(
+                            reviewId = record[REVIEW.REVIEW_ID],
+                            userId = record[REVIEW.USER_ID],
+                            hotelId = record[REVIEW.HOTEL_ID],
+                            rating = it,
+                            reviewTitle = it1,
+                            reviewBody = it2
+                        )
+                    }
+                }
+            }
+            if (review != null) {
+                reviews.add(review)
+            }
+
+            val bookings = mutableListOf<BookingDTO>()
+            val booking = record[BOOKING.CHECK_IN_DATE]?.let {
+                record[BOOKING.CHECK_OUT_DATE]?.let { it1 ->
+                    BookingDTO(
+                        bookingId = record[BOOKING.BOOKING_ID],
+                        userId = record[BOOKING.USER_ID],
+                        hotelId = record[BOOKING.HOTEL_ID],
+                        checkInDate = it,
+                        checkOutDate = it1,
+                        totalCost = record[BOOKING.TOTAL_COST]
+                    )
+                }
+            }
+
+            if(booking != null) {
+                bookings.add(booking)
+            }
+
+            HotelDTO(hotelId, name!!, location!!, rates, amenities, reviews, bookings)
         }
     }
 
@@ -121,7 +158,7 @@ class HotelService {
                     .fetchOneInto(LocationDTO::class.java)
             } ?: throw NoSuchElementException("Location not found")
 
-            // Fetch reviews associated with the hotel
+
             val reviews = dslContext.select()
                 .from(REVIEW)
                 .where(REVIEW.HOTEL_ID.eq(id))
