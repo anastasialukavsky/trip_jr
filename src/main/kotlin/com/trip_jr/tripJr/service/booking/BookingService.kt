@@ -104,10 +104,6 @@ class BookingService {
     fun updateBooking(userId: UUID, bookingId: UUID, hotelId: UUID,  booking: BookingDTO): BookingDTO {
         try {
 
-            if (userId ==null  || bookingId == null|| hotelId ==null || booking ==null) {
-                throw NullPointerException("Booking id and hotel id must be set!")
-            }
-
             val bookingRecord = dslContext
                 .select()
                 .from(BOOKING)
@@ -127,48 +123,26 @@ class BookingService {
                 totalCost = booking.totalCost,
             )
 
-            val hotel = dslContext
-                .select()
-                .from(HOTEL)
-                .where(HOTEL.HOTEL_ID.eq(hotelId))
-                .fetchOneInto(HotelDTO::class.java)
 
-            if(hotel == null) throw  RuntimeException("Hotel not found")
-            logger.debug(hotel.toString())
-
-            val rateRecord = dslContext
-                .select()
-                .from(RATE)
-                .where(RATE.HOTEL_ID.eq(hotel.hotelId))
-//                .and(RATE.RATE_ID.eq(hotel.hotelId))
-                .fetchOneInto(RateDTO::class.java)
-
-            if (rateRecord == null) {
-                throw RuntimeException("Rate record not found for the specified hotel")
-            }
-            if (bookingRecord != null) {
-                val updatedBookingRecord = dslContext.update(BOOKING)
-                    .set(BOOKING.CHECK_IN_DATE, booking.checkInDate)
-                    .set(BOOKING.CHECK_OUT_DATE, booking.checkOutDate)
+            val updatedBookingRecord = dslContext.update(BOOKING)
+                .set(BOOKING.CHECK_IN_DATE, booking.checkInDate)
+                .set(BOOKING.CHECK_OUT_DATE, booking.checkOutDate)
 //                    .set(BOOKING.TOTAL_COST, totalCostBigDecimal)
+                .where(BOOKING.USER_ID.eq(userId))
+                .and(BOOKING.BOOKING_ID.eq(bookingId))
+//                    .and(RATE.HOTEL_ID.eq(hotelId))
+                .execute()
+
+            if (updatedBookingRecord == 1) {
+                val updatedRecord = dslContext
+                    .selectFrom(BOOKING)
                     .where(BOOKING.USER_ID.eq(userId))
                     .and(BOOKING.BOOKING_ID.eq(bookingId))
-//                    .and(RATE.HOTEL_ID.eq(hotelId))
-                    .execute()
+                    .fetchOneInto(BookingDTO::class.java)
 
-                if (updatedBookingRecord == 1) {
-                    val updatedRecord = dslContext
-                        .selectFrom(BOOKING)
-                        .where(BOOKING.USER_ID.eq(userId))
-                        .and(BOOKING.BOOKING_ID.eq(bookingId))
-                        .fetchOneInto(BookingDTO::class.java)
-
-                    return updatedRecord ?: throw RuntimeException("Failed to fetch updated booking")
-                } else {
-                    throw RuntimeException("Failed to update booking")
-                }
+                return updatedRecord ?: throw RuntimeException("Failed to fetch updated booking")
             } else {
-                throw RuntimeException("Booking not found")
+                throw RuntimeException("Failed to update booking")
             }
         } catch (e: Exception) {
             throw e
