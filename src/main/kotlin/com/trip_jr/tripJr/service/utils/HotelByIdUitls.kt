@@ -19,7 +19,8 @@ class HotelByIdUitls {
 
     fun getHotelRates(hotelId: UUID): MutableList<RateDTO> {
         try {
-            val ratesRecord = dslContext.select()
+            val ratesRecord = dslContext
+                .select()
                 .from(RATE)
                 .where(RATE.HOTEL_ID.eq(hotelId))
                 .fetchInto(RateDTO::class.java)
@@ -32,7 +33,8 @@ class HotelByIdUitls {
 
     fun getHotelAmenities(hotelId: UUID): MutableList<AmenityDTO> {
         try {
-            val amenitiesRecord = dslContext.select()
+            val amenitiesRecord = dslContext
+                .select()
                 .from(AMENITY)
                 .where(AMENITY.HOTEL_ID.eq(hotelId))
                 .fetchInto(AmenityDTO::class.java)
