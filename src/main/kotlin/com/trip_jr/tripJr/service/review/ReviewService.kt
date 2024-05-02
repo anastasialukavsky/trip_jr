@@ -45,83 +45,50 @@ class ReviewService {
         }
     }
 
-    fun updateReview(userId: UUID, reviewId: UUID, review: UpdateReviewDTO): ReviewDTO {
+    fun updateReview(userId: UUID, reviewId: UUID, review: UpdateReviewDTO): ReviewDTO? {
         try {
-            val userRecord = userUtils.getUserById(userId)
 
-            if (userRecord == null) {
-                throw RuntimeException("User record is not found")
-            }
 
-            // Fetch the original review record
-            val originalReviewRecord = dslContext
-                .selectFrom(REVIEW)
+            val record = dslContext
+                .select()
+                .from(REVIEW)
                 .where(REVIEW.REVIEW_ID.eq(reviewId))
-                .fetchOne { record ->
-                    record[REVIEW.RATING]?.let {
-                        record[REVIEW.REVIEW_TITLE]?.let { it1 ->
-                            record[REVIEW.REVIEW_BODY]?.let { it2 ->
-                                ReviewDTO(
-                                    reviewId = record[REVIEW.REVIEW_ID],
-                                    userId = record[REVIEW.USER_ID],
-                                    hotelId = record[REVIEW.HOTEL_ID],
-                                    rating = it,
-                                    reviewTitle = it1,
-                                    reviewBody = it2
-                                )
-                            }
-                        }
-                    }
-                }
+                .fetchOne()
 
-            val updatedReviewRecord = originalReviewRecord?.copy()
 
-            review.rating?.let {
-                if (updatedReviewRecord != null) {
-                    updatedReviewRecord.rating = it
-                }
-            }
-            review.reviewTitle?.let {
-                if (updatedReviewRecord != null) {
-                    updatedReviewRecord.reviewTitle = it
-                }
-            }
-            review.reviewBody?.let {
-                if (updatedReviewRecord != null) {
-                    updatedReviewRecord.reviewBody = it
-                }
-            }
+            val originalReviewRecord: ReviewDTO =
+                ReviewDTO(
+                    reviewId = reviewId,
+                    userId = userId,
+                    hotelId = record?.get(REVIEW.HOTEL_ID),
+                    rating = record?.get(REVIEW.RATING)!!,
+                    reviewTitle = record.get(REVIEW.REVIEW_TITLE)!!,
+                    reviewBody = record.get(REVIEW.REVIEW_BODY)!!
+                )
+
+
+            val updatedReview = originalReviewRecord?.copy(
+                rating = review.rating ?: originalReviewRecord.rating,
+                reviewTitle = review.reviewTitle ?: originalReviewRecord.reviewTitle,
+                reviewBody = review.reviewBody ?: originalReviewRecord.reviewBody
+            )
+
 
             val updateQuery = dslContext.update(REVIEW)
-                .set(REVIEW.REVIEW_TITLE, updatedReviewRecord?.reviewTitle)
-                .set(REVIEW.REVIEW_BODY, updatedReviewRecord?.reviewBody)
+                .set(REVIEW.RATING, updatedReview?.rating)
+                .set(REVIEW.REVIEW_TITLE, updatedReview?.reviewTitle)
+                .set(REVIEW.REVIEW_BODY, updatedReview?.reviewBody)
                 .where(REVIEW.REVIEW_ID.eq(reviewId))
                 .execute()
 
             if (updateQuery == 1) {
-                val updatedRecord = dslContext
-                    .selectFrom(REVIEW)
-                    .where(REVIEW.REVIEW_ID.eq(reviewId))
-                    .fetchOneInto(ReviewDTO::class.java)
-
-                updatedRecord?.let {
-                    if (originalReviewRecord != null) {
-                        updatedRecord.reviewId = originalReviewRecord.reviewId
-                    }
-                    if (originalReviewRecord != null) {
-                        updatedRecord.userId = originalReviewRecord.userId
-                    }
-                    if (originalReviewRecord != null) {
-                        updatedRecord.hotelId = originalReviewRecord.hotelId
-                    }
-                }
-
-                return updatedRecord ?: throw RuntimeException("Failed to fetch updated review")
+                return updatedReview
             } else {
                 throw RuntimeException("Failed to update review")
             }
+
         } catch (e: Exception) {
-            throw e // You can handle exceptions more gracefully here
+            throw e
         }
     }
 
