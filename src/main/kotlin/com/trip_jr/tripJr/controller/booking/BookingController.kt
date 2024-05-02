@@ -22,9 +22,7 @@ class BookingController {
 
     @QueryMapping(name = "bookingByIdForUserById")
     fun bookingById(
-        @Argument(
-            name = "userId"
-        ) userId: UUID,
+        @Argument(name = "userId") userId: UUID,
         @Argument(name = "bookingId") bookingId: UUID
     ): BookingDTO? {
         return bookingService.getSingleBookingByUserId(userId, bookingId)
@@ -34,5 +32,15 @@ class BookingController {
     @MutationMapping(name = "createBooking")
     fun createBooking(@Argument(name = "booking") booking: BookingDTO): BookingDTO {
         return bookingService.createBooking(booking)
+    }
+
+    @MutationMapping(name = "updateBooking")
+    fun updateBooking(
+        @Argument(name = "userId") userId: UUID,
+        @Argument(name = "bookingId") bookingId: UUID,
+        @Argument(name = "hotelId") hotelId: UUID,
+        @Argument(name = "booking") booking: BookingDTO
+    ): BookingDTO {
+        return bookingService.updateBooking(userId, bookingId, hotelId, booking)
     }
 }
