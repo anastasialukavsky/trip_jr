@@ -102,7 +102,6 @@ input UpdateUserInput {
     firstName: String
     lastName: String
     passwordHash: String
-    #    reviews: [ReviewInput]
 }
 
 type ReviewDTO {
@@ -117,6 +116,12 @@ type ReviewDTO {
 input ReviewInput {
     userId: UUID
     hotelId: UUID
+    rating: Int
+    reviewTitle: String
+    reviewBody: String
+}
+
+input UpdateReviewInput {
     rating: Int
     reviewTitle: String
     reviewBody: String
@@ -138,7 +143,12 @@ input BookingInput {
     hotelId: UUID
     checkInDate: Date!
     checkOutDate: Date!
-    totalCost: Float!
+    #    totalCost: Float!
+}
+
+input UpdateBookingInput {
+    checkInDate: Date
+    checkOutDate: Date
 }
 
 type Mutation {
@@ -147,4 +157,6 @@ type Mutation {
     createReview(review: ReviewInput): ReviewDTO
     createBooking(booking: BookingInput) : BookingDTO
     updateUser(id: UUID, user: UpdateUserInput) : UserDTO
+    updateBooking(userId: UUID, bookingId: UUID, hotelId: UUID, booking: UpdateBookingInput) : BookingDTO
+    updateReview(userId:UUID, reviewId: UUID, review:UpdateReviewInput) : ReviewDTO
 }
