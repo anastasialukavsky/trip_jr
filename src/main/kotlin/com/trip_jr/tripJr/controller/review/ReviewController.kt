@@ -36,7 +36,7 @@ class ReviewController {
         @Argument(name = "userId") userId: UUID,
         @Argument(name = "reviewId") reviewId: UUID,
         @Argument(name = "review") review: UpdateReviewDTO
-    ): ReviewDTO {
+    ): ReviewDTO? {
         return reviewService.updateReview(userId, reviewId, review)
     }
 }
