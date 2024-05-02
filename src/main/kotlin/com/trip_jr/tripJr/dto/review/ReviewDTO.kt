@@ -10,9 +10,3 @@ data class ReviewDTO(
     var reviewTitle: String,
     var reviewBody: String,
     )
-
-data class UpdateReviewDTO(
-    val rating: Int?,
-    val reviewTitle: String?,
-    val reviewBody: String?,
-)
