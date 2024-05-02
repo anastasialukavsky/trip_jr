@@ -1,6 +1,7 @@
 package com.trip_jr.tripJr.controller.review
 
 import com.trip_jr.tripJr.dto.review.ReviewDTO
+import com.trip_jr.tripJr.dto.review.UpdateReviewDTO
 import com.trip_jr.tripJr.service.review.ReviewService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.graphql.data.method.annotation.Argument
@@ -28,5 +29,14 @@ class ReviewController {
             reviewBody = review.reviewBody
         )
         return reviewService.createReview(newReview)
+    }
+
+    @MutationMapping(name = "updateReview")
+    fun updateReview(
+        @Argument(name = "userId") userId: UUID,
+        @Argument(name = "reviewId") reviewId: UUID,
+        @Argument(name = "review") review: UpdateReviewDTO
+    ): ReviewDTO {
+        return reviewService.updateReview(userId, reviewId, review)
     }
 }
