@@ -1,6 +1,7 @@
 package com.trip_jr.tripJr.controller.booking
 
 import com.trip_jr.tripJr.dto.booking.BookingDTO
+import com.trip_jr.tripJr.dto.booking.UpdateBookingDTO
 import com.trip_jr.tripJr.service.booking.BookingService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.graphql.data.method.annotation.Argument
@@ -39,8 +40,8 @@ class BookingController {
         @Argument(name = "userId") userId: UUID,
         @Argument(name = "bookingId") bookingId: UUID,
         @Argument(name = "hotelId") hotelId: UUID,
-        @Argument(name = "booking") booking: BookingDTO
-    ): BookingDTO {
+        @Argument(name = "booking") booking: UpdateBookingDTO
+    ): BookingDTO? {
         return bookingService.updateBooking(userId, bookingId, hotelId, booking)
     }
 }
