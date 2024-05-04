@@ -12,6 +12,10 @@ import org.jooq.impl.DSL
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.sql.Timestamp
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 
 import java.util.*
@@ -72,13 +76,23 @@ class BookingService {
             val totalCost = rateRecord?.rate?.times(durationInDays.toDouble()) ?: 0.0
             val totalCostBigDecimal = totalCost.toBigDecimal()
             val bookingId = booking.bookingId ?: uuidUtils.generateUUID()
+
+            val currentTimestamp = OffsetDateTime.now(ZoneOffset.UTC)
+
             val bookingRecord = dslContext.insertInto(BOOKING)
                 .set(BOOKING.BOOKING_ID, bookingId)
                 .set(BOOKING.USER_ID, booking.userId)
                 .set(BOOKING.HOTEL_ID, booking.hotelId)
+                .set(BOOKING.GUEST_FIRST_NAME, booking.guestFirstName)
+                .set(BOOKING.GUEST_LAST_NAME, booking.guestLastName)
+                .set(BOOKING.NUM_OF_GUESTS, booking.numOfGuests)
+                .set(BOOKING.OCCASION, booking.occasion)
+                .set(BOOKING.GUEST_NOTES, booking.guestNotes)
                 .set(BOOKING.CHECK_IN_DATE, booking.checkInDate)
                 .set(BOOKING.CHECK_OUT_DATE, booking.checkOutDate)
                 .set(BOOKING.TOTAL_COST, totalCostBigDecimal)
+                .set(BOOKING.CREATED_AT, currentTimestamp)
+                .set(BOOKING.UPDATED_AT, currentTimestamp)
                 .returningResult(BOOKING.BOOKING_ID)
                 .fetchOne()
 
@@ -104,6 +118,7 @@ class BookingService {
                 .where(BOOKING.USER_ID.eq(userId))
                 .and(BOOKING.BOOKING_ID.eq(bookingId))
                 .fetchOne()
+
             if (bookingRecord == null) {
                 throw RuntimeException("Booking not found")
             }
