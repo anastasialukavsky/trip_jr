@@ -1,5 +1,6 @@
 scalar UUID
 scalar Date
+scalar DateTime
 
 type Query {
     hotels: [HotelDTO]
@@ -132,18 +133,29 @@ type BookingDTO {
     bookingId: UUID
     userId: UUID
     hotelId: UUID
+    guestFirstName: String!
+    guestLastName: String!
+    numOfGuests: Int!
+    occasion: String
+    guestNotes: String
     checkInDate: Date
     checkOutDate: Date
     totalCost: Float
+    createdAt: DateTime!
+    updatedAt: DateTime!
 }
 
 
 input BookingInput {
     userId: UUID
     hotelId: UUID
+    guestFirstName: String!
+    guestLastName: String!
+    numOfGuests: Int!
+    occasion: String
+    guestNotes: String
     checkInDate: Date!
     checkOutDate: Date!
-    #    totalCost: Float!
 }
 
 input UpdateBookingInput {
