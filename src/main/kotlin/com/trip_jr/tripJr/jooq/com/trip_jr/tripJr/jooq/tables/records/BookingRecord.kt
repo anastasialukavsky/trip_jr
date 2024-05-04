@@ -8,6 +8,7 @@ import com.trip_jr.tripJr.jooq.tables.Booking
 
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.OffsetDateTime
 import java.util.UUID
 
 import org.jooq.Record1
@@ -44,6 +45,34 @@ open class BookingRecord() : UpdatableRecordImpl<BookingRecord>(Booking.BOOKING)
         set(value): Unit = set(5, value)
         get(): BigDecimal? = get(5) as BigDecimal?
 
+    open var guestFirstName: String?
+        set(value): Unit = set(6, value)
+        get(): String? = get(6) as String?
+
+    open var guestLastName: String?
+        set(value): Unit = set(7, value)
+        get(): String? = get(7) as String?
+
+    open var numOfGuests: Int?
+        set(value): Unit = set(8, value)
+        get(): Int? = get(8) as Int?
+
+    open var occasion: String?
+        set(value): Unit = set(9, value)
+        get(): String? = get(9) as String?
+
+    open var guestNotes: String?
+        set(value): Unit = set(10, value)
+        get(): String? = get(10) as String?
+
+    open var createdAt: OffsetDateTime?
+        set(value): Unit = set(11, value)
+        get(): OffsetDateTime? = get(11) as OffsetDateTime?
+
+    open var updatedAt: OffsetDateTime?
+        set(value): Unit = set(12, value)
+        get(): OffsetDateTime? = get(12) as OffsetDateTime?
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -53,13 +82,20 @@ open class BookingRecord() : UpdatableRecordImpl<BookingRecord>(Booking.BOOKING)
     /**
      * Create a detached, initialised BookingRecord
      */
-    constructor(bookingId: UUID? = null, userId: UUID? = null, hotelId: UUID? = null, checkInDate: LocalDate? = null, checkOutDate: LocalDate? = null, totalCost: BigDecimal? = null): this() {
+    constructor(bookingId: UUID? = null, userId: UUID? = null, hotelId: UUID? = null, checkInDate: LocalDate? = null, checkOutDate: LocalDate? = null, totalCost: BigDecimal? = null, guestFirstName: String? = null, guestLastName: String? = null, numOfGuests: Int? = null, occasion: String? = null, guestNotes: String? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null): this() {
         this.bookingId = bookingId
         this.userId = userId
         this.hotelId = hotelId
         this.checkInDate = checkInDate
         this.checkOutDate = checkOutDate
         this.totalCost = totalCost
+        this.guestFirstName = guestFirstName
+        this.guestLastName = guestLastName
+        this.numOfGuests = numOfGuests
+        this.occasion = occasion
+        this.guestNotes = guestNotes
+        this.createdAt = createdAt
+        this.updatedAt = updatedAt
         resetChangedOnNotNull()
     }
 }

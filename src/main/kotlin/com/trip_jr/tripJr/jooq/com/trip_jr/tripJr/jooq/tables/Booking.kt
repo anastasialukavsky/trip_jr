@@ -14,6 +14,7 @@ import com.trip_jr.tripJr.jooq.tables.records.BookingRecord
 
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.OffsetDateTime
 import java.util.UUID
 
 import kotlin.collections.Collection
@@ -108,6 +109,41 @@ open class Booking(
      * The column <code>public.booking.total_cost</code>.
      */
     val TOTAL_COST: TableField<BookingRecord, BigDecimal?> = createField(DSL.name("total_cost"), SQLDataType.NUMERIC(10, 2).nullable(false), this, "")
+
+    /**
+     * The column <code>public.booking.guest_first_name</code>.
+     */
+    val GUEST_FIRST_NAME: TableField<BookingRecord, String?> = createField(DSL.name("guest_first_name"), SQLDataType.VARCHAR(255), this, "")
+
+    /**
+     * The column <code>public.booking.guest_last_name</code>.
+     */
+    val GUEST_LAST_NAME: TableField<BookingRecord, String?> = createField(DSL.name("guest_last_name"), SQLDataType.VARCHAR(255), this, "")
+
+    /**
+     * The column <code>public.booking.num_of_guests</code>.
+     */
+    val NUM_OF_GUESTS: TableField<BookingRecord, Int?> = createField(DSL.name("num_of_guests"), SQLDataType.INTEGER, this, "")
+
+    /**
+     * The column <code>public.booking.occasion</code>.
+     */
+    val OCCASION: TableField<BookingRecord, String?> = createField(DSL.name("occasion"), SQLDataType.VARCHAR(255), this, "")
+
+    /**
+     * The column <code>public.booking.guest_notes</code>.
+     */
+    val GUEST_NOTES: TableField<BookingRecord, String?> = createField(DSL.name("guest_notes"), SQLDataType.CLOB, this, "")
+
+    /**
+     * The column <code>public.booking.created_at</code>.
+     */
+    val CREATED_AT: TableField<BookingRecord, OffsetDateTime?> = createField(DSL.name("created_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).defaultValue(DSL.field(DSL.raw("CURRENT_TIMESTAMP"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
+
+    /**
+     * The column <code>public.booking.updated_at</code>.
+     */
+    val UPDATED_AT: TableField<BookingRecord, OffsetDateTime?> = createField(DSL.name("updated_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).defaultValue(DSL.field(DSL.raw("CURRENT_TIMESTAMP"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
 
     private constructor(alias: Name, aliased: Table<BookingRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<BookingRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
