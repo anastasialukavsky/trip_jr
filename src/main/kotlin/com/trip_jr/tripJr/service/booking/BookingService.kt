@@ -62,6 +62,7 @@ class BookingService {
         try {
             val durationInDays = ChronoUnit.DAYS.between(booking.checkInDate, booking.checkOutDate)
 
+
             val rateRecord = dslContext.select()
                 .from(RATE)
                 .where(RATE.HOTEL_ID.eq(booking.hotelId))
@@ -107,20 +108,23 @@ class BookingService {
                 throw RuntimeException("Booking not found")
             }
 
-            //maybe dont need this
-            val bookingMapping = BookingDTO(
-                bookingId = bookingId,
-                userId = userId,
-                hotelId = hotelId,
-                checkInDate = booking.checkInDate,
-                checkOutDate = booking.checkOutDate,
-                totalCost = booking.totalCost,
-            )
+            val durationInDays = ChronoUnit.DAYS.between(booking.checkInDate, booking.checkOutDate)
 
+
+            val rateRecord = dslContext.select()
+                .from(RATE)
+                .where(RATE.HOTEL_ID.eq(hotelId))
+                .and(DSL.extract(booking.checkInDate, DatePart.MONTH).eq(RATE.MONTH))
+                .fetchOneInto(RateDTO::class.java)
+
+
+            val totalCost = rateRecord?.rate?.times(durationInDays.toDouble()) ?: 0.0
+            val totalCostBigDecimal = totalCost.toBigDecimal()
 
             val updatedBookingRecord = dslContext.update(BOOKING)
                 .set(BOOKING.CHECK_IN_DATE, booking.checkInDate)
                 .set(BOOKING.CHECK_OUT_DATE, booking.checkOutDate)
+                .set(BOOKING.TOTAL_COST, totalCostBigDecimal)
                 .where(BOOKING.USER_ID.eq(userId))
                 .and(BOOKING.BOOKING_ID.eq(bookingId))
                 .execute()
