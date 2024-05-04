@@ -159,6 +159,11 @@ input BookingInput {
 }
 
 input UpdateBookingInput {
+    guestFirstName: String
+    guestLastName: String
+    numOfGuests: Int
+    occasion: String
+    guestNotes: String
     checkInDate: Date
     checkOutDate: Date
 }
