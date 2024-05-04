@@ -12,21 +12,16 @@ import org.springframework.graphql.execution.RuntimeWiringConfigurer
 @Configuration
 class GraphQLConfig {
 
-//    @Bean
-//    fun schemaParserOptions(): SchemaParserOptions {
-//        return SchemaParserOptions.newOptions()
-//            .scalars(ExtendedScalars.UUID) // Register UUID scalar globally
-//            .build()
-//    }
 
     @Bean
     fun uuidScalarConfig(): UUIDScalarConfig {
         return UUIDScalarConfig()
     }
     @Bean
-    fun runtimeWiringConfigurer(uuidScalar: GraphQLScalarType, dateScalar: GraphQLScalarType): RuntimeWiringConfigurer {
+    fun runtimeWiringConfigurer(uuidScalar: GraphQLScalarType, dateScalar: GraphQLScalarType, dateTimeScalar: GraphQLScalarType): RuntimeWiringConfigurer {
         return RuntimeWiringConfigurer { wiringBuilder: RuntimeWiring.Builder ->
             wiringBuilder.scalar(uuidScalar)
+            wiringBuilder.scalar(dateTimeScalar)
             wiringBuilder.scalar(dateScalar).build()
         }
     }
