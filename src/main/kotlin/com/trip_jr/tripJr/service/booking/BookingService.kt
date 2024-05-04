@@ -1,24 +1,17 @@
 package com.trip_jr.tripJr.service.booking
 
 import com.trip_jr.tripJr.dto.booking.BookingDTO
-import com.trip_jr.tripJr.dto.hotel.HotelDTO
 import com.trip_jr.tripJr.dto.hotel.RateDTO
-import com.trip_jr.tripJr.jooq.tables.records.BookingRecord
 import com.trip_jr.tripJr.jooq.tables.references.BOOKING
-import com.trip_jr.tripJr.jooq.tables.references.HOTEL
 import com.trip_jr.tripJr.jooq.tables.references.RATE
 import com.trip_jr.tripJr.service.hotel.HotelService
 import com.trip_jr.tripJr.service.utils.UUIDUtils
-import com.trip_jr.tripJr.service.utils.UserUtils
 import org.jooq.DSLContext
 import org.jooq.DatePart
 import org.jooq.impl.DSL
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 import java.util.*
@@ -127,10 +120,8 @@ class BookingService {
             val updatedBookingRecord = dslContext.update(BOOKING)
                 .set(BOOKING.CHECK_IN_DATE, booking.checkInDate)
                 .set(BOOKING.CHECK_OUT_DATE, booking.checkOutDate)
-//                    .set(BOOKING.TOTAL_COST, totalCostBigDecimal)
                 .where(BOOKING.USER_ID.eq(userId))
                 .and(BOOKING.BOOKING_ID.eq(bookingId))
-//                    .and(RATE.HOTEL_ID.eq(hotelId))
                 .execute()
 
             if (updatedBookingRecord == 1) {
