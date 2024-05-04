@@ -107,7 +107,8 @@ class BookingService {
                 throw RuntimeException("Booking not found")
             }
 
-            val booking = BookingDTO(
+            //maybe dont need this
+            val bookingMapping = BookingDTO(
                 bookingId = bookingId,
                 userId = userId,
                 hotelId = hotelId,
