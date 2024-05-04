@@ -123,14 +123,31 @@ class HotelService {
             val bookings = mutableListOf<BookingDTO>()
             val booking = record[BOOKING.CHECK_IN_DATE]?.let {
                 record[BOOKING.CHECK_OUT_DATE]?.let { it1 ->
-                    BookingDTO(
-                        bookingId = record[BOOKING.BOOKING_ID],
-                        userId = record[BOOKING.USER_ID],
-                        hotelId = record[BOOKING.HOTEL_ID],
-                        checkInDate = it,
-                        checkOutDate = it1,
-                        totalCost = record[BOOKING.TOTAL_COST]
-                    )
+                    record[BOOKING.GUEST_FIRST_NAME]?.let { it2 ->
+                        record[BOOKING.GUEST_LAST_NAME]?.let { it3 ->
+                            record[BOOKING.NUM_OF_GUESTS]?.let { it4 ->
+                                record[BOOKING.CREATED_AT]?.toLocalDateTime()?.let { it5 ->
+                                    record[BOOKING.UPDATED_AT]?.toLocalDateTime()?.let { it6 ->
+                                        BookingDTO(
+                                            bookingId = record[BOOKING.BOOKING_ID],
+                                            userId = record[BOOKING.USER_ID],
+                                            hotelId = record[BOOKING.HOTEL_ID],
+                                            guestFirstName = it2,
+                                            guestLastName = it3,
+                                            numOfGuests = it4,
+                                            occasion = record[BOOKING.OCCASION],
+                                            guestNotes = record[BOOKING.GUEST_NOTES],
+                                            checkInDate = it,
+                                            checkOutDate = it1,
+                                            totalCost = record[BOOKING.TOTAL_COST],
+                                            createdAt = it5,
+                                            updatedAt = it6
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -182,16 +199,14 @@ class HotelService {
     }
 
 
-//    fun generateUniqueUUID(): UUID {
-//        return UUID.randomUUID()
-//    }
+
 
     fun createHotel(hotel: HotelDTO): HotelDTO? {
         try {
 
             val hotelId = uuidUtils.generateUUID()
             val locationId = uuidUtils.generateUUID()
-//            logger.debug("LOC ID", locationId)
+
 
 
             val locationRecord = dslContext.insertInto(LOCATION)
@@ -206,7 +221,7 @@ class HotelService {
                     LOCATION.LONGITUDE
                 )
                 .values(
-                    hotel.location.locationId ?: UUID.randomUUID(),
+                    hotel.location.locationId ?: locationId,
                     hotel.location.phoneNumber,
                     hotel.location.address,
                     hotel.location.city,
@@ -218,9 +233,7 @@ class HotelService {
                 .returningResult(LOCATION.LOCATION_ID)
                 .fetchOne()
 
-//            logger.debug("LOCATION RECORD", locationRecord)
 
-//            logger.debug("LOC REC ", locationRecord?.get(LOCATION.LOCATION_ID))
             val hotelRecord = dslContext.insertInto(HOTEL)
                 .columns(HOTEL.HOTEL_ID, HOTEL.NAME, HOTEL.LOCATION_ID)
                 .values(hotelId, hotel.name, locationRecord?.get(LOCATION.LOCATION_ID))
