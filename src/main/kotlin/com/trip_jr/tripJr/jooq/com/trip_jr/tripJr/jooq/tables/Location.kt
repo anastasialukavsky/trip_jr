@@ -10,6 +10,7 @@ import com.trip_jr.tripJr.jooq.keys.LOCATION_PKEY
 import com.trip_jr.tripJr.jooq.tables.Hotel.HotelPath
 import com.trip_jr.tripJr.jooq.tables.records.LocationRecord
 
+import java.time.OffsetDateTime
 import java.util.UUID
 
 import kotlin.collections.Collection
@@ -113,6 +114,16 @@ open class Location(
      * The column <code>public.location.longitude</code>.
      */
     val LONGITUDE: TableField<LocationRecord, Double?> = createField(DSL.name("longitude"), SQLDataType.DOUBLE, this, "")
+
+    /**
+     * The column <code>public.location.created_at</code>.
+     */
+    val CREATED_AT: TableField<LocationRecord, OffsetDateTime?> = createField(DSL.name("created_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).defaultValue(DSL.field(DSL.raw("CURRENT_TIMESTAMP"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
+
+    /**
+     * The column <code>public.location.updated_at</code>.
+     */
+    val UPDATED_AT: TableField<LocationRecord, OffsetDateTime?> = createField(DSL.name("updated_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).defaultValue(DSL.field(DSL.raw("CURRENT_TIMESTAMP"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
 
     private constructor(alias: Name, aliased: Table<LocationRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<LocationRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)

@@ -6,6 +6,7 @@ package com.trip_jr.tripJr.jooq.tables.records
 
 import com.trip_jr.tripJr.jooq.tables.Location
 
+import java.time.OffsetDateTime
 import java.util.UUID
 
 import org.jooq.Record1
@@ -50,6 +51,14 @@ open class LocationRecord() : UpdatableRecordImpl<LocationRecord>(Location.LOCAT
         set(value): Unit = set(7, value)
         get(): Double? = get(7) as Double?
 
+    open var createdAt: OffsetDateTime?
+        set(value): Unit = set(8, value)
+        get(): OffsetDateTime? = get(8) as OffsetDateTime?
+
+    open var updatedAt: OffsetDateTime?
+        set(value): Unit = set(9, value)
+        get(): OffsetDateTime? = get(9) as OffsetDateTime?
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -59,7 +68,7 @@ open class LocationRecord() : UpdatableRecordImpl<LocationRecord>(Location.LOCAT
     /**
      * Create a detached, initialised LocationRecord
      */
-    constructor(locationId: UUID? = null, phoneNumber: String? = null, address: String? = null, city: String? = null, state: String? = null, zip: String? = null, latitude: Double? = null, longitude: Double? = null): this() {
+    constructor(locationId: UUID? = null, phoneNumber: String? = null, address: String? = null, city: String? = null, state: String? = null, zip: String? = null, latitude: Double? = null, longitude: Double? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null): this() {
         this.locationId = locationId
         this.phoneNumber = phoneNumber
         this.address = address
@@ -68,6 +77,8 @@ open class LocationRecord() : UpdatableRecordImpl<LocationRecord>(Location.LOCAT
         this.zip = zip
         this.latitude = latitude
         this.longitude = longitude
+        this.createdAt = createdAt
+        this.updatedAt = updatedAt
         resetChangedOnNotNull()
     }
 }
