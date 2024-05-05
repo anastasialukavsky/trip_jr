@@ -208,10 +208,8 @@ class HotelService {
 
     fun createHotel(hotel: HotelDTO): HotelDTO? {
         try {
-
             val hotelId = uuidUtils.generateUUID()
             val locationId = uuidUtils.generateUUID()
-
 
             val locationRecord = dslContext.insertInto(LOCATION)
                 .columns(
@@ -237,9 +235,8 @@ class HotelService {
                 .returningResult(LOCATION.LOCATION_ID)
                 .fetchOne()
 
-
             val hotelRecord = dslContext.insertInto(HOTEL)
-                .columns(HOTEL.HOTEL_ID, HOTEL.NAME, HOTEL.NUM_OF_ROOMS, HOTEL.DESCRIPTION,HOTEL.LOCATION_ID)
+                .columns(HOTEL.HOTEL_ID, HOTEL.NAME, HOTEL.NUM_OF_ROOMS, HOTEL.DESCRIPTION, HOTEL.LOCATION_ID)
                 .values(hotelId, hotel.name, hotel.numOfRooms, hotel.description, locationRecord?.get(LOCATION.LOCATION_ID))
                 .returningResult(HOTEL.HOTEL_ID)
                 .fetchOne()
@@ -261,7 +258,6 @@ class HotelService {
                     )
                     .execute()
                 rate.copy(rateId = rateId, hotelId = hotelId)
-
             }
 
             val amenitiesRecords = hotel.amenities.map { amenity ->
@@ -277,31 +273,31 @@ class HotelService {
                 amenity.copy(amenityId = amenityId, hotelId = hotelId)
             }
 
+            val locationDTO = LocationDTO(
+                locationId = locationRecord?.get(LOCATION.LOCATION_ID),
+                phoneNumber = hotel.location.phoneNumber,
+                address = hotel.location.address,
+                city = hotel.location.city,
+                state = hotel.location.state,
+                zip = hotel.location.zip,
+                latitude = hotel.location.latitude,
+                longitude = hotel.location.longitude
+            )
 
             return HotelDTO(
-                hotelId = hotelRecord.get(HOTEL.HOTEL_ID),
+                hotelId = hotelId,
                 name = hotel.name ?: "",
                 numOfRooms = hotel.numOfRooms,
                 description = hotel.description,
-                location = LocationDTO(
-                    locationId = locationRecord?.get(LOCATION.LOCATION_ID),
-                    phoneNumber = hotel.location.phoneNumber,
-                    address = hotel.location.address,
-                    city = hotel.location.city,
-                    state = hotel.location.state,
-                    zip = hotel.location.zip,
-                    latitude = hotel.location.latitude,
-                    longitude = hotel.location.longitude
-                ),
+                location = locationDTO,
                 rates = ratesRecords,
                 amenities = amenitiesRecords
-
             )
-
         } catch (e: Exception) {
             e.printStackTrace()
             return null
         }
     }
+
 
 }
