@@ -51,6 +51,8 @@ type AmenityDTO {
     amenityId: UUID
     amenityName: String!
     hotelId: UUID
+    createdAt: DateTime
+    updatedAt: DateTime
 }
 
 
@@ -192,6 +194,10 @@ input UpdateLocationInput {
     longitude: Float
 }
 
+input UpdateAmenityInput {
+    amenityName: String
+}
+
 type Mutation {
     createHotel(hotel: HotelInput) : HotelDTO
     createUser(user: UserInput) : UserDTO
@@ -202,4 +208,5 @@ type Mutation {
     updateReview(userId:UUID, reviewId: UUID, review:UpdateReviewInput) : ReviewDTO
     updateHotel(id: UUID, hotel: UpdateHotelInput) : HotelDTO
     updateLocation(id: UUID, location: UpdateLocationInput) : LocationDTO
+    updateAmenity(hotelId: UUID,amenityId: UUID,  amenity: UpdateAmenityInput) : AmenityDTO
 }
