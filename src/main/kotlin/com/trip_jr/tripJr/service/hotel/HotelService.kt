@@ -1,19 +1,19 @@
 package com.trip_jr.tripJr.service.hotel
 
 import com.trip_jr.tripJr.dto.booking.BookingDTO
-import com.trip_jr.tripJr.dto.hotel.AmenityDTO
-import com.trip_jr.tripJr.dto.hotel.HotelDTO
-import com.trip_jr.tripJr.dto.hotel.LocationDTO
-import com.trip_jr.tripJr.dto.hotel.RateDTO
+import com.trip_jr.tripJr.dto.hotel.*
+import com.trip_jr.tripJr.dto.hotel.updateDTOs.UpdateHotelDTO
 import com.trip_jr.tripJr.dto.review.ReviewDTO
 import com.trip_jr.tripJr.jooq.tables.references.*
-import com.trip_jr.tripJr.service.utils.HotelByIdUitls
+import com.trip_jr.tripJr.service.utils.HotelByIdUtils
 import com.trip_jr.tripJr.service.utils.UUIDUtils
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
 import org.slf4j.LoggerFactory
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 
 @Service
 class HotelService {
@@ -23,7 +23,7 @@ class HotelService {
     lateinit var dslContext: DSLContext
 
     @Autowired
-    lateinit var hotelByIdUtils: HotelByIdUitls
+    lateinit var hotelByIdUtils: HotelByIdUtils
 
     @Autowired
     lateinit var uuidUtils: UUIDUtils
@@ -166,10 +166,11 @@ class HotelService {
         }
     }
 
-    fun getHotelById(id: UUID): HotelDTO {
+    fun getHotelById(id: UUID): HotelDTO? {
         try {
             val record = dslContext.select()
                 .from(HOTEL)
+                .join(LOCATION).on(HOTEL.LOCATION_ID.eq(LOCATION.LOCATION_ID))
                 .where(HOTEL.HOTEL_ID.eq(id))
                 .fetchOne()
 
@@ -179,26 +180,21 @@ class HotelService {
             val bookings = hotelByIdUtils.getHotelBookings(id)
 
 
-            val location = record?.let {
-                dslContext.select()
-                    .from(LOCATION)
-                    .where(LOCATION.LOCATION_ID.eq(it[HOTEL.LOCATION_ID]))
-                    .fetchOneInto(LocationDTO::class.java)
-            } ?: throw NoSuchElementException("Location not found")
+            val location = record?.into(LocationDTO::class.java)
 
-
-            return HotelDTO(
-                hotelId = record[HOTEL.HOTEL_ID],
-                name = record[HOTEL.NAME] ?: "",
-                numOfRooms = record[HOTEL.NUM_OF_ROOMS] ?: 1,
-                description = record[HOTEL.DESCRIPTION] ?: "",
-                location = location,
-                rates = rates,
-                amenities = amenities,
-                reviews = reviews,
-                bookings = bookings
-            )
-
+            return location?.let {
+                HotelDTO(
+                    hotelId = record.get(HOTEL.HOTEL_ID),
+                    name = record.get(HOTEL.NAME) ?: "",
+                    numOfRooms = record.get(HOTEL.NUM_OF_ROOMS) ?: 1,
+                    description = record.get(HOTEL.DESCRIPTION) ?: "",
+                    location = it,
+                    rates = rates,
+                    amenities = amenities,
+                    reviews = reviews,
+                    bookings = bookings
+                )
+            }
 
         } catch (e: Exception) {
             throw e
@@ -237,7 +233,13 @@ class HotelService {
 
             val hotelRecord = dslContext.insertInto(HOTEL)
                 .columns(HOTEL.HOTEL_ID, HOTEL.NAME, HOTEL.NUM_OF_ROOMS, HOTEL.DESCRIPTION, HOTEL.LOCATION_ID)
-                .values(hotelId, hotel.name, hotel.numOfRooms, hotel.description, locationRecord?.get(LOCATION.LOCATION_ID))
+                .values(
+                    hotelId,
+                    hotel.name,
+                    hotel.numOfRooms,
+                    hotel.description,
+                    locationRecord?.get(LOCATION.LOCATION_ID)
+                )
                 .returningResult(HOTEL.HOTEL_ID)
                 .fetchOne()
 
@@ -284,11 +286,18 @@ class HotelService {
                 longitude = hotel.location.longitude
             )
 
-            return HotelDTO(
+            //TODO figure out why graph query returns null for all records
+//            return HotelDTO(
+//                hotelId = hotelId,
+//                name = hotel.name ?: "",
+//                numOfRooms = hotel.numOfRooms,
+//                description = hotel.description,
+//                location = locationDTO,
+//                rates = ratesRecords,
+//                amenities = amenitiesRecords
+//            )
+            return hotel.copy(
                 hotelId = hotelId,
-                name = hotel.name ?: "",
-                numOfRooms = hotel.numOfRooms,
-                description = hotel.description,
                 location = locationDTO,
                 rates = ratesRecords,
                 amenities = amenitiesRecords
@@ -299,5 +308,78 @@ class HotelService {
         }
     }
 
+
+    fun updateHotel(id: UUID, hotel: UpdateHotelDTO): HotelDTO? {
+        try {
+            val hotelRecord = dslContext
+                .select()
+                .from(HOTEL)
+                .join(LOCATION).on(HOTEL.LOCATION_ID.eq(LOCATION.LOCATION_ID))
+                .where(HOTEL.HOTEL_ID.eq(id))
+                .fetchOne() ?: throw RuntimeException("Hotel with ID $id not found")
+
+            val rates = hotelByIdUtils.getHotelRates(id)
+            val amenities = hotelByIdUtils.getHotelAmenities(id)
+            val reviews = hotelByIdUtils.getHotelReviews(id)
+            val bookings = hotelByIdUtils.getHotelBookings(id)
+
+
+            val location = hotelRecord.into(LocationDTO::class.java)
+
+            val currentTimestamp = OffsetDateTime.now(ZoneOffset.UTC)
+
+            val originalHotelRecord: HotelDTO? =
+                hotelRecord.get(HOTEL.CREATED_AT)?.let {
+                    hotelRecord.get(HOTEL.NAME)?.let { it1 ->
+                        HotelDTO(
+                            hotelId = id,
+                            name = it1,
+                            numOfRooms = hotelRecord.get(HOTEL.NUM_OF_ROOMS),
+                            description = hotelRecord.get(HOTEL.DESCRIPTION),
+                            location = location,
+                            rates = rates,
+                            amenities = amenities,
+                            reviews = reviews,
+                            bookings = bookings,
+                            createdAt = it.toLocalDateTime(),
+                            updatedAt = currentTimestamp.toLocalDateTime()
+                        )
+                    }
+                }
+
+            val updatedHotelRecord = originalHotelRecord?.copy(
+                name = hotel.name ?: originalHotelRecord.name,
+                numOfRooms = hotel.numOfRooms ?: originalHotelRecord.numOfRooms,
+                description = hotel.description ?: originalHotelRecord.description,
+                createdAt = originalHotelRecord.createdAt,
+                updatedAt = originalHotelRecord.updatedAt,
+                location = location,
+                rates = rates,
+                amenities = amenities,
+                reviews = reviews,
+                bookings = bookings
+            )
+
+            val updateQuery = dslContext.update(HOTEL)
+                .set(HOTEL.NAME, updatedHotelRecord?.name)
+                .set(HOTEL.NUM_OF_ROOMS, updatedHotelRecord?.numOfRooms)
+                .set(HOTEL.DESCRIPTION, updatedHotelRecord?.description)
+//                .set(HOTEL.CREATED_AT, updatedHotelRecord?.createdAt)
+                .set(HOTEL.UPDATED_AT, currentTimestamp)
+                .where(HOTEL.HOTEL_ID.eq(id))
+                .execute()
+
+            if(updateQuery == 1) {
+                return updatedHotelRecord
+            } else {
+                throw RuntimeException("Failed to update hotel record")
+            }
+
+
+
+        } catch (e: Exception) {
+            throw e
+        }
+    }
 
 }
