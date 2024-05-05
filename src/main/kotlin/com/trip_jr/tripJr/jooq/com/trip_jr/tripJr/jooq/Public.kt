@@ -10,6 +10,7 @@ import com.trip_jr.tripJr.jooq.tables.Hotel
 import com.trip_jr.tripJr.jooq.tables.Location
 import com.trip_jr.tripJr.jooq.tables.Rate
 import com.trip_jr.tripJr.jooq.tables.Review
+import com.trip_jr.tripJr.jooq.tables.Room
 import com.trip_jr.tripJr.jooq.tables.Users
 
 import kotlin.collections.List
@@ -63,6 +64,11 @@ open class Public : SchemaImpl("public", DefaultCatalog.DEFAULT_CATALOG) {
     val REVIEW: Review get() = Review.REVIEW
 
     /**
+     * The table <code>public.room</code>.
+     */
+    val ROOM: Room get() = Room.ROOM
+
+    /**
      * The table <code>public.users</code>.
      */
     val USERS: Users get() = Users.USERS
@@ -76,6 +82,7 @@ open class Public : SchemaImpl("public", DefaultCatalog.DEFAULT_CATALOG) {
         Location.LOCATION,
         Rate.RATE,
         Review.REVIEW,
+        Room.ROOM,
         Users.USERS
     )
 }

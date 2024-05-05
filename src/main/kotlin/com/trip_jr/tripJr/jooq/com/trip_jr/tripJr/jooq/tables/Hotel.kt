@@ -13,13 +13,16 @@ import com.trip_jr.tripJr.jooq.keys.HOTEL__FK_LOCATION
 import com.trip_jr.tripJr.jooq.keys.RATE__FK_HOTEL
 import com.trip_jr.tripJr.jooq.keys.RATE__RATE_HOTEL_ID_FKEY
 import com.trip_jr.tripJr.jooq.keys.REVIEW__REVIEW_HOTEL_ID_FKEY
+import com.trip_jr.tripJr.jooq.keys.ROOM__ROOM_HOTEL_ID_FKEY
 import com.trip_jr.tripJr.jooq.tables.Amenity.AmenityPath
 import com.trip_jr.tripJr.jooq.tables.Booking.BookingPath
 import com.trip_jr.tripJr.jooq.tables.Location.LocationPath
 import com.trip_jr.tripJr.jooq.tables.Rate.RatePath
 import com.trip_jr.tripJr.jooq.tables.Review.ReviewPath
+import com.trip_jr.tripJr.jooq.tables.Room.RoomPath
 import com.trip_jr.tripJr.jooq.tables.records.HotelRecord
 
+import java.time.OffsetDateTime
 import java.util.UUID
 
 import kotlin.collections.Collection
@@ -99,6 +102,26 @@ open class Hotel(
      * The column <code>public.hotel.location_id</code>.
      */
     val LOCATION_ID: TableField<HotelRecord, UUID?> = createField(DSL.name("location_id"), SQLDataType.UUID, this, "")
+
+    /**
+     * The column <code>public.hotel.num_of_rooms</code>.
+     */
+    val NUM_OF_ROOMS: TableField<HotelRecord, Int?> = createField(DSL.name("num_of_rooms"), SQLDataType.INTEGER, this, "")
+
+    /**
+     * The column <code>public.hotel.description</code>.
+     */
+    val DESCRIPTION: TableField<HotelRecord, String?> = createField(DSL.name("description"), SQLDataType.CLOB, this, "")
+
+    /**
+     * The column <code>public.hotel.created_at</code>.
+     */
+    val CREATED_AT: TableField<HotelRecord, OffsetDateTime?> = createField(DSL.name("created_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).defaultValue(DSL.field(DSL.raw("CURRENT_TIMESTAMP"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
+
+    /**
+     * The column <code>public.hotel.updated_at</code>.
+     */
+    val UPDATED_AT: TableField<HotelRecord, OffsetDateTime?> = createField(DSL.name("updated_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).defaultValue(DSL.field(DSL.raw("CURRENT_TIMESTAMP"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
 
     private constructor(alias: Name, aliased: Table<HotelRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<HotelRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
@@ -230,6 +253,21 @@ open class Hotel(
 
     val review: ReviewPath
         get(): ReviewPath = review()
+
+    private lateinit var _room: RoomPath
+
+    /**
+     * Get the implicit to-many join path to the <code>public.room</code> table
+     */
+    fun room(): RoomPath {
+        if (!this::_room.isInitialized)
+            _room = RoomPath(this, null, ROOM__ROOM_HOTEL_ID_FKEY.inverseKey)
+
+        return _room;
+    }
+
+    val room: RoomPath
+        get(): RoomPath = room()
     override fun `as`(alias: String): Hotel = Hotel(DSL.name(alias), this)
     override fun `as`(alias: Name): Hotel = Hotel(alias, this)
     override fun `as`(alias: Table<*>): Hotel = Hotel(alias.qualifiedName, this)

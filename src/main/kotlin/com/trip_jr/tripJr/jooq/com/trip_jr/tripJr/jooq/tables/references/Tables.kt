@@ -10,6 +10,7 @@ import com.trip_jr.tripJr.jooq.tables.Hotel
 import com.trip_jr.tripJr.jooq.tables.Location
 import com.trip_jr.tripJr.jooq.tables.Rate
 import com.trip_jr.tripJr.jooq.tables.Review
+import com.trip_jr.tripJr.jooq.tables.Room
 import com.trip_jr.tripJr.jooq.tables.Users
 
 
@@ -43,6 +44,11 @@ val RATE: Rate = Rate.RATE
  * The table <code>public.review</code>.
  */
 val REVIEW: Review = Review.REVIEW
+
+/**
+ * The table <code>public.room</code>.
+ */
+val ROOM: Room = Room.ROOM
 
 /**
  * The table <code>public.users</code>.

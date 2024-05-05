@@ -6,6 +6,7 @@ package com.trip_jr.tripJr.jooq.tables.records
 
 import com.trip_jr.tripJr.jooq.tables.Hotel
 
+import java.time.OffsetDateTime
 import java.util.UUID
 
 import org.jooq.Record1
@@ -30,6 +31,22 @@ open class HotelRecord() : UpdatableRecordImpl<HotelRecord>(Hotel.HOTEL) {
         set(value): Unit = set(2, value)
         get(): UUID? = get(2) as UUID?
 
+    open var numOfRooms: Int?
+        set(value): Unit = set(3, value)
+        get(): Int? = get(3) as Int?
+
+    open var description: String?
+        set(value): Unit = set(4, value)
+        get(): String? = get(4) as String?
+
+    open var createdAt: OffsetDateTime?
+        set(value): Unit = set(5, value)
+        get(): OffsetDateTime? = get(5) as OffsetDateTime?
+
+    open var updatedAt: OffsetDateTime?
+        set(value): Unit = set(6, value)
+        get(): OffsetDateTime? = get(6) as OffsetDateTime?
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -39,10 +56,14 @@ open class HotelRecord() : UpdatableRecordImpl<HotelRecord>(Hotel.HOTEL) {
     /**
      * Create a detached, initialised HotelRecord
      */
-    constructor(hotelId: UUID? = null, name: String? = null, locationId: UUID? = null): this() {
+    constructor(hotelId: UUID? = null, name: String? = null, locationId: UUID? = null, numOfRooms: Int? = null, description: String? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null): this() {
         this.hotelId = hotelId
         this.name = name
         this.locationId = locationId
+        this.numOfRooms = numOfRooms
+        this.description = description
+        this.createdAt = createdAt
+        this.updatedAt = updatedAt
         resetChangedOnNotNull()
     }
 }
