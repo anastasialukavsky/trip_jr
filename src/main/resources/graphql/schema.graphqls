@@ -15,11 +15,15 @@ type Query {
 type HotelDTO {
     hotelId: UUID
     name: String!
+    numOfRooms: Int
+    description: String
     location: LocationDTO
     rates: [RateDTO!]
     amenities: [AmenityDTO]
     reviews: [ReviewDTO]
     bookings: [BookingDTO]
+    createdAt: DateTime
+    updatedAt: DateTime
 }
 
 type LocationDTO {
