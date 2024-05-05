@@ -35,6 +35,8 @@ type LocationDTO {
     zip: String
     latitude: Float
     longitude: Float
+    createdAt: DateTime
+    updatedAt: DateTime
 }
 
 type RateDTO {
@@ -174,6 +176,22 @@ input UpdateBookingInput {
     checkOutDate: Date
 }
 
+input UpdateHotelInput {
+    name: String
+    numOfRooms: Int
+    description: String
+}
+
+input UpdateLocationInput {
+    phoneNumber: String
+    address: String
+    city: String
+    state: String
+    zip: String
+    latitude: Float
+    longitude: Float
+}
+
 type Mutation {
     createHotel(hotel: HotelInput) : HotelDTO
     createUser(user: UserInput) : UserDTO
@@ -182,4 +200,6 @@ type Mutation {
     updateUser(id: UUID, user: UpdateUserInput) : UserDTO
     updateBooking(userId: UUID, bookingId: UUID, hotelId: UUID, booking: UpdateBookingInput) : BookingDTO
     updateReview(userId:UUID, reviewId: UUID, review:UpdateReviewInput) : ReviewDTO
+    updateHotel(id: UUID, hotel: UpdateHotelInput) : HotelDTO
+    updateLocation(id: UUID, location: UpdateLocationInput) : LocationDTO
 }
