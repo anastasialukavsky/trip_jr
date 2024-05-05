@@ -14,7 +14,7 @@ type Query {
 
 type HotelDTO {
     hotelId: UUID
-    name: String!
+    name: String
     numOfRooms: Int
     description: String
     location: LocationDTO
@@ -53,7 +53,9 @@ type AmenityDTO {
 
 
 input HotelInput {
-    name: String!
+    name: String
+    numOfRooms: Int
+    description: String
     location: LocationInput
     rates: [RateInput]
     amenities: [AmenityInput]
