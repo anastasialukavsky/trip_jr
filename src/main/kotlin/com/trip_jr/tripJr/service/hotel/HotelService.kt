@@ -239,8 +239,8 @@ class HotelService {
 
 
             val hotelRecord = dslContext.insertInto(HOTEL)
-                .columns(HOTEL.HOTEL_ID, HOTEL.NAME, HOTEL.LOCATION_ID)
-                .values(hotelId, hotel.name, locationRecord?.get(LOCATION.LOCATION_ID))
+                .columns(HOTEL.HOTEL_ID, HOTEL.NAME, HOTEL.NUM_OF_ROOMS, HOTEL.DESCRIPTION,HOTEL.LOCATION_ID)
+                .values(hotelId, hotel.name, hotel.numOfRooms, hotel.description, locationRecord?.get(LOCATION.LOCATION_ID))
                 .returningResult(HOTEL.HOTEL_ID)
                 .fetchOne()
 
@@ -280,7 +280,7 @@ class HotelService {
 
             return HotelDTO(
                 hotelId = hotelRecord.get(HOTEL.HOTEL_ID),
-                name = hotel.name,
+                name = hotel.name ?: "",
                 numOfRooms = hotel.numOfRooms,
                 description = hotel.description,
                 location = LocationDTO(
