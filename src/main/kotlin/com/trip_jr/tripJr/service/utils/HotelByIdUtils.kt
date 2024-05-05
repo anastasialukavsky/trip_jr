@@ -12,7 +12,7 @@ import java.util.*
 
 
 @Component
-class HotelByIdUitls {
+class HotelByIdUtils {
 
     @Autowired
     lateinit var dslContext: DSLContext
