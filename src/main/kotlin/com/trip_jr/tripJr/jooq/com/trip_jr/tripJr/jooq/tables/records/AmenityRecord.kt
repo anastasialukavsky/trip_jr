@@ -6,6 +6,7 @@ package com.trip_jr.tripJr.jooq.tables.records
 
 import com.trip_jr.tripJr.jooq.tables.Amenity
 
+import java.time.OffsetDateTime
 import java.util.UUID
 
 import org.jooq.Record1
@@ -30,6 +31,14 @@ open class AmenityRecord() : UpdatableRecordImpl<AmenityRecord>(Amenity.AMENITY)
         set(value): Unit = set(2, value)
         get(): UUID? = get(2) as UUID?
 
+    open var createdAt: OffsetDateTime?
+        set(value): Unit = set(3, value)
+        get(): OffsetDateTime? = get(3) as OffsetDateTime?
+
+    open var updatedAt: OffsetDateTime?
+        set(value): Unit = set(4, value)
+        get(): OffsetDateTime? = get(4) as OffsetDateTime?
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -39,10 +48,12 @@ open class AmenityRecord() : UpdatableRecordImpl<AmenityRecord>(Amenity.AMENITY)
     /**
      * Create a detached, initialised AmenityRecord
      */
-    constructor(amenityId: UUID? = null, amenityName: String? = null, hotelId: UUID? = null): this() {
+    constructor(amenityId: UUID? = null, amenityName: String? = null, hotelId: UUID? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null): this() {
         this.amenityId = amenityId
         this.amenityName = amenityName
         this.hotelId = hotelId
+        this.createdAt = createdAt
+        this.updatedAt = updatedAt
         resetChangedOnNotNull()
     }
 }

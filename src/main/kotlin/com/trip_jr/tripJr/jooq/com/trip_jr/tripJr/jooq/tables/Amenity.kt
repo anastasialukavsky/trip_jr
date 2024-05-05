@@ -10,6 +10,7 @@ import com.trip_jr.tripJr.jooq.keys.AMENITY__AMENITY_HOTEL_ID_FKEY
 import com.trip_jr.tripJr.jooq.tables.Hotel.HotelPath
 import com.trip_jr.tripJr.jooq.tables.records.AmenityRecord
 
+import java.time.OffsetDateTime
 import java.util.UUID
 
 import kotlin.collections.Collection
@@ -89,6 +90,16 @@ open class Amenity(
      * The column <code>public.amenity.hotel_id</code>.
      */
     val HOTEL_ID: TableField<AmenityRecord, UUID?> = createField(DSL.name("hotel_id"), SQLDataType.UUID, this, "")
+
+    /**
+     * The column <code>public.amenity.created_at</code>.
+     */
+    val CREATED_AT: TableField<AmenityRecord, OffsetDateTime?> = createField(DSL.name("created_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).defaultValue(DSL.field(DSL.raw("CURRENT_TIMESTAMP"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
+
+    /**
+     * The column <code>public.amenity.updated_at</code>.
+     */
+    val UPDATED_AT: TableField<AmenityRecord, OffsetDateTime?> = createField(DSL.name("updated_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).defaultValue(DSL.field(DSL.raw("CURRENT_TIMESTAMP"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
 
     private constructor(alias: Name, aliased: Table<AmenityRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<AmenityRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
