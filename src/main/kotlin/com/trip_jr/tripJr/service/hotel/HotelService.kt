@@ -32,7 +32,8 @@ class HotelService {
 
 
     fun getAllHotels(): List<HotelDTO> {
-        val hotels = dslContext.select()
+        val hotels = dslContext
+            .select()
             .from(HOTEL)
             .join(LOCATION).on(HOTEL.LOCATION_ID.eq(LOCATION.LOCATION_ID))
             .join(RATE).on(RATE.HOTEL_ID.eq(HOTEL.HOTEL_ID))
@@ -45,21 +46,26 @@ class HotelService {
         return hotels.map { record ->
             val hotelId = record[HOTEL.HOTEL_ID]
             val name = record[HOTEL.NAME]
+            val numOfRooms = record[HOTEL.NUM_OF_ROOMS] ?: 1
+            val description = record[HOTEL.DESCRIPTION] ?: ""
             val location = record[LOCATION.PHONE_NUMBER]?.let {
                 record[LOCATION.ADDRESS]?.let { it1 ->
                     record[LOCATION.CITY]?.let { it2 ->
                         record[LOCATION.STATE]?.let { it3 ->
                             record[LOCATION.LATITUDE]?.let { it4 ->
                                 record[LOCATION.LONGITUDE]?.let { it5 ->
-                                    LocationDTO(
-                                        locationId = record[LOCATION.LOCATION_ID],
-                                        phoneNumber = it,
-                                        address = it1,
-                                        city = it2,
-                                        state = it3,
-                                        latitude = it4,
-                                        longitude = it5
-                                    )
+                                    record[LOCATION.ZIP]?.let { it6 ->
+                                        LocationDTO(
+                                            locationId = record[LOCATION.LOCATION_ID],
+                                            phoneNumber = it,
+                                            address = it1,
+                                            city = it2,
+                                            state = it3,
+                                            zip = it6,
+                                            latitude = it4,
+                                            longitude = it5
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -151,11 +157,12 @@ class HotelService {
                 }
             }
 
-            if(booking != null) {
+            if (booking != null) {
                 bookings.add(booking)
             }
 
-            HotelDTO(hotelId, name!!, location!!, rates, amenities, reviews, bookings)
+
+            HotelDTO(hotelId, name!!, numOfRooms, description, location!!, rates, amenities, reviews, bookings)
         }
     }
 
@@ -180,25 +187,23 @@ class HotelService {
             } ?: throw NoSuchElementException("Location not found")
 
 
-            return record.let {
-                it[HOTEL.NAME]?.let { name ->
-                    HotelDTO(
-                        hotelId = it[HOTEL.HOTEL_ID],
-                        name = name,
-                        location = location,
-                        rates = rates,
-                        amenities = amenities,
-                        reviews = reviews,
-                        bookings = bookings
-                    )
-                } ?: throw NoSuchElementException("Hotel name not found")
-            }
+            return HotelDTO(
+                hotelId = record[HOTEL.HOTEL_ID],
+                name = record[HOTEL.NAME] ?: "",
+                numOfRooms = record[HOTEL.NUM_OF_ROOMS] ?: 1,
+                description = record[HOTEL.DESCRIPTION] ?: "",
+                location = location,
+                rates = rates,
+                amenities = amenities,
+                reviews = reviews,
+                bookings = bookings
+            )
+
+
         } catch (e: Exception) {
             throw e
         }
     }
-
-
 
 
     fun createHotel(hotel: HotelDTO): HotelDTO? {
@@ -206,7 +211,6 @@ class HotelService {
 
             val hotelId = uuidUtils.generateUUID()
             val locationId = uuidUtils.generateUUID()
-
 
 
             val locationRecord = dslContext.insertInto(LOCATION)
@@ -277,6 +281,8 @@ class HotelService {
             return HotelDTO(
                 hotelId = hotelRecord.get(HOTEL.HOTEL_ID),
                 name = hotel.name,
+                numOfRooms = hotel.numOfRooms,
+                description = hotel.description,
                 location = LocationDTO(
                     locationId = locationRecord?.get(LOCATION.LOCATION_ID),
                     phoneNumber = hotel.location.phoneNumber,
