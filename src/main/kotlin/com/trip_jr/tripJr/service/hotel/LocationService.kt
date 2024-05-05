@@ -25,7 +25,7 @@ class LocationService {
             val locationRecord = dslContext.select()
                 .from(LOCATION)
                 .where(LOCATION.LOCATION_ID.eq(id))
-                .fetchOne()  ?: throw RuntimeException("Location with ID $id not found")
+                .fetchOne() ?: throw RuntimeException("Location with ID $id not found")
 
             val currentTimestamp = OffsetDateTime.now(ZoneOffset.UTC)
 
@@ -74,11 +74,9 @@ class LocationService {
                 .execute()
 
 
-            if(updateQuery == 1) {
-                return updatedLocationRecord
-            } else {
-                throw RuntimeException("Failed to update location")
-            }
+            return if (updateQuery == 1) updatedLocationRecord
+             else throw RuntimeException("Failed to update location")
+
         } catch (e: Exception) {
             throw e
         }
