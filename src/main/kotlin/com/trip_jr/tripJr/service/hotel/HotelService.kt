@@ -369,12 +369,11 @@ class HotelService {
                 .where(HOTEL.HOTEL_ID.eq(id))
                 .execute()
 
-            if(updateQuery == 1) {
+            if (updateQuery == 1) {
                 return updatedHotelRecord
             } else {
                 throw RuntimeException("Failed to update hotel record")
             }
-
 
 
         } catch (e: Exception) {
@@ -382,4 +381,46 @@ class HotelService {
         }
     }
 
+
+    fun deleteHotel(id: UUID): Boolean {
+        try {
+            var isDeleteSuccessful = false
+            dslContext.transaction { config ->
+                dslContext.deleteFrom(BOOKING)
+                    .where(BOOKING.HOTEL_ID.eq(id))
+                    .execute()
+
+                dslContext.deleteFrom(REVIEW)
+                    .where(REVIEW.HOTEL_ID.eq(id))
+                    .execute()
+
+                dslContext.deleteFrom(AMENITY)
+                    .where(AMENITY.HOTEL_ID.eq(id))
+                    .execute()
+
+                dslContext.deleteFrom(RATE)
+                    .where(RATE.HOTEL_ID.eq(id))
+                    .execute()
+
+//                val locationId = dslContext.select(HOTEL.LOCATION_ID)
+//                    .from(HOTEL)
+//                    .where(HOTEL.HOTEL_ID.eq(id))
+//                    .fetchOne(HOTEL.LOCATION_ID) ?: throw RuntimeException("Location with ID $locationId not found")
+//
+//                dslContext.deleteFrom(LOCATION)
+//                    .where(LOCATION.LOCATION_ID.eq(locationId))
+//                    .execute()
+
+                val deletedHotelCount = dslContext.deleteFrom(HOTEL)
+                    .where(HOTEL.HOTEL_ID.eq(id))
+                    .execute()
+
+                isDeleteSuccessful = deletedHotelCount == 1
+            }
+
+            return isDeleteSuccessful
+        } catch (e: Exception) {
+            throw e
+        }
+    }
 }
