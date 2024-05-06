@@ -46,4 +46,9 @@ class HotelController {
     : HotelDTO? {
         return hotelService.updateHotel(id, hotel)
     }
+
+    @MutationMapping(name = "deleteHotel")
+    fun deleteHotel(@Argument id: UUID): Boolean {
+        return hotelService.deleteHotel(id)
+    }
 }
