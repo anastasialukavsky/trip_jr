@@ -213,4 +213,7 @@ type Mutation {
     updateAmenity(hotelId: UUID,amenityId: UUID,  amenity: UpdateAmenityInput) : AmenityDTO
     deleteUser(id:UUID): Boolean
     deleteHotel(id:UUID): Boolean
+    deleteAmenity(id:UUID): Boolean
+    deleteLocation(id: UUID): Boolean
+    deleteReview(id:UUID): Boolean
 }
