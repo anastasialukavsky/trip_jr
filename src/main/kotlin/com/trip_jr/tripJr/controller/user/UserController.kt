@@ -41,4 +41,9 @@ class UserController {
         return userService.updateUser(id, user)
     }
 
+    @MutationMapping(name = "deleteUser")
+    fun deleteUser(@Argument(name = "id") id: UUID) : Boolean {
+        return userService.deleteUser(id)
+    }
+
 }
