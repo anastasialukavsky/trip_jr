@@ -2,6 +2,7 @@ package com.trip_jr.tripJr.service.hotel
 
 import com.trip_jr.tripJr.dto.hotel.AmenityDTO
 import com.trip_jr.tripJr.dto.hotel.updateDTOs.UpdateAmenityDTO
+import com.trip_jr.tripJr.jooq.tables.Hotel
 import com.trip_jr.tripJr.jooq.tables.references.AMENITY
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Autowired
@@ -56,6 +57,20 @@ class AmenityService {
 
 
         } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    fun deleteHotelAmenity(id: UUID): Boolean{
+        try {
+            val deleteRecordCount = dslContext.deleteFrom(AMENITY)
+                .where(AMENITY.AMENITY_ID.eq(id))
+                .execute()
+
+            return deleteRecordCount == 1
+        }catch (e:RuntimeException){
+            throw RuntimeException("Failed to delete hotel amenity with id $id", e)
+        } catch(e:Exception) {
             throw e
         }
     }
