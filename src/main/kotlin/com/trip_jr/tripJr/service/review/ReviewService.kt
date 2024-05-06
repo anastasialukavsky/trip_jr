@@ -81,11 +81,9 @@ class ReviewService {
                 .where(REVIEW.REVIEW_ID.eq(reviewId))
                 .execute()
 
-            if (updateQuery == 1) {
-                return updatedReview
-            } else {
-                throw RuntimeException("Failed to update review")
-            }
+            return if (updateQuery == 1) updatedReview
+             else throw RuntimeException("Failed to update review")
+
 
         } catch (e: Exception) {
             throw e
