@@ -65,12 +65,11 @@ class UserService {
     }
 
 
-
     fun getUserById(id: UUID): UserDTO? {
         try {
 
             val userRecord = userUtils.getUserById(id)
-            val bookingRecords =  userUtils.fetchUserBookings(id)
+            val bookingRecords = userUtils.fetchUserBookings(id)
             val reviewRecords = userUtils.fetchUserReviews(id)
 
 
@@ -123,7 +122,7 @@ class UserService {
 
     fun updateUser(id: UUID, user: UserDTO): UserDTO {
         try {
-            val userRecord  = userUtils.getUserById(id)
+            val userRecord = userUtils.getUserById(id)
 
             if (userRecord != null) {
                 val hashPassword = passwordUtils.hashPassword(user.passwordHash)
@@ -144,10 +143,21 @@ class UserService {
             } else {
                 throw RuntimeException("User record with ID $id not found")
             }
-        }catch (e:Exception){
+        } catch (e: Exception) {
             throw e
         }
     }
 
 
+    fun deleteUser(id: UUID): Boolean {
+        try {
+            val deletedRecordCount = dslContext.deleteFrom(USERS)
+                .where(USERS.USER_ID.eq(id))
+                .execute()
+
+            return deletedRecordCount == 1
+        } catch (e: Exception) {
+            throw e
+        }
+    }
 }
