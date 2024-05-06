@@ -81,4 +81,18 @@ class LocationService {
             throw e
         }
     }
+
+    fun deleteHotelLocation(id: UUID): Boolean {
+        try {
+            val deleteRecordCount = dslContext.deleteFrom(LOCATION)
+                .where(LOCATION.LOCATION_ID.eq(id))
+                .execute()
+
+            return deleteRecordCount == 1
+        }catch (e:RuntimeException){
+            throw RuntimeException("Failed to delete location with ID $id", e)
+        } catch(e:Exception) {
+            throw e
+        }
+    }
 }
