@@ -39,4 +39,9 @@ class ReviewController {
     ): ReviewDTO? {
         return reviewService.updateReview(userId, reviewId, review)
     }
+
+    @MutationMapping(name = "deleteReview")
+    fun deleteReview(@Argument(name = "id") id: UUID): Boolean {
+        return reviewService.deleteUserReview(id)
+    }
 }
