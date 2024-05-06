@@ -24,4 +24,10 @@ class AmenityController {
     : AmenityDTO? {
         return amenityService.updateHotelAmenity(hotelId, amenityId, amenity)
     }
+
+
+    @MutationMapping(name = "deleteAmenity")
+    fun deleteAmenity(@Argument(name="id") id: UUID) : Boolean {
+        return amenityService.deleteHotelAmenity(id)
+    }
 }
