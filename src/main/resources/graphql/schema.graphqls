@@ -99,6 +99,8 @@ type UserDTO {
     passwordHash: String!
     reviews: [ReviewDTO]
     bookings: [BookingDTO]
+    createdAt: DateTime
+    updatedAt: DateTime
 }
 
 input UserInput {
@@ -209,4 +211,6 @@ type Mutation {
     updateHotel(id: UUID, hotel: UpdateHotelInput) : HotelDTO
     updateLocation(id: UUID, location: UpdateLocationInput) : LocationDTO
     updateAmenity(hotelId: UUID,amenityId: UUID,  amenity: UpdateAmenityInput) : AmenityDTO
+    deleteUser(id:UUID): Boolean
+    deleteHotel(id:UUID): Boolean
 }
