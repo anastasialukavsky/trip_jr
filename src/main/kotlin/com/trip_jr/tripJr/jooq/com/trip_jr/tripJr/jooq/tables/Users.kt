@@ -13,6 +13,7 @@ import com.trip_jr.tripJr.jooq.tables.Booking.BookingPath
 import com.trip_jr.tripJr.jooq.tables.Review.ReviewPath
 import com.trip_jr.tripJr.jooq.tables.records.UsersRecord
 
+import java.time.OffsetDateTime
 import java.util.UUID
 
 import kotlin.collections.Collection
@@ -102,6 +103,16 @@ open class Users(
      * The column <code>public.users.password_hash</code>.
      */
     val PASSWORD_HASH: TableField<UsersRecord, String?> = createField(DSL.name("password_hash"), SQLDataType.VARCHAR(255).nullable(false), this, "")
+
+    /**
+     * The column <code>public.users.created_at</code>.
+     */
+    val CREATED_AT: TableField<UsersRecord, OffsetDateTime?> = createField(DSL.name("created_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).defaultValue(DSL.field(DSL.raw("CURRENT_TIMESTAMP"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
+
+    /**
+     * The column <code>public.users.updated_at</code>.
+     */
+    val UPDATED_AT: TableField<UsersRecord, OffsetDateTime?> = createField(DSL.name("updated_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).defaultValue(DSL.field(DSL.raw("CURRENT_TIMESTAMP"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
 
     private constructor(alias: Name, aliased: Table<UsersRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<UsersRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
