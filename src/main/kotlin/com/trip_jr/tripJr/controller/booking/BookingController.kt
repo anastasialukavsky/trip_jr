@@ -44,4 +44,9 @@ class BookingController {
     ): BookingDTO? {
         return bookingService.updateBooking(userId, bookingId, hotelId, booking)
     }
+
+    @MutationMapping(name = "deleteBooking")
+    fun deleteBooking(@Argument(name = "id") id: UUID):Boolean{
+        return bookingService.deleteBooking(id)
+    }
 }
