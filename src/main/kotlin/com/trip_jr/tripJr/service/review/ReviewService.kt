@@ -82,7 +82,7 @@ class ReviewService {
                 .execute()
 
             return if (updateQuery == 1) updatedReview
-             else throw RuntimeException("Failed to update review")
+            else throw RuntimeException("Failed to update review")
 
 
         } catch (e: Exception) {
@@ -90,4 +90,18 @@ class ReviewService {
         }
     }
 
+
+    fun deleteUserReview(id: UUID): Boolean {
+        try {
+            val deleteRecordCount = dslContext.deleteFrom(REVIEW)
+                .where(REVIEW.REVIEW_ID.eq(id))
+                .execute()
+
+            return deleteRecordCount == 1
+        } catch (e: RuntimeException) {
+            throw RuntimeException("Failed to delete review with id $id", e)
+        } catch (e: Exception) {
+            throw e
+        }
+    }
 }
