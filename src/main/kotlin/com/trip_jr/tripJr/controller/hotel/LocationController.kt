@@ -23,4 +23,9 @@ class LocationController {
         return locationService.updateLocation(id, location)
     }
 
+
+    @MutationMapping(name="deleteLocation")
+    fun deleteLocation(@Argument(name="id") id: UUID): Boolean {
+        return locationService.deleteHotelLocation(id)
+    }
 }
