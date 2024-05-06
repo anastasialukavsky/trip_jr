@@ -210,4 +210,18 @@ class BookingService {
         }
     }
 
+
+    fun deleteBooking(bookingId: UUID): Boolean {
+        try {
+          val deleteRecordCount = dslContext.deleteFrom(BOOKING)
+              .where(BOOKING.BOOKING_ID.eq(bookingId))
+              .execute()
+
+            return deleteRecordCount == 1
+        }catch(e: RuntimeException){
+            throw RuntimeException("Failed to delete booking", e)
+        }catch(e: Exception){
+            throw e
+        }
+    }
 }
