@@ -216,4 +216,6 @@ type Mutation {
     deleteAmenity(id:UUID): Boolean
     deleteLocation(id: UUID): Boolean
     deleteReview(id:UUID): Boolean
+    deleteBooking(id:UUID): Boolean
+    deleteRate(id: UUID): Boolean
 }
