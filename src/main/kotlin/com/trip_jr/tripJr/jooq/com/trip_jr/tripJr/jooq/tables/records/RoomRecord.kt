@@ -9,7 +9,6 @@ import com.trip_jr.tripJr.jooq.enums.RoomStatus
 import com.trip_jr.tripJr.jooq.enums.RoomType
 import com.trip_jr.tripJr.jooq.tables.Room
 
-import java.math.BigDecimal
 import java.time.OffsetDateTime
 import java.util.UUID
 
@@ -43,54 +42,57 @@ open class RoomRecord() : UpdatableRecordImpl<RoomRecord>(Room.ROOM) {
         set(value): Unit = set(4, value)
         get(): Int? = get(4) as Int?
 
-    open var rate: BigDecimal?
-        set(value): Unit = set(5, value)
-        get(): BigDecimal? = get(5) as BigDecimal?
-
     open var description: String?
-        set(value): Unit = set(6, value)
-        get(): String? = get(6) as String?
+        set(value): Unit = set(5, value)
+        get(): String? = get(5) as String?
 
     open var floor: Int?
-        set(value): Unit = set(7, value)
-        get(): Int? = get(7) as Int?
+        set(value): Unit = set(6, value)
+        get(): Int? = get(6) as Int?
 
     open var availability: Boolean?
-        set(value): Unit = set(8, value)
-        get(): Boolean? = get(8) as Boolean?
+        set(value): Unit = set(7, value)
+        get(): Boolean? = get(7) as Boolean?
 
     open var lastCleaned: OffsetDateTime?
+        set(value): Unit = set(8, value)
+        get(): OffsetDateTime? = get(8) as OffsetDateTime?
+
+    open var createdAt: OffsetDateTime?
         set(value): Unit = set(9, value)
         get(): OffsetDateTime? = get(9) as OffsetDateTime?
 
-    open var createdAt: OffsetDateTime?
+    open var updatedAt: OffsetDateTime?
         set(value): Unit = set(10, value)
         get(): OffsetDateTime? = get(10) as OffsetDateTime?
 
-    open var updatedAt: OffsetDateTime?
-        set(value): Unit = set(11, value)
-        get(): OffsetDateTime? = get(11) as OffsetDateTime?
-
     open var hotelId: UUID?
+        set(value): Unit = set(11, value)
+        get(): UUID? = get(11) as UUID?
+
+    open var rateId: UUID?
         set(value): Unit = set(12, value)
         get(): UUID? = get(12) as UUID?
+
+    open var roomId: UUID?
+        set(value): Unit = set(13, value)
+        get(): UUID? = get(13) as UUID?
 
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
 
-    override fun key(): Record1<Int?> = super.key() as Record1<Int?>
+    override fun key(): Record1<UUID?> = super.key() as Record1<UUID?>
 
     /**
      * Create a detached, initialised RoomRecord
      */
-    constructor(roomNumber: Int? = null, roomType: RoomType? = null, roomStatus: RoomStatus? = null, bedType: BedType? = null, maximumOccupancy: Int? = null, rate: BigDecimal? = null, description: String? = null, floor: Int? = null, availability: Boolean? = null, lastCleaned: OffsetDateTime? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null, hotelId: UUID? = null): this() {
+    constructor(roomNumber: Int? = null, roomType: RoomType? = null, roomStatus: RoomStatus? = null, bedType: BedType? = null, maximumOccupancy: Int? = null, description: String? = null, floor: Int? = null, availability: Boolean? = null, lastCleaned: OffsetDateTime? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null, hotelId: UUID? = null, rateId: UUID? = null, roomId: UUID? = null): this() {
         this.roomNumber = roomNumber
         this.roomType = roomType
         this.roomStatus = roomStatus
         this.bedType = bedType
         this.maximumOccupancy = maximumOccupancy
-        this.rate = rate
         this.description = description
         this.floor = floor
         this.availability = availability
@@ -98,6 +100,8 @@ open class RoomRecord() : UpdatableRecordImpl<RoomRecord>(Room.ROOM) {
         this.createdAt = createdAt
         this.updatedAt = updatedAt
         this.hotelId = hotelId
+        this.rateId = rateId
+        this.roomId = roomId
         resetChangedOnNotNull()
     }
 }
