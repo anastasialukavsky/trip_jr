@@ -13,6 +13,7 @@ import com.trip_jr.tripJr.jooq.keys.HOTEL__FK_LOCATION
 import com.trip_jr.tripJr.jooq.keys.RATE__FK_HOTEL
 import com.trip_jr.tripJr.jooq.keys.RATE__RATE_HOTEL_ID_FKEY
 import com.trip_jr.tripJr.jooq.keys.REVIEW__REVIEW_HOTEL_ID_FKEY
+import com.trip_jr.tripJr.jooq.keys.ROOM__FK_HOTEL_ID
 import com.trip_jr.tripJr.jooq.keys.ROOM__ROOM_HOTEL_ID_FKEY
 import com.trip_jr.tripJr.jooq.tables.Amenity.AmenityPath
 import com.trip_jr.tripJr.jooq.tables.Booking.BookingPath
@@ -254,20 +255,37 @@ open class Hotel(
     val review: ReviewPath
         get(): ReviewPath = review()
 
-    private lateinit var _room: RoomPath
+    private lateinit var _fkHotelId: RoomPath
 
     /**
-     * Get the implicit to-many join path to the <code>public.room</code> table
+     * Get the implicit to-many join path to the <code>public.room</code> table,
+     * via the <code>fk_hotel_id</code> key
      */
-    fun room(): RoomPath {
-        if (!this::_room.isInitialized)
-            _room = RoomPath(this, null, ROOM__ROOM_HOTEL_ID_FKEY.inverseKey)
+    fun fkHotelId(): RoomPath {
+        if (!this::_fkHotelId.isInitialized)
+            _fkHotelId = RoomPath(this, null, ROOM__FK_HOTEL_ID.inverseKey)
 
-        return _room;
+        return _fkHotelId;
     }
 
-    val room: RoomPath
-        get(): RoomPath = room()
+    val fkHotelId: RoomPath
+        get(): RoomPath = fkHotelId()
+
+    private lateinit var _roomHotelIdFkey: RoomPath
+
+    /**
+     * Get the implicit to-many join path to the <code>public.room</code> table,
+     * via the <code>room_hotel_id_fkey</code> key
+     */
+    fun roomHotelIdFkey(): RoomPath {
+        if (!this::_roomHotelIdFkey.isInitialized)
+            _roomHotelIdFkey = RoomPath(this, null, ROOM__ROOM_HOTEL_ID_FKEY.inverseKey)
+
+        return _roomHotelIdFkey;
+    }
+
+    val roomHotelIdFkey: RoomPath
+        get(): RoomPath = roomHotelIdFkey()
     override fun `as`(alias: String): Hotel = Hotel(DSL.name(alias), this)
     override fun `as`(alias: Name): Hotel = Hotel(alias, this)
     override fun `as`(alias: Table<*>): Hotel = Hotel(alias.qualifiedName, this)

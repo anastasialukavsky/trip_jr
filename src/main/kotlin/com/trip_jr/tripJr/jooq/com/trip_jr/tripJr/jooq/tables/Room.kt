@@ -9,11 +9,13 @@ import com.trip_jr.tripJr.jooq.enums.BedType
 import com.trip_jr.tripJr.jooq.enums.RoomStatus
 import com.trip_jr.tripJr.jooq.enums.RoomType
 import com.trip_jr.tripJr.jooq.keys.ROOM_PKEY
+import com.trip_jr.tripJr.jooq.keys.ROOM__FK_HOTEL_ID
+import com.trip_jr.tripJr.jooq.keys.ROOM__FK_RATE_ID
 import com.trip_jr.tripJr.jooq.keys.ROOM__ROOM_HOTEL_ID_FKEY
 import com.trip_jr.tripJr.jooq.tables.Hotel.HotelPath
+import com.trip_jr.tripJr.jooq.tables.Rate.RatePath
 import com.trip_jr.tripJr.jooq.tables.records.RoomRecord
 
-import java.math.BigDecimal
 import java.time.OffsetDateTime
 import java.util.UUID
 
@@ -107,11 +109,6 @@ open class Room(
     val MAXIMUM_OCCUPANCY: TableField<RoomRecord, Int?> = createField(DSL.name("maximum_occupancy"), SQLDataType.INTEGER, this, "")
 
     /**
-     * The column <code>public.room.rate</code>.
-     */
-    val RATE: TableField<RoomRecord, BigDecimal?> = createField(DSL.name("rate"), SQLDataType.NUMERIC(10, 2), this, "")
-
-    /**
      * The column <code>public.room.description</code>.
      */
     val DESCRIPTION: TableField<RoomRecord, String?> = createField(DSL.name("description"), SQLDataType.CLOB, this, "")
@@ -145,6 +142,16 @@ open class Room(
      * The column <code>public.room.hotel_id</code>.
      */
     val HOTEL_ID: TableField<RoomRecord, UUID?> = createField(DSL.name("hotel_id"), SQLDataType.UUID, this, "")
+
+    /**
+     * The column <code>public.room.rate_id</code>.
+     */
+    val RATE_ID: TableField<RoomRecord, UUID?> = createField(DSL.name("rate_id"), SQLDataType.UUID, this, "")
+
+    /**
+     * The column <code>public.room.room_id</code>.
+     */
+    val ROOM_ID: TableField<RoomRecord, UUID?> = createField(DSL.name("room_id"), SQLDataType.UUID.nullable(false), this, "")
 
     private constructor(alias: Name, aliased: Table<RoomRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<RoomRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
@@ -180,22 +187,54 @@ open class Room(
     override fun getSchema(): Schema? = if (aliased()) null else Public.PUBLIC
     override fun getIdentity(): Identity<RoomRecord, Int?> = super.getIdentity() as Identity<RoomRecord, Int?>
     override fun getPrimaryKey(): UniqueKey<RoomRecord> = ROOM_PKEY
-    override fun getReferences(): List<ForeignKey<RoomRecord, *>> = listOf(ROOM__ROOM_HOTEL_ID_FKEY)
+    override fun getReferences(): List<ForeignKey<RoomRecord, *>> = listOf(ROOM__FK_HOTEL_ID, ROOM__ROOM_HOTEL_ID_FKEY, ROOM__FK_RATE_ID)
 
-    private lateinit var _hotel: HotelPath
+    private lateinit var _fkHotelId: HotelPath
 
     /**
-     * Get the implicit join path to the <code>public.hotel</code> table.
+     * Get the implicit join path to the <code>public.hotel</code> table, via
+     * the <code>fk_hotel_id</code> key.
      */
-    fun hotel(): HotelPath {
-        if (!this::_hotel.isInitialized)
-            _hotel = HotelPath(this, ROOM__ROOM_HOTEL_ID_FKEY, null)
+    fun fkHotelId(): HotelPath {
+        if (!this::_fkHotelId.isInitialized)
+            _fkHotelId = HotelPath(this, ROOM__FK_HOTEL_ID, null)
 
-        return _hotel;
+        return _fkHotelId;
     }
 
-    val hotel: HotelPath
-        get(): HotelPath = hotel()
+    val fkHotelId: HotelPath
+        get(): HotelPath = fkHotelId()
+
+    private lateinit var _roomHotelIdFkey: HotelPath
+
+    /**
+     * Get the implicit join path to the <code>public.hotel</code> table, via
+     * the <code>room_hotel_id_fkey</code> key.
+     */
+    fun roomHotelIdFkey(): HotelPath {
+        if (!this::_roomHotelIdFkey.isInitialized)
+            _roomHotelIdFkey = HotelPath(this, ROOM__ROOM_HOTEL_ID_FKEY, null)
+
+        return _roomHotelIdFkey;
+    }
+
+    val roomHotelIdFkey: HotelPath
+        get(): HotelPath = roomHotelIdFkey()
+
+    private lateinit var _rate: RatePath
+
+    /**
+     * Get the implicit join path to the <code>public.rate</code> table.
+     */
+    fun rate(): RatePath {
+        if (!this::_rate.isInitialized)
+            _rate = RatePath(this, ROOM__FK_RATE_ID, null)
+
+        return _rate;
+    }
+
+    val rate: RatePath
+        get(): RatePath = rate()
     override fun `as`(alias: String): Room = Room(DSL.name(alias), this)
     override fun `as`(alias: Name): Room = Room(alias, this)
     override fun `as`(alias: Table<*>): Room = Room(alias.qualifiedName, this)
