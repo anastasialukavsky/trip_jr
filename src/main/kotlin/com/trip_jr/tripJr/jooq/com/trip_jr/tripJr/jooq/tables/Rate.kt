@@ -8,7 +8,9 @@ import com.trip_jr.tripJr.jooq.Public
 import com.trip_jr.tripJr.jooq.keys.RATE_PKEY
 import com.trip_jr.tripJr.jooq.keys.RATE__FK_HOTEL
 import com.trip_jr.tripJr.jooq.keys.RATE__RATE_HOTEL_ID_FKEY
+import com.trip_jr.tripJr.jooq.keys.ROOM__FK_RATE_ID
 import com.trip_jr.tripJr.jooq.tables.Hotel.HotelPath
+import com.trip_jr.tripJr.jooq.tables.Room.RoomPath
 import com.trip_jr.tripJr.jooq.tables.records.RateRecord
 
 import java.util.UUID
@@ -167,6 +169,21 @@ open class Rate(
 
     val rateHotelIdFkey: HotelPath
         get(): HotelPath = rateHotelIdFkey()
+
+    private lateinit var _room: RoomPath
+
+    /**
+     * Get the implicit to-many join path to the <code>public.room</code> table
+     */
+    fun room(): RoomPath {
+        if (!this::_room.isInitialized)
+            _room = RoomPath(this, null, ROOM__FK_RATE_ID.inverseKey)
+
+        return _room;
+    }
+
+    val room: RoomPath
+        get(): RoomPath = room()
     override fun `as`(alias: String): Rate = Rate(DSL.name(alias), this)
     override fun `as`(alias: Name): Rate = Rate(alias, this)
     override fun `as`(alias: Table<*>): Rate = Rate(alias.qualifiedName, this)

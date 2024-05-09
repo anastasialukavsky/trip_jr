@@ -16,9 +16,9 @@ import org.jooq.Schema
  */
 @Suppress("UNCHECKED_CAST")
 enum class RoomType(@get:JvmName("literal") public val literal: String) : EnumType {
-    single("single"),
-    double("double"),
-    suite("suite");
+    Single("Single"),
+    Double("Double"),
+    Suite("Suite");
     override fun getCatalog(): Catalog? = schema.catalog
     override fun getSchema(): Schema = Public.PUBLIC
     override fun getName(): String = "room_type"
