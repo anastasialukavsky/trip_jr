@@ -25,6 +25,57 @@ type HotelDTO {
     createdAt: DateTime
     updatedAt: DateTime
 }
+enum RoomType {
+    single
+    double
+    suite
+}
+
+enum RoomStatus {
+    Vacant
+    Occupied
+    Reserved
+    Maintenance
+}
+
+enum BedType {
+    Single
+    Double
+    Queen
+    King
+}
+
+type RoomDTO {
+    roomId: UUID
+    hotelId: UUID
+    rate: RateDTO!
+    roomNumber:Int!
+    roomType: RoomType!
+    roomStatus: RoomStatus!
+    bedType: BedType!
+    maximumOccupancy: Int!
+    description: String!
+    floor: Int!
+    availability: Boolean!
+    lastCleaned: DateTime
+    createdAt: DateTime!
+    updatedAt: DateTime!
+}
+
+input RoomInput {
+    hotelId: UUID!
+#    rateId: UUID
+    rate: RateInput!
+    roomNumber: Int!
+    roomType: RoomType!
+    roomStatus: RoomStatus!
+    bedType: BedType!
+    maximumOccupancy: Int!
+    description: String!
+    floor: Int!
+    availability: Boolean!
+    lastCleaned: DateTime
+}
 
 type LocationDTO {
     locationId: UUID
@@ -205,6 +256,7 @@ type Mutation {
     createUser(user: UserInput) : UserDTO
     createReview(review: ReviewInput): ReviewDTO
     createBooking(booking: BookingInput) : BookingDTO
+    createRoom(hotelId: UUID!, room: RoomInput, rate: RateInput!) : RoomDTO
     updateUser(id: UUID, user: UpdateUserInput) : UserDTO
     updateBooking(userId: UUID, bookingId: UUID, hotelId: UUID, booking: UpdateBookingInput) : BookingDTO
     updateReview(userId:UUID, reviewId: UUID, review:UpdateReviewInput) : ReviewDTO
