@@ -10,4 +10,8 @@ class UUIDUtils {
         return UUID.randomUUID()
     }
 
+    fun parseUUID(id: UUID?) : UUID{
+        return   UUID.fromString(id.toString())
+    }
+
 }
