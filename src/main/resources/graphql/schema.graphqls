@@ -5,6 +5,7 @@ scalar DateTime
 type Query {
     hotels: [HotelDTO]
     users: [UserDTO!]!
+    roomsByHotelId(hotelId: UUID): [RoomDTO!]!
     hotelById(id: UUID!): HotelDTO
     userById(id: UUID!): UserDTO
     bookingsByUserId(userId: UUID): [BookingDTO]
@@ -26,9 +27,9 @@ type HotelDTO {
     updatedAt: DateTime
 }
 enum RoomType {
-    single
-    double
-    suite
+    Single
+    Double
+    Suite
 }
 
 enum RoomStatus {
@@ -74,6 +75,19 @@ input RoomInput {
     description: String!
     floor: Int!
     availability: Boolean!
+    lastCleaned: DateTime
+}
+
+input UpdateRoomInput {
+#    rate: RateInput!
+    roomNumber: Int
+    roomType: RoomType
+    roomStatus: RoomStatus
+    bedType: BedType
+    maximumOccupancy: Int
+    description: String
+    floor: Int
+    availability: Boolean
     lastCleaned: DateTime
 }
 
@@ -257,6 +271,7 @@ type Mutation {
     createReview(review: ReviewInput): ReviewDTO
     createBooking(booking: BookingInput) : BookingDTO
     createRoom(hotelId: UUID!, room: RoomInput, rate: RateInput!) : RoomDTO
+    updateRoom(hotelId:UUID, roomId: UUID, room: UpdateRoomInput): RoomDTO
     updateUser(id: UUID, user: UpdateUserInput) : UserDTO
     updateBooking(userId: UUID, bookingId: UUID, hotelId: UUID, booking: UpdateBookingInput) : BookingDTO
     updateReview(userId:UUID, reviewId: UUID, review:UpdateReviewInput) : ReviewDTO
