@@ -8,6 +8,7 @@ import org.springframework.graphql.data.method.annotation.Argument
 import org.springframework.graphql.data.method.annotation.MutationMapping
 import org.springframework.graphql.data.method.annotation.QueryMapping
 import org.springframework.stereotype.Controller
+import reactor.core.publisher.Flux
 import java.util.*
 
 
@@ -17,6 +18,11 @@ class RoomController {
     @Autowired
     private lateinit var roomService: RoomService
 
+    @QueryMapping(name="roomsByHotelId")
+    fun roomsByHotelId(@Argument(name="hotelId") hotelId: UUID): MutableList<RoomDTO> {
+        return roomService.roomsByHotelId(hotelId)
+    }
+
     @MutationMapping(name="createRoom")
     fun createRoom(
         @Argument(name="hotelId") hotelId: UUID,
@@ -24,5 +30,14 @@ class RoomController {
         @Argument(name="rate") rate: RateDTO,
         ): RoomDTO? {
         return roomService.createRoom(hotelId, room, rate)
+    }
+
+    @MutationMapping(name="updateRoom")
+    fun updateRoom(
+        @Argument(name="hotelId") hotelId: UUID,
+        @Argument(name="roomId") roomId: UUID,
+        @Argument(name="room") room: UpdateRoomDTO,
+    ): RoomDTO? {
+        return roomService.updateRoom(hotelId, roomId, room)
     }
 }
