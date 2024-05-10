@@ -369,11 +369,9 @@ class HotelService {
                 .where(HOTEL.HOTEL_ID.eq(id))
                 .execute()
 
-            if (updateQuery == 1) {
-                return updatedHotelRecord
-            } else {
-                throw RuntimeException("Failed to update hotel record")
-            }
+            return if (updateQuery == 1) updatedHotelRecord
+             else throw RuntimeException("Failed to update hotel record")
+
 
 
         } catch (e: Exception) {
