@@ -19,7 +19,7 @@ type HotelDTO {
     numOfRooms: Int
     description: String
     location: LocationDTO
-    rates: [RateDTO!]
+#    rates: [RateDTO!]
     amenities: [AmenityDTO]
     reviews: [ReviewDTO]
     bookings: [BookingDTO]
@@ -65,6 +65,8 @@ type RoomDTO {
 
 input RoomInput {
     hotelId: UUID!
+#    maybe remove or make new input that will hold room_id
+    roomId: UUID!
 #    rateId: UUID
     rate: RateInput!
     roomNumber: Int!
@@ -75,7 +77,7 @@ input RoomInput {
     description: String!
     floor: Int!
     availability: Boolean!
-    lastCleaned: DateTime
+#    lastCleaned: DateTime
 }
 
 input UpdateRoomInput {
@@ -126,7 +128,7 @@ input HotelInput {
     numOfRooms: Int
     description: String
     location: LocationInput
-    rates: [RateInput]
+#    rates: [RateInput]
     amenities: [AmenityInput]
 }
 
@@ -210,6 +212,7 @@ type BookingDTO {
     bookingId: UUID
     userId: UUID
     hotelId: UUID
+    roomDetails: RoomDTO!
     guestFirstName: String!
     guestLastName: String!
     numOfGuests: Int!
@@ -231,6 +234,7 @@ input BookingInput {
     numOfGuests: Int!
     occasion: String
     guestNotes: String
+    roomDetails: RoomInput!
     checkInDate: Date!
     checkOutDate: Date!
 }
@@ -278,6 +282,7 @@ type Mutation {
     updateHotel(id: UUID, hotel: UpdateHotelInput) : HotelDTO
     updateLocation(id: UUID, location: UpdateLocationInput) : LocationDTO
     updateAmenity(hotelId: UUID,amenityId: UUID,  amenity: UpdateAmenityInput) : AmenityDTO
+    deleteRoom(id: UUID) : Boolean
     deleteUser(id:UUID): Boolean
     deleteHotel(id:UUID): Boolean
     deleteAmenity(id:UUID): Boolean
