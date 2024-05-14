@@ -11,7 +11,6 @@ data class HotelDTO(
     val numOfRooms: Int? = 1,
     val description: String? = "",
     var location: LocationDTO,
-    val rates: List<RateDTO> = listOf(),
     val amenities: List<AmenityDTO> = listOf(),
     val reviews: List<ReviewDTO> = listOf(),
     val bookings: List<BookingDTO> = listOf(),
