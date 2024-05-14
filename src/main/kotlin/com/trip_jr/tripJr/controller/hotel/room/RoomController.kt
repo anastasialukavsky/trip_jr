@@ -40,4 +40,9 @@ class RoomController {
     ): RoomDTO? {
         return roomService.updateRoom(hotelId, roomId, room)
     }
+
+    @MutationMapping(name="deleteRoom")
+    fun deleteRoom(@Argument(name="id") id: UUID) : Boolean {
+        return roomService.deleteRoom(id)
+    }
 }
