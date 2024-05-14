@@ -29,7 +29,6 @@ class RateUtils {
                             rateId = it[RATE.RATE_ID],
                             rate = it1,
                             month = it2,
-                            hotelId = it[RATE.HOTEL_ID],
                             defaultRate = it3
                         )
                     }
