@@ -35,15 +35,15 @@ class BookingController {
         return bookingService.createBooking(booking)
     }
 
-    @MutationMapping(name = "updateBooking")
-    fun updateBooking(
-        @Argument(name = "userId") userId: UUID,
-        @Argument(name = "bookingId") bookingId: UUID,
-        @Argument(name = "hotelId") hotelId: UUID,
-        @Argument(name = "booking") booking: UpdateBookingDTO
-    ): BookingDTO? {
-        return bookingService.updateBooking(userId, bookingId, hotelId, booking)
-    }
+//    @MutationMapping(name = "updateBooking")
+//    fun updateBooking(
+//        @Argument(name = "userId") userId: UUID,
+//        @Argument(name = "bookingId") bookingId: UUID,
+//        @Argument(name = "hotelId") hotelId: UUID,
+//        @Argument(name = "booking") booking: UpdateBookingDTO
+//    ): BookingDTO? {
+//        return bookingService.updateBooking(userId, bookingId, hotelId, booking)
+//    }
 
     @MutationMapping(name = "deleteBooking")
     fun deleteBooking(@Argument(name = "id") id: UUID):Boolean{
