@@ -17,19 +17,6 @@ class HotelByIdUtils {
     @Autowired
     lateinit var dslContext: DSLContext
 
-    fun getHotelRates(hotelId: UUID): MutableList<RateDTO> {
-        try {
-            val ratesRecord = dslContext
-                .select()
-                .from(RATE)
-                .where(RATE.HOTEL_ID.eq(hotelId))
-                .fetchInto(RateDTO::class.java)
-
-            return ratesRecord
-        } catch (e: Exception) {
-            throw e;
-        }
-    }
 
     fun getHotelAmenities(hotelId: UUID): MutableList<AmenityDTO> {
         try {
