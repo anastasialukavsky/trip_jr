@@ -21,10 +21,10 @@ class HotelController {
     private lateinit var hotelService: HotelService
 
 
-    @QueryMapping(name = "hotels")
-    fun hotels(): List<HotelDTO> {
-        return hotelService.getAllHotels()
-    }
+//    @QueryMapping(name = "hotels")
+//    fun hotels(): List<HotelDTO> {
+//        return hotelService.getAllHotels()
+//    }
 
     @QueryMapping
     fun hotelById(@Argument id: UUID): HotelDTO? {
