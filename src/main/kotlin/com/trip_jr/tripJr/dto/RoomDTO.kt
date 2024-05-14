@@ -19,27 +19,7 @@ data class RoomDTO(
     val description: String,
     val floor: Int,
     val availability: Boolean,
-    val lastCleaned: LocalDateTime = LocalDateTime.now(),
+    val lastCleaned: LocalDateTime? = LocalDateTime.now(),
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val updatedAt: LocalDateTime = LocalDateTime.now(),
     )
-
-//enum class RoomType {
-//    SINGLE,
-//    DOUBLE,
-//    SUIT
-//}
-//
-//enum class RoomStatus {
-//    AVAILABLE,
-//    OCCUPIED,
-//    RESERVED,
-//    MAINTENANCE,
-//}
-//
-//enum class BedType {
-//    SINGLE,
-//    DOUBLE,
-//    QUEEN,
-//    KING
-//}
