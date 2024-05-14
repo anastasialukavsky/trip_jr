@@ -1,5 +1,6 @@
 package com.trip_jr.tripJr.dto.booking
 
+import com.trip_jr.tripJr.dto.RoomDTO
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -17,6 +18,7 @@ data class BookingDTO(
     val checkInDate: LocalDate,
     val checkOutDate: LocalDate,
     val totalCost: BigDecimal?,
+    val roomDetails: RoomDTO?,
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val updatedAt: LocalDateTime = LocalDateTime.now()
 )
