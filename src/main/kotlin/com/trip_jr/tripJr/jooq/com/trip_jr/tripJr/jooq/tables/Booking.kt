@@ -8,7 +8,9 @@ import com.trip_jr.tripJr.jooq.Public
 import com.trip_jr.tripJr.jooq.keys.BOOKING_PKEY
 import com.trip_jr.tripJr.jooq.keys.BOOKING__BOOKING_HOTEL_ID_FKEY
 import com.trip_jr.tripJr.jooq.keys.BOOKING__BOOKING_USER_ID_FKEY
+import com.trip_jr.tripJr.jooq.keys.BOOKING__FK_BOOKING_ROOM_ID
 import com.trip_jr.tripJr.jooq.tables.Hotel.HotelPath
+import com.trip_jr.tripJr.jooq.tables.Room.RoomPath
 import com.trip_jr.tripJr.jooq.tables.Users.UsersPath
 import com.trip_jr.tripJr.jooq.tables.records.BookingRecord
 
@@ -145,6 +147,11 @@ open class Booking(
      */
     val UPDATED_AT: TableField<BookingRecord, OffsetDateTime?> = createField(DSL.name("updated_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).defaultValue(DSL.field(DSL.raw("CURRENT_TIMESTAMP"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
 
+    /**
+     * The column <code>public.booking.room_id</code>.
+     */
+    val ROOM_ID: TableField<BookingRecord, UUID?> = createField(DSL.name("room_id"), SQLDataType.UUID, this, "")
+
     private constructor(alias: Name, aliased: Table<BookingRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<BookingRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
     private constructor(alias: Name, aliased: Table<BookingRecord>?, where: Condition?): this(alias, null, null, null, aliased, null, where)
@@ -178,7 +185,7 @@ open class Booking(
     }
     override fun getSchema(): Schema? = if (aliased()) null else Public.PUBLIC
     override fun getPrimaryKey(): UniqueKey<BookingRecord> = BOOKING_PKEY
-    override fun getReferences(): List<ForeignKey<BookingRecord, *>> = listOf(BOOKING__BOOKING_USER_ID_FKEY, BOOKING__BOOKING_HOTEL_ID_FKEY)
+    override fun getReferences(): List<ForeignKey<BookingRecord, *>> = listOf(BOOKING__BOOKING_USER_ID_FKEY, BOOKING__BOOKING_HOTEL_ID_FKEY, BOOKING__FK_BOOKING_ROOM_ID)
 
     private lateinit var _users: UsersPath
 
@@ -209,6 +216,21 @@ open class Booking(
 
     val hotel: HotelPath
         get(): HotelPath = hotel()
+
+    private lateinit var _room: RoomPath
+
+    /**
+     * Get the implicit join path to the <code>public.room</code> table.
+     */
+    fun room(): RoomPath {
+        if (!this::_room.isInitialized)
+            _room = RoomPath(this, BOOKING__FK_BOOKING_ROOM_ID, null)
+
+        return _room;
+    }
+
+    val room: RoomPath
+        get(): RoomPath = room()
     override fun `as`(alias: String): Booking = Booking(DSL.name(alias), this)
     override fun `as`(alias: Name): Booking = Booking(alias, this)
     override fun `as`(alias: Table<*>): Booking = Booking(alias.qualifiedName, this)

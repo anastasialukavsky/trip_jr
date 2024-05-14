@@ -73,6 +73,10 @@ open class BookingRecord() : UpdatableRecordImpl<BookingRecord>(Booking.BOOKING)
         set(value): Unit = set(12, value)
         get(): OffsetDateTime? = get(12) as OffsetDateTime?
 
+    open var roomId: UUID?
+        set(value): Unit = set(13, value)
+        get(): UUID? = get(13) as UUID?
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -82,7 +86,7 @@ open class BookingRecord() : UpdatableRecordImpl<BookingRecord>(Booking.BOOKING)
     /**
      * Create a detached, initialised BookingRecord
      */
-    constructor(bookingId: UUID? = null, userId: UUID? = null, hotelId: UUID? = null, checkInDate: LocalDate? = null, checkOutDate: LocalDate? = null, totalCost: BigDecimal? = null, guestFirstName: String? = null, guestLastName: String? = null, numOfGuests: Int? = null, occasion: String? = null, guestNotes: String? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null): this() {
+    constructor(bookingId: UUID? = null, userId: UUID? = null, hotelId: UUID? = null, checkInDate: LocalDate? = null, checkOutDate: LocalDate? = null, totalCost: BigDecimal? = null, guestFirstName: String? = null, guestLastName: String? = null, numOfGuests: Int? = null, occasion: String? = null, guestNotes: String? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null, roomId: UUID? = null): this() {
         this.bookingId = bookingId
         this.userId = userId
         this.hotelId = hotelId
@@ -96,6 +100,7 @@ open class BookingRecord() : UpdatableRecordImpl<BookingRecord>(Booking.BOOKING)
         this.guestNotes = guestNotes
         this.createdAt = createdAt
         this.updatedAt = updatedAt
+        this.roomId = roomId
         resetChangedOnNotNull()
     }
 }

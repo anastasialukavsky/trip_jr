@@ -8,10 +8,12 @@ import com.trip_jr.tripJr.jooq.Public
 import com.trip_jr.tripJr.jooq.enums.BedType
 import com.trip_jr.tripJr.jooq.enums.RoomStatus
 import com.trip_jr.tripJr.jooq.enums.RoomType
+import com.trip_jr.tripJr.jooq.keys.BOOKING__FK_BOOKING_ROOM_ID
 import com.trip_jr.tripJr.jooq.keys.ROOM_PKEY
 import com.trip_jr.tripJr.jooq.keys.ROOM__FK_HOTEL_ID
 import com.trip_jr.tripJr.jooq.keys.ROOM__FK_RATE_ID
 import com.trip_jr.tripJr.jooq.keys.ROOM__ROOM_HOTEL_ID_FKEY
+import com.trip_jr.tripJr.jooq.tables.Booking.BookingPath
 import com.trip_jr.tripJr.jooq.tables.Hotel.HotelPath
 import com.trip_jr.tripJr.jooq.tables.Rate.RatePath
 import com.trip_jr.tripJr.jooq.tables.records.RoomRecord
@@ -235,6 +237,22 @@ open class Room(
 
     val rate: RatePath
         get(): RatePath = rate()
+
+    private lateinit var _booking: BookingPath
+
+    /**
+     * Get the implicit to-many join path to the <code>public.booking</code>
+     * table
+     */
+    fun booking(): BookingPath {
+        if (!this::_booking.isInitialized)
+            _booking = BookingPath(this, null, BOOKING__FK_BOOKING_ROOM_ID.inverseKey)
+
+        return _booking;
+    }
+
+    val booking: BookingPath
+        get(): BookingPath = booking()
     override fun `as`(alias: String): Room = Room(DSL.name(alias), this)
     override fun `as`(alias: Name): Room = Room(alias, this)
     override fun `as`(alias: Table<*>): Room = Room(alias.qualifiedName, this)

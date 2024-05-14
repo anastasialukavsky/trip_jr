@@ -6,17 +6,14 @@ package com.trip_jr.tripJr.jooq.tables
 
 import com.trip_jr.tripJr.jooq.Public
 import com.trip_jr.tripJr.jooq.keys.RATE_PKEY
-import com.trip_jr.tripJr.jooq.keys.RATE__FK_HOTEL
-import com.trip_jr.tripJr.jooq.keys.RATE__RATE_HOTEL_ID_FKEY
 import com.trip_jr.tripJr.jooq.keys.ROOM__FK_RATE_ID
-import com.trip_jr.tripJr.jooq.tables.Hotel.HotelPath
 import com.trip_jr.tripJr.jooq.tables.Room.RoomPath
 import com.trip_jr.tripJr.jooq.tables.records.RateRecord
 
+import java.time.OffsetDateTime
 import java.util.UUID
 
 import kotlin.collections.Collection
-import kotlin.collections.List
 
 import org.jooq.Condition
 import org.jooq.Field
@@ -84,11 +81,6 @@ open class Rate(
     val RATE_ID: TableField<RateRecord, UUID?> = createField(DSL.name("rate_id"), SQLDataType.UUID.nullable(false), this, "")
 
     /**
-     * The column <code>public.rate.hotel_id</code>.
-     */
-    val HOTEL_ID: TableField<RateRecord, UUID?> = createField(DSL.name("hotel_id"), SQLDataType.UUID, this, "")
-
-    /**
      * The column <code>public.rate.rate</code>.
      */
     val RATE_: TableField<RateRecord, Double?> = createField(DSL.name("rate"), SQLDataType.DOUBLE, this, "")
@@ -102,6 +94,16 @@ open class Rate(
      * The column <code>public.rate.default_rate</code>.
      */
     val DEFAULT_RATE: TableField<RateRecord, Double?> = createField(DSL.name("default_rate"), SQLDataType.DOUBLE, this, "")
+
+    /**
+     * The column <code>public.rate.created_at</code>.
+     */
+    val CREATED_AT: TableField<RateRecord, OffsetDateTime?> = createField(DSL.name("created_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).defaultValue(DSL.field(DSL.raw("CURRENT_TIMESTAMP"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
+
+    /**
+     * The column <code>public.rate.updated_at</code>.
+     */
+    val UPDATED_AT: TableField<RateRecord, OffsetDateTime?> = createField(DSL.name("updated_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).defaultValue(DSL.field(DSL.raw("CURRENT_TIMESTAMP"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
 
     private constructor(alias: Name, aliased: Table<RateRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<RateRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
@@ -136,39 +138,6 @@ open class Rate(
     }
     override fun getSchema(): Schema? = if (aliased()) null else Public.PUBLIC
     override fun getPrimaryKey(): UniqueKey<RateRecord> = RATE_PKEY
-    override fun getReferences(): List<ForeignKey<RateRecord, *>> = listOf(RATE__FK_HOTEL, RATE__RATE_HOTEL_ID_FKEY)
-
-    private lateinit var _fkHotel: HotelPath
-
-    /**
-     * Get the implicit join path to the <code>public.hotel</code> table, via
-     * the <code>fk_hotel</code> key.
-     */
-    fun fkHotel(): HotelPath {
-        if (!this::_fkHotel.isInitialized)
-            _fkHotel = HotelPath(this, RATE__FK_HOTEL, null)
-
-        return _fkHotel;
-    }
-
-    val fkHotel: HotelPath
-        get(): HotelPath = fkHotel()
-
-    private lateinit var _rateHotelIdFkey: HotelPath
-
-    /**
-     * Get the implicit join path to the <code>public.hotel</code> table, via
-     * the <code>rate_hotel_id_fkey</code> key.
-     */
-    fun rateHotelIdFkey(): HotelPath {
-        if (!this::_rateHotelIdFkey.isInitialized)
-            _rateHotelIdFkey = HotelPath(this, RATE__RATE_HOTEL_ID_FKEY, null)
-
-        return _rateHotelIdFkey;
-    }
-
-    val rateHotelIdFkey: HotelPath
-        get(): HotelPath = rateHotelIdFkey()
 
     private lateinit var _room: RoomPath
 
