@@ -6,6 +6,7 @@ package com.trip_jr.tripJr.jooq.tables.records
 
 import com.trip_jr.tripJr.jooq.tables.Rate
 
+import java.time.OffsetDateTime
 import java.util.UUID
 
 import org.jooq.Record1
@@ -22,21 +23,25 @@ open class RateRecord() : UpdatableRecordImpl<RateRecord>(Rate.RATE) {
         set(value): Unit = set(0, value)
         get(): UUID? = get(0) as UUID?
 
-    open var hotelId: UUID?
-        set(value): Unit = set(1, value)
-        get(): UUID? = get(1) as UUID?
-
     open var rate: Double?
-        set(value): Unit = set(2, value)
-        get(): Double? = get(2) as Double?
+        set(value): Unit = set(1, value)
+        get(): Double? = get(1) as Double?
 
     open var month: Int?
-        set(value): Unit = set(3, value)
-        get(): Int? = get(3) as Int?
+        set(value): Unit = set(2, value)
+        get(): Int? = get(2) as Int?
 
     open var defaultRate: Double?
+        set(value): Unit = set(3, value)
+        get(): Double? = get(3) as Double?
+
+    open var createdAt: OffsetDateTime?
         set(value): Unit = set(4, value)
-        get(): Double? = get(4) as Double?
+        get(): OffsetDateTime? = get(4) as OffsetDateTime?
+
+    open var updatedAt: OffsetDateTime?
+        set(value): Unit = set(5, value)
+        get(): OffsetDateTime? = get(5) as OffsetDateTime?
 
     // -------------------------------------------------------------------------
     // Primary key information
@@ -47,12 +52,13 @@ open class RateRecord() : UpdatableRecordImpl<RateRecord>(Rate.RATE) {
     /**
      * Create a detached, initialised RateRecord
      */
-    constructor(rateId: UUID? = null, hotelId: UUID? = null, rate: Double? = null, month: Int? = null, defaultRate: Double? = null): this() {
+    constructor(rateId: UUID? = null, rate: Double? = null, month: Int? = null, defaultRate: Double? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null): this() {
         this.rateId = rateId
-        this.hotelId = hotelId
         this.rate = rate
         this.month = month
         this.defaultRate = defaultRate
+        this.createdAt = createdAt
+        this.updatedAt = updatedAt
         resetChangedOnNotNull()
     }
 }
