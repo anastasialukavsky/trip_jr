@@ -226,21 +226,19 @@ class RoomService {
                                     (room.floor ?: originalRoomRecord?.floor)?.let { it6 ->
                                         (room.availability ?: originalRoomRecord?.availability)?.let { it7 ->
                                             (room.lastCleaned ?: originalRoomRecord?.lastCleaned)?.let { it8 ->
-//                                                (room.createdAt ?: originalRoomRecord?.createdAt)?.let { it9 ->
-                                                    originalRoomRecord?.copy(
-                                                        rate = rate,
-                                                        roomNumber = it1,
-                                                        roomType = it2,
-                                                        roomStatus = it3,
-                                                        bedType = it,
-                                                        maximumOccupancy = it4,
-                                                        description = it5,
-                                                        floor = it6,
-                                                        availability = it7,
-                                                        lastCleaned = it8,
-                                                        updatedAt = currentTimestamp.toLocalDateTime()
-                                                    )
-                                                }
+                                                originalRoomRecord?.copy(
+                                                    rate = rate,
+                                                    roomNumber = it1,
+                                                    roomType = it2,
+                                                    roomStatus = it3,
+                                                    bedType = it,
+                                                    maximumOccupancy = it4,
+                                                    description = it5,
+                                                    floor = it6,
+                                                    availability = it7,
+                                                    lastCleaned = it8,
+                                                    updatedAt = currentTimestamp.toLocalDateTime()
+                                                )
                                             }
                                         }
                                     }
@@ -249,6 +247,7 @@ class RoomService {
                         }
                     }
                 }
+            }
 
 
             val updateQuery = dslContext.update(ROOM)
@@ -272,4 +271,16 @@ class RoomService {
         }
     }
 
+    fun deleteRoom(id: UUID): Boolean {
+        try {
+            val deleteRecordCount = dslContext.deleteFrom(ROOM)
+                .where(ROOM.ROOM_ID.eq(id))
+                .execute()
+
+            return deleteRecordCount == 1
+
+        } catch (e: Exception) {
+            throw e
+        }
+    }
 }
