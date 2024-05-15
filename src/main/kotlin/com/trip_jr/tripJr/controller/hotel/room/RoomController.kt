@@ -28,6 +28,11 @@ class RoomController {
         return roomService.roomById(roomId)
     }
 
+    @QueryMapping(name="availableRoomsByHotelId")
+    fun availableRoomsByHotelId(@Argument(name="hotelId") hotelId: UUID): MutableList<RoomDTO> {
+        return roomService.getAvailableRoomsByHotelId(hotelId)
+    }
+
     @MutationMapping(name="createRoom")
     fun createRoom(
         @Argument(name="hotelId") hotelId: UUID,
