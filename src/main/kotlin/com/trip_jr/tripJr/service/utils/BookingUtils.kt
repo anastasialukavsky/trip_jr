@@ -3,8 +3,10 @@ package com.trip_jr.tripJr.service.utils
 import com.trip_jr.tripJr.dto.booking.BookingDTO
 import com.trip_jr.tripJr.dto.booking.CreateBookingDTO
 import com.trip_jr.tripJr.dto.hotel.RateDTO
+import com.trip_jr.tripJr.jooq.enums.RoomStatus
 import com.trip_jr.tripJr.jooq.tables.references.BOOKING
 import com.trip_jr.tripJr.jooq.tables.references.RATE
+import com.trip_jr.tripJr.jooq.tables.references.ROOM
 import org.jooq.DSLContext
 import org.jooq.impl.DSL
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,10 +20,12 @@ class BookingUtils {
     @Autowired
     lateinit var dslContext: DSLContext
 
-    fun isRoomAvailable(booking: CreateBookingDTO): Boolean {
+    fun isRoomNotBooked(booking: CreateBookingDTO): Boolean {
+        try {
+
         val overlappingBookings = dslContext.selectCount()
             .from(BOOKING)
-            .where(BOOKING.ROOM_ID.eq(booking.roomDetails?.roomId))
+            .where(BOOKING.ROOM_ID.eq(booking.roomDetails.roomId))
             .and(
                 DSL.or(
                     (BOOKING.CHECK_IN_DATE.le(booking.checkInDate).and(BOOKING.CHECK_OUT_DATE.gt(booking.checkInDate))),
@@ -32,8 +36,30 @@ class BookingUtils {
             .fetchOne(0, Int::class.java)
 
         return overlappingBookings == 0
+        }catch(e: Exception) {
+            throw e
+        }
 
     }
+
+    fun changeRoomStatusWhenBooked(booking: CreateBookingDTO): Boolean {
+        try {
+            if(isRoomNotBooked(booking)) {
+                val updateCount = dslContext.update(ROOM)
+                    .set(ROOM.ROOM_STATUS, RoomStatus.Occupied)
+                    .set(ROOM.AVAILABILITY, false)
+                    .where(ROOM.ROOM_ID.eq(booking.roomDetails.roomId))
+                    .execute()
+
+                return updateCount > 0
+            } else {
+                return false
+            }
+        }catch(e: Exception) {
+            throw e
+        }
+    }
+
 
     fun calculateTotalCost(booking: CreateBookingDTO): BigDecimal {
         val durationInDays = ChronoUnit.DAYS.between(booking.checkInDate, booking.checkOutDate)
