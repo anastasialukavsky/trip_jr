@@ -23,13 +23,18 @@ class RoomController {
         return roomService.roomsByHotelId(hotelId)
     }
 
+    @QueryMapping(name="roomById")
+    fun roomById(@Argument(name="id") roomId: UUID): RoomDTO? {
+        return roomService.roomById(roomId)
+    }
+
     @MutationMapping(name="createRoom")
     fun createRoom(
         @Argument(name="hotelId") hotelId: UUID,
         @Argument(name="room") room:  RoomDTO,
-        @Argument(name="rate") rate: RateDTO,
+//        @Argument(name="rate") rate: RateDTO,
         ): RoomDTO? {
-        return roomService.createRoom(hotelId, room, rate)
+        return roomService.createRoom(hotelId, room)
     }
 
     @MutationMapping(name="updateRoom")
