@@ -8,6 +8,7 @@ type Query {
     roomsByHotelId(hotelId: UUID): [RoomDTO!]!
     hotelById(id: UUID!): HotelDTO
     userById(id: UUID!): UserDTO
+    roomById(id: UUID!): RoomDTO
     bookingsByUserId(userId: UUID): [BookingDTO]
     bookingByIdForUserById(userId: UUID, bookingId: UUID): BookingDTO
 }
@@ -66,7 +67,7 @@ type RoomDTO {
 input RoomInput {
     hotelId: UUID!
 #    maybe remove or make new input that will hold room_id
-    roomId: UUID!
+#    roomId: UUID!
 #    rateId: UUID
     rate: RateInput!
     roomNumber: Int!
@@ -226,6 +227,11 @@ type BookingDTO {
 }
 
 
+input BookingRoomInput {
+    roomId: UUID!
+    rateId: UUID!
+}
+
 input BookingInput {
     userId: UUID
     hotelId: UUID
@@ -234,7 +240,7 @@ input BookingInput {
     numOfGuests: Int!
     occasion: String
     guestNotes: String
-    roomDetails: RoomInput!
+    roomDetails: BookingRoomInput!
     checkInDate: Date!
     checkOutDate: Date!
 }
@@ -274,7 +280,7 @@ type Mutation {
     createUser(user: UserInput) : UserDTO
     createReview(review: ReviewInput): ReviewDTO
     createBooking(booking: BookingInput) : BookingDTO
-    createRoom(hotelId: UUID!, room: RoomInput, rate: RateInput!) : RoomDTO
+    createRoom(hotelId: UUID!, room: RoomInput) : RoomDTO
     updateRoom(hotelId:UUID, roomId: UUID, room: UpdateRoomInput): RoomDTO
     updateUser(id: UUID, user: UpdateUserInput) : UserDTO
     updateBooking(userId: UUID, bookingId: UUID, hotelId: UUID, booking: UpdateBookingInput) : BookingDTO
