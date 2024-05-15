@@ -81,7 +81,7 @@ class BookingService {
 
     fun createBooking(booking: CreateBookingDTO): BookingDTO {
         try {
-            val isRoomAvailable = bookingUtils.isRoomAvailable(booking)
+            val isRoomAvailable = bookingUtils.isRoomNotBooked(booking)
             if (!isRoomAvailable) {
                 throw IllegalStateException("The selected room is not available for the specified dates.")
             }
@@ -93,6 +93,8 @@ class BookingService {
             val totalCost = bookingUtils.calculateTotalCost(booking)
             val bookingId = booking.bookingId ?: uuidUtils.generateUUID()
             val currentTimestamp = OffsetDateTime.now(ZoneOffset.UTC)
+
+            bookingUtils.changeRoomStatusWhenBooked(booking)
 
             val bookingRecord = dslContext.insertInto(BOOKING)
                 .set(BOOKING.BOOKING_ID, bookingId)
@@ -152,16 +154,13 @@ class BookingService {
                 createdAt = currentTimestamp.toLocalDateTime(),
                 updatedAt = currentTimestamp.toLocalDateTime()
             )
+
             return createdBooking
         } catch (e: Exception) {
             throw e
         }
     }
 
-//    fun calculateTotalCost(rateRecord: RateDTO?, durationInDays: Long): Double {
-//        val rate = rateRecord?.rate ?: 0.0
-//        return rate * durationInDays
-//    }
 
 //    fun updateBooking(userId: UUID, bookingId: UUID, hotelId: UUID, booking: UpdateBookingDTO): BookingDTO? {
 //        try {
