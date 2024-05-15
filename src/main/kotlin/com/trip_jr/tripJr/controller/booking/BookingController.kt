@@ -1,6 +1,7 @@
 package com.trip_jr.tripJr.controller.booking
 
 import com.trip_jr.tripJr.dto.booking.BookingDTO
+import com.trip_jr.tripJr.dto.booking.CreateBookingDTO
 import com.trip_jr.tripJr.dto.booking.UpdateBookingDTO
 import com.trip_jr.tripJr.service.booking.BookingService
 import org.springframework.beans.factory.annotation.Autowired
@@ -31,7 +32,7 @@ class BookingController {
 
 
     @MutationMapping(name = "createBooking")
-    fun createBooking(@Argument(name = "booking") booking: BookingDTO): BookingDTO {
+    fun createBooking(@Argument(name = "booking") booking: CreateBookingDTO): BookingDTO {
         return bookingService.createBooking(booking)
     }
 
