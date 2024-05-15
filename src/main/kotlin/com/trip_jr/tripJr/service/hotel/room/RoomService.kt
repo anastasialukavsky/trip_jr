@@ -91,7 +91,74 @@ class RoomService {
     }
 
 
-    fun createRoom(hotelId: UUID?, room: RoomDTO, rate: RateDTO): RoomDTO? {
+    fun roomById(roomId: UUID): RoomDTO? {
+        try {
+            val roomRecord = dslContext.select()
+                .from(ROOM)
+                .where(ROOM.ROOM_ID.eq(roomId))
+                .fetchOne()
+
+            if (roomRecord != null) {
+                val rateId = roomRecord.get(ROOM.RATE_ID) // Assuming rate_id is stored in roomRecord
+                val rateRecord = dslContext.select()
+                    .from(RATE)
+                    .where(RATE.RATE_ID.eq(rateId))
+                    .fetchOne()
+
+                return if (rateRecord != null) {
+                    roomRecord.get(ROOM.HOTEL_ID)?.let { hotelId ->
+                        roomRecord.get(ROOM.ROOM_NUMBER)?.let { roomNumber ->
+                            roomRecord.get(ROOM.ROOM_TYPE)?.let { roomType ->
+                                roomRecord.get(ROOM.ROOM_STATUS)?.let { roomStatus ->
+                                    roomRecord.get(ROOM.BED_TYPE)?.let { bedType ->
+                                        roomRecord.get(ROOM.DESCRIPTION)?.let { description ->
+                                            roomRecord.get(ROOM.AVAILABILITY)?.let { availability ->
+                                                roomRecord.get(ROOM.CREATED_AT)?.toLocalDateTime()?.let { createdAt ->
+                                                    RoomDTO(
+                                                        roomId = roomId,
+                                                        hotelId = hotelId,
+                                                        rate = rateRecord.get(RATE.RATE_)?.let {
+                                                            rateRecord.get(RATE.MONTH)?.let { it1 ->
+                                                                RateDTO(
+                                                                    rateId = rateRecord.get(RATE.RATE_ID),
+                                                                    rate = it,
+                                                                    month = it1,
+                                                                    defaultRate = rateRecord.get(RATE.DEFAULT_RATE)!!
+                                                                )
+                                                            }
+                                                        },
+                                                        roomNumber = roomNumber,
+                                                        roomType = roomType,
+                                                        roomStatus = roomStatus,
+                                                        bedType = bedType,
+                                                        maximumOccupancy = roomRecord.get(ROOM.MAXIMUM_OCCUPANCY)!!,
+                                                        description = description,
+                                                        floor = roomRecord.get(ROOM.FLOOR)!!,
+                                                        availability = availability,
+                                                        lastCleaned = roomRecord.get(ROOM.LAST_CLEANED)?.toLocalDateTime(),
+                                                        createdAt = createdAt,
+                                                        updatedAt = roomRecord.get(ROOM.UPDATED_AT)?.toLocalDateTime()!!
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    throw IllegalStateException("Rate record not found for roomId: $roomId")
+                }
+            }
+            return null
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+
+    fun createRoom(hotelId: UUID?, room: RoomDTO): RoomDTO? {
         try {
 
             val parsedHotelId = uuidUtils.parseUUID(hotelId)
@@ -100,7 +167,8 @@ class RoomService {
             val roomId = uuidUtils.generateUUID()
             logger.info("Creating room with id {}", roomId)
 
-            val rateId = rate.rateId ?: uuidUtils.generateUUID()
+
+            val rateId =  uuidUtils.generateUUID()
             val rateRecord = dslContext.insertInto(RATE)
                 .columns(
                     RATE.RATE_ID,
@@ -110,9 +178,9 @@ class RoomService {
                 )
                 .values(
                     rateId,
-                    rate.rate,
-                    rate.month,
-                    rate.defaultRate,
+                    room.rate?.rate,
+                    room.rate?.month,
+                    room.rate?.defaultRate,
                 )
                 .returningResult(RATE.RATE_ID)
                 .fetchOne()
@@ -146,6 +214,7 @@ class RoomService {
                 )
                 .returningResult(ROOM.ROOM_ID)
                 .fetchOne()
+
 
             if (roomRecord == null) throw Exception("Failed to create room")
 
