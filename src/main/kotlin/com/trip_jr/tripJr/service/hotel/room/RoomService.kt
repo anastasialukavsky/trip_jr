@@ -3,6 +3,7 @@ package com.trip_jr.tripJr.service.hotel.room
 import com.trip_jr.tripJr.controller.hotel.room.UpdateRoomDTO
 import com.trip_jr.tripJr.dto.RoomDTO
 import com.trip_jr.tripJr.dto.hotel.RateDTO
+import com.trip_jr.tripJr.jooq.enums.RoomStatus
 import com.trip_jr.tripJr.jooq.tables.Hotel
 import com.trip_jr.tripJr.jooq.tables.Room
 import com.trip_jr.tripJr.jooq.tables.references.LOCATION
@@ -157,6 +158,58 @@ class RoomService {
         }
     }
 
+    fun getAvailableRoomsByHotelId(hotelId: UUID): MutableList<RoomDTO> {
+        try {
+            val availableRoomsRecord = dslContext.select()
+                .from(ROOM)
+                .where(ROOM.HOTEL_ID.eq(hotelId))
+                .and(ROOM.AVAILABILITY.eq(true))
+                .and(ROOM.ROOM_STATUS.eq(RoomStatus.Vacant))
+                .fetch()
+
+            val availableRooms = mutableListOf<RoomDTO>()
+            for (record in availableRoomsRecord) {
+                record.get(ROOM.HOTEL_ID)?.let {
+                    record.get(ROOM.ROOM_NUMBER)?.let { it1 ->
+                        record.get(ROOM.ROOM_TYPE)?.let { it2 ->
+                            record.get(ROOM.BED_TYPE)?.let { it3 ->
+                                record.get(ROOM.DESCRIPTION)?.let { it4 ->
+                                    record.get(ROOM.AVAILABILITY)?.let { it5 ->
+                                        record.get(ROOM.CREATED_AT)?.let { it6 ->
+                                            RoomDTO(
+                                                roomId = record.get(ROOM.ROOM_ID),
+                                                hotelId = it,
+                                                roomNumber = it1,
+                                                roomType = it2,
+                                                roomStatus = RoomStatus.valueOf(record.get(ROOM.ROOM_STATUS).toString()),
+                                                bedType = it3,
+                                                maximumOccupancy = record.get(ROOM.MAXIMUM_OCCUPANCY)!!,
+                                                description = it4,
+                                                floor = record.get(ROOM.FLOOR)!!,
+                                                availability = it5,
+                                                lastCleaned = record.get(ROOM.LAST_CLEANED)?.toLocalDateTime(),
+                                                createdAt = it6.toLocalDateTime(),
+                                                updatedAt = record.get(ROOM.UPDATED_AT)!!.toLocalDateTime()
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }?.let {
+                    availableRooms.add(
+                        it
+                    )
+                }
+            }
+
+            return availableRooms
+
+        }catch(e: Exception) {
+            throw e
+        }
+    }
 
     fun createRoom(hotelId: UUID?, room: RoomDTO): RoomDTO? {
         try {
