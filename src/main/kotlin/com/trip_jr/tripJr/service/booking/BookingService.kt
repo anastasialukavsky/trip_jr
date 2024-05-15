@@ -1,6 +1,8 @@
 package com.trip_jr.tripJr.service.booking
 
+import com.trip_jr.tripJr.dto.RoomDTO
 import com.trip_jr.tripJr.dto.booking.BookingDTO
+import com.trip_jr.tripJr.dto.booking.CreateBookingDTO
 import com.trip_jr.tripJr.dto.booking.UpdateBookingDTO
 import com.trip_jr.tripJr.dto.hotel.RateDTO
 import com.trip_jr.tripJr.jooq.enums.BedType
@@ -10,6 +12,7 @@ import com.trip_jr.tripJr.jooq.tables.references.BOOKING
 import com.trip_jr.tripJr.jooq.tables.references.RATE
 import com.trip_jr.tripJr.jooq.tables.references.ROOM
 import com.trip_jr.tripJr.service.hotel.HotelService
+import com.trip_jr.tripJr.service.hotel.room.RoomService
 import com.trip_jr.tripJr.service.utils.BookingUtils
 import com.trip_jr.tripJr.service.utils.UUIDUtils
 import org.jooq.DSLContext
@@ -40,6 +43,9 @@ class BookingService {
     @Autowired
     lateinit var bookingUtils: BookingUtils
 
+    @Autowired
+    lateinit var roomService: RoomService
+
     private val logger = LoggerFactory.getLogger(HotelService::class.java)
 
     fun getAllBookingsByUserId(userId: UUID): List<BookingDTO> {
@@ -50,9 +56,6 @@ class BookingService {
                 .where(BOOKING.USER_ID.eq(userId))
                 .fetch()
 
-//            val roomRecord = dslContext.select()
-//                .from(ROOM)
-//                .where
 
             return bookingsRecord.into(BookingDTO::class.java)
         } catch (e: Exception) {
@@ -76,14 +79,16 @@ class BookingService {
     }
 
 
-    fun createBooking(booking: BookingDTO): BookingDTO {
+    fun createBooking(booking: CreateBookingDTO): BookingDTO {
         try {
             val isRoomAvailable = bookingUtils.isRoomAvailable(booking)
             if (!isRoomAvailable) {
                 throw IllegalStateException("The selected room is not available for the specified dates.")
             }
 
-            val roomId = booking.roomDetails?.roomId
+            val roomId = booking.roomDetails.roomId
+            val rateId =  booking.roomDetails.rateId
+
 
             val totalCost = bookingUtils.calculateTotalCost(booking)
             val bookingId = booking.bookingId ?: uuidUtils.generateUUID()
@@ -108,21 +113,55 @@ class BookingService {
 
             bookingRecord ?: throw NullPointerException("Failed to create booking record!")
 
-            val createdBooking = booking.copy(
-                bookingId = bookingRecord.get(BOOKING.BOOKING_ID),
-                totalCost = totalCost
-            )
+            val roomRecord = roomService.roomById(roomId)
 
+            val createdBooking = BookingDTO(
+                bookingId = bookingRecord.get(BOOKING.BOOKING_ID),
+                userId = booking.userId,
+                hotelId = booking.hotelId,
+                guestFirstName = booking.guestFirstName,
+                guestLastName = booking.guestLastName,
+                numOfGuests = booking.numOfGuests,
+                occasion = booking.occasion,
+                guestNotes = booking.guestNotes,
+                checkInDate = booking.checkInDate,
+                checkOutDate = booking.checkOutDate,
+                totalCost = totalCost,
+                roomDetails = roomRecord?.let {
+                    RoomDTO(
+                        roomId = roomId,
+                        hotelId = it.hotelId,
+                        roomNumber = roomRecord.roomNumber,
+                        roomType = roomRecord.roomType,
+                        roomStatus = roomRecord.roomStatus,
+                        bedType = roomRecord.bedType,
+                        maximumOccupancy = roomRecord.maximumOccupancy,
+                        description = roomRecord.description,
+                        floor = roomRecord.floor,
+                        availability = roomRecord.availability,
+                        rate = roomRecord.rate?.let { it1 ->
+                            RateDTO(
+                                rateId = rateId,
+                                rate = it1.rate,
+                                month = roomRecord.rate.month,
+                                defaultRate = roomRecord.rate.defaultRate
+                            )
+                        }
+                    )
+                },
+                createdAt = currentTimestamp.toLocalDateTime(),
+                updatedAt = currentTimestamp.toLocalDateTime()
+            )
             return createdBooking
         } catch (e: Exception) {
             throw e
         }
     }
 
-    fun calculateTotalCost(rateRecord: RateDTO?, durationInDays: Long): Double {
-        val rate = rateRecord?.rate ?: 0.0
-        return rate * durationInDays
-    }
+//    fun calculateTotalCost(rateRecord: RateDTO?, durationInDays: Long): Double {
+//        val rate = rateRecord?.rate ?: 0.0
+//        return rate * durationInDays
+//    }
 
 //    fun updateBooking(userId: UUID, bookingId: UUID, hotelId: UUID, booking: UpdateBookingDTO): BookingDTO? {
 //        try {
