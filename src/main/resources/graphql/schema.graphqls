@@ -6,6 +6,7 @@ type Query {
     hotels: [HotelDTO]
     users: [UserDTO!]!
     roomsByHotelId(hotelId: UUID): [RoomDTO!]!
+    availableRoomsByHotelId(hotelId:UUID): [RoomDTO]!
     hotelById(id: UUID!): HotelDTO
     userById(id: UUID!): UserDTO
     roomById(id: UUID!): RoomDTO
@@ -20,7 +21,6 @@ type HotelDTO {
     numOfRooms: Int
     description: String
     location: LocationDTO
-#    rates: [RateDTO!]
     amenities: [AmenityDTO]
     reviews: [ReviewDTO]
     bookings: [BookingDTO]
