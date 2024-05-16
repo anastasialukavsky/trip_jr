@@ -8,15 +8,16 @@ import java.time.LocalDateTime
 import java.util.*
 
 data class UpdateRoomDTO(
-val roomNumber: Int?,
-val roomType: RoomType?,
-val roomStatus: RoomStatus?,
-val bedType: BedType?,
-val maximumOccupancy: Int?,
-val description: String?,
-val floor: Int?,
-val availability: Boolean?,
-val lastCleaned: LocalDateTime? = LocalDateTime.now(),
-val updatedAt: LocalDateTime? = LocalDateTime.now(),
-
+    val roomId: UUID,
+    val roomNumber: Int?,
+    val roomType: RoomType?,
+    val roomStatus: RoomStatus?,
+    val bedType: BedType?,
+    val maximumOccupancy: Int?,
+    val description: String?,
+    val floor: Int?,
+    val rate: RateDTO?,
+    val availability: Boolean?,
+    val lastCleaned: LocalDateTime? = LocalDateTime.now(),
+    val updatedAt: LocalDateTime? = LocalDateTime.now(),
 )
