@@ -1,7 +1,9 @@
 package com.trip_jr.tripJr.service.utils
 
+import com.trip_jr.tripJr.dto.RoomDTO
 import com.trip_jr.tripJr.dto.booking.BookingDTO
 import com.trip_jr.tripJr.dto.booking.CreateBookingDTO
+import com.trip_jr.tripJr.dto.booking.UpdateBookingDTO
 import com.trip_jr.tripJr.dto.hotel.RateDTO
 import com.trip_jr.tripJr.jooq.enums.RoomStatus
 import com.trip_jr.tripJr.jooq.tables.references.BOOKING
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
 import java.time.temporal.ChronoUnit
+import java.util.*
 
 @Component
 class BookingUtils {
@@ -66,11 +69,37 @@ class BookingUtils {
 
         val rateRecord = dslContext.select()
             .from(RATE)
-            .where(RATE.RATE_ID.eq(booking.roomDetails?.rateId))
+            .where(RATE.RATE_ID.eq(booking.roomDetails.rateId))
             .fetchOneInto(RateDTO::class.java) ?: throw NullPointerException("Rate not found")
 
         val totalCost = rateRecord.rate.times(durationInDays.toDouble()) ?: 0.0
         return totalCost.toBigDecimal()
+    }
+
+
+    fun calculateTotalCostUpdate(booking: UpdateBookingDTO): BigDecimal {
+        val durationInDays = ChronoUnit.DAYS.between(booking.checkInDate, booking.checkOutDate)
+
+        val rateRecord = dslContext.select()
+            .from(RATE)
+            .where(RATE.RATE_ID.eq(booking.roomDetails?.rate?.rateId))
+            .fetchOneInto(RateDTO::class.java) ?: throw NullPointerException("Rate not found")
+
+        val totalCost = rateRecord.rate.times(durationInDays.toDouble()) ?: 0.0
+        return totalCost.toBigDecimal()
+    }
+
+    fun getBookingsRoomById(roomId: UUID) : RoomDTO {
+        try {
+            val roomRecord = dslContext.select()
+                .from(ROOM)
+                .where(ROOM.ROOM_ID.eq(roomId))
+                .fetchInto(RoomDTO::class.java)
+
+            return roomRecord[0]
+        }catch(e: Exception) {
+            throw e
+        }
     }
 
 }
