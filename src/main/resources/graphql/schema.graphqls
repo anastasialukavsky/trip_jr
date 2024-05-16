@@ -232,6 +232,9 @@ input BookingRoomInput {
     rateId: UUID!
 }
 
+
+
+
 input BookingInput {
     userId: UUID
     hotelId: UUID
@@ -251,8 +254,10 @@ input UpdateBookingInput {
     numOfGuests: Int
     occasion: String
     guestNotes: String
+    roomDetails: UpdateRoomInput
     checkInDate: Date
     checkOutDate: Date
+    #bring rate input
 }
 
 input UpdateHotelInput {
@@ -283,7 +288,7 @@ type Mutation {
     createRoom(hotelId: UUID!, room: RoomInput) : RoomDTO
     updateRoom(hotelId:UUID, roomId: UUID, room: UpdateRoomInput): RoomDTO
     updateUser(id: UUID, user: UpdateUserInput) : UserDTO
-    updateBooking(userId: UUID, bookingId: UUID, hotelId: UUID, booking: UpdateBookingInput) : BookingDTO
+    updateBooking(userId: UUID, bookingId: UUID, booking: UpdateBookingInput) : BookingDTO
     updateReview(userId:UUID, reviewId: UUID, review:UpdateReviewInput) : ReviewDTO
     updateHotel(id: UUID, hotel: UpdateHotelInput) : HotelDTO
     updateLocation(id: UUID, location: UpdateLocationInput) : LocationDTO
