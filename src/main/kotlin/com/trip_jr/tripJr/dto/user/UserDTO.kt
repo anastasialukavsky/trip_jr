@@ -16,9 +16,3 @@ data class UserDTO(
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val updatedAt: LocalDateTime = LocalDateTime.now()
 )
-
-//enum class UserRole(val literal: String) {
-//    ADMIN("admin"),
-//    USER("user"),
-//    OWNER("owner");
-//}
