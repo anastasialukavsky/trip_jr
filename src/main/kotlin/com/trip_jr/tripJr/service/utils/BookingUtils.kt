@@ -1,7 +1,6 @@
 package com.trip_jr.tripJr.service.utils
 
-import com.trip_jr.tripJr.dto.RoomDTO
-import com.trip_jr.tripJr.dto.booking.BookingDTO
+import com.trip_jr.tripJr.dto.hotel.RoomDTO
 import com.trip_jr.tripJr.dto.booking.CreateBookingDTO
 import com.trip_jr.tripJr.dto.booking.UpdateBookingDTO
 import com.trip_jr.tripJr.dto.hotel.RateDTO
@@ -78,16 +77,25 @@ class BookingUtils {
 
 
     fun calculateTotalCostUpdate(booking: UpdateBookingDTO): BigDecimal {
-        val durationInDays = ChronoUnit.DAYS.between(booking.checkInDate, booking.checkOutDate)
+        try {
+            val durationInDays = ChronoUnit.DAYS.between(booking.checkInDate, booking.checkOutDate)
 
-        val rateRecord = dslContext.select()
-            .from(RATE)
-            .where(RATE.RATE_ID.eq(booking.roomDetails?.rate?.rateId))
-            .fetchOneInto(RateDTO::class.java) ?: throw NullPointerException("Rate not found")
+            val rateRecord = dslContext.select()
+                .from(RATE)
+                .where(RATE.RATE_ID.eq(booking.roomDetails.rate?.rateId))
+                .fetchOneInto(RateDTO::class.java)
 
-        val totalCost = rateRecord.rate.times(durationInDays.toDouble()) ?: 0.0
-        return totalCost.toBigDecimal()
+            if (rateRecord != null) {
+                val totalCost = rateRecord.rate.times(durationInDays.toDouble()) ?: 0.0
+                return totalCost.toBigDecimal()
+            } else {
+                throw RuntimeException("Rate record not found for rateId: ${booking.roomDetails.rate?.rateId}")
+            }
+        } catch (e: Exception) {
+            throw RuntimeException("Failed to calculate total cost: ${e.message}")
+        }
     }
+
 
     fun getBookingsRoomById(roomId: UUID) : RoomDTO {
         try {
