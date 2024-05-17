@@ -67,7 +67,7 @@ type RoomDTO {
 input RoomInput {
     hotelId: UUID!
 #    maybe remove or make new input that will hold room_id
-#    roomId: UUID!
+    roomId: UUID!
 #    rateId: UUID
     rate: RateInput!
     roomNumber: Int!
@@ -81,18 +81,7 @@ input RoomInput {
 #    lastCleaned: DateTime
 }
 
-input UpdateRoomInput {
-#    rate: RateInput!
-    roomNumber: Int
-    roomType: RoomType
-    roomStatus: RoomStatus
-    bedType: BedType
-    maximumOccupancy: Int
-    description: String
-    floor: Int
-    availability: Boolean
-    lastCleaned: DateTime
-}
+
 
 type LocationDTO {
     locationId: UUID
@@ -109,7 +98,7 @@ type LocationDTO {
 
 type RateDTO {
     rateId: UUID
-    hotelId: UUID
+#    hotelId: UUID
     rate: Float!
     month: Int!
     defaultRate: Float!
@@ -228,10 +217,40 @@ type BookingDTO {
 
 
 input BookingRoomInput {
-    roomId: UUID!
-    rateId: UUID!
+    roomId: UUID
+    rateId: UUID
 }
 
+#input UpdateRateInput {
+#    rateId: UUID
+#    rate: Float!
+#    month: Int!
+#    defaultRate: Float!
+#}
+
+
+input UpdateRateInput {
+    rateId: UUID
+    rate: Float
+    month: Int
+    defaultRate: Float
+}
+
+input UpdateRoomInput {
+#    roomId: UUID
+#    hotelId: UUID
+    roomNumber: Int
+    roomType: RoomType
+    roomStatus: RoomStatus
+    bedType: BedType
+    maximumOccupancy: Int
+    description: String
+    floor: Int
+    rate: UpdateRateInput
+    availability: Boolean
+    lastCleaned: DateTime
+    updatedAt: DateTime
+}
 
 
 
@@ -243,7 +262,7 @@ input BookingInput {
     numOfGuests: Int!
     occasion: String
     guestNotes: String
-    roomDetails: BookingRoomInput!
+    roomDetails: BookingRoomInput
     checkInDate: Date!
     checkOutDate: Date!
 }
@@ -254,9 +273,10 @@ input UpdateBookingInput {
     numOfGuests: Int
     occasion: String
     guestNotes: String
-    roomDetails: UpdateRoomInput
     checkInDate: Date
     checkOutDate: Date
+    roomDetails: BookingRoomInput
+    updateAt: DateTime
     #bring rate input
 }
 
@@ -280,6 +300,11 @@ input UpdateAmenityInput {
     amenityName: String
 }
 
+type AuthSignInPayload {
+    token: String!
+    email: String!
+}
+
 type Mutation {
     createHotel(hotel: HotelInput) : HotelDTO
     createUser(user: UserInput) : UserDTO
@@ -301,4 +326,5 @@ type Mutation {
     deleteReview(id:UUID): Boolean
     deleteBooking(id:UUID): Boolean
     deleteRate(id: UUID): Boolean
+    signIn(email: String!, password: String!): AuthSignInPayload
 }
