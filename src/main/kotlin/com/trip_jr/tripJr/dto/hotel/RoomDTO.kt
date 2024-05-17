@@ -1,6 +1,5 @@
-package com.trip_jr.tripJr.dto
+package com.trip_jr.tripJr.dto.hotel
 
-import com.trip_jr.tripJr.dto.hotel.RateDTO
 import com.trip_jr.tripJr.jooq.enums.BedType
 import com.trip_jr.tripJr.jooq.enums.RoomStatus
 import com.trip_jr.tripJr.jooq.enums.RoomType
