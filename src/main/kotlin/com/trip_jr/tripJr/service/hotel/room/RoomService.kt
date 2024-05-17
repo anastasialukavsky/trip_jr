@@ -1,23 +1,18 @@
 package com.trip_jr.tripJr.service.hotel.room
 
 import com.trip_jr.tripJr.controller.hotel.room.UpdateRoomDTO
-import com.trip_jr.tripJr.dto.RoomDTO
+import com.trip_jr.tripJr.dto.hotel.RoomDTO
 import com.trip_jr.tripJr.dto.hotel.RateDTO
 import com.trip_jr.tripJr.jooq.enums.RoomStatus
-import com.trip_jr.tripJr.jooq.tables.Hotel
-import com.trip_jr.tripJr.jooq.tables.Room
-import com.trip_jr.tripJr.jooq.tables.references.LOCATION
 import com.trip_jr.tripJr.jooq.tables.references.RATE
 import com.trip_jr.tripJr.jooq.tables.references.ROOM
 import com.trip_jr.tripJr.service.hotel.HotelService
 import com.trip_jr.tripJr.service.utils.RateUtils
 import com.trip_jr.tripJr.service.utils.UUIDUtils
 import org.jooq.DSLContext
-import org.jooq.impl.DSL
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.sql.Timestamp
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.*
