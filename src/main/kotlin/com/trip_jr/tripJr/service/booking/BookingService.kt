@@ -1,7 +1,6 @@
 package com.trip_jr.tripJr.service.booking
 
-import com.trip_jr.tripJr.controller.hotel.room.UpdateRoomDTO
-import com.trip_jr.tripJr.dto.RoomDTO
+import com.trip_jr.tripJr.dto.hotel.RoomDTO
 import com.trip_jr.tripJr.dto.booking.BookingDTO
 import com.trip_jr.tripJr.dto.booking.CreateBookingDTO
 import com.trip_jr.tripJr.dto.booking.UpdateBookingDTO
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
-import java.time.temporal.ChronoUnit
 
 import java.util.*
 
@@ -163,7 +161,9 @@ class BookingService {
                 .and(BOOKING.BOOKING_ID.eq(bookingId))
                 .fetchOne() ?: throw RuntimeException("Booking with ID $bookingId not found")
 
+            logger.info("Booking Record: $bookingRecord")
             val roomId = bookingRecord.get(BOOKING.ROOM_ID)
+            logger.info("ROOMIDDDD $roomId ")
             val roomRecord = roomId?.let { bookingUtils.getBookingsRoomById(it) }
 
 
