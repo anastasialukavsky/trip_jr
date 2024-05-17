@@ -1,28 +1,15 @@
 package com.trip_jr.tripJr.service.user
 
-import com.trip_jr.tripJr.dto.booking.BookingDTO
-import com.trip_jr.tripJr.dto.review.ReviewDTO
 import com.trip_jr.tripJr.dto.user.UserDTO
 //import com.trip_jr.tripJr.dto.user.UserRole
 //import com.trip_jr.tripJr.jooq.enums.UserRole
-import com.trip_jr.tripJr.jooq.tables.Users
-import com.trip_jr.tripJr.jooq.tables.references.BOOKING
-import com.trip_jr.tripJr.jooq.tables.references.REVIEW
 import com.trip_jr.tripJr.jooq.tables.references.USERS
-import com.trip_jr.tripJr.service.utils.PasswordUtils
+import com.trip_jr.tripJr.service.utils.auth.PasswordUtils
 import com.trip_jr.tripJr.service.utils.UUIDUtils
 import com.trip_jr.tripJr.service.utils.UserUtils
-import org.slf4j.LoggerFactory
 import org.jooq.DSLContext
-import org.jooq.User
-import org.jooq.impl.DSL
-import org.jooq.impl.SQLDataType
-import org.mindrot.jbcrypt.BCrypt
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.dao.DuplicateKeyException
 import org.springframework.stereotype.Service
-import org.springframework.web.client.RestTemplate
-import java.lang.reflect.Field
 import java.util.*
 
 @Service
