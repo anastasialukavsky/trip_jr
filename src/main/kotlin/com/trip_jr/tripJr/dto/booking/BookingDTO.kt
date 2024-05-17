@@ -1,6 +1,6 @@
 package com.trip_jr.tripJr.dto.booking
 
-import com.trip_jr.tripJr.dto.RoomDTO
+import com.trip_jr.tripJr.dto.hotel.RoomDTO
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
