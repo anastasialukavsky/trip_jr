@@ -8,7 +8,8 @@ import java.time.LocalDateTime
 import java.util.*
 
 data class UpdateRoomDTO(
-    val roomId: UUID,
+    val roomId: UUID?,
+    val hotelId: UUID?,
     val roomNumber: Int?,
     val roomType: RoomType?,
     val roomStatus: RoomStatus?,
