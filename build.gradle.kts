@@ -49,9 +49,12 @@ dependencies {
     implementation("org.mindrot:jbcrypt:0.4")
 //    implementation ("org.springframework.boot:spring-boot-starter-security")
 //    implementation ("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-    implementation("io.jsonwebtoken:jjwt-api:0.12.5")
+    implementation("io.jsonwebtoken:jjwt-api:0.11.2")
     implementation ("io.jsonwebtoken:jjwt-impl:0.11.2")
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
+    implementation("io.jsonwebtoken:jjwt-impl:0.11.2")
+    implementation("io.jsonwebtoken:jjwt-impl:0.11.2")
+
     //TODO configure liquibase
 //    implementation("org.liquibase:liquibase-core")
     implementation("org.postgresql:postgresql:42.6.2")
