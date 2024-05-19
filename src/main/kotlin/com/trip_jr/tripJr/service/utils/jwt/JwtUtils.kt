@@ -8,16 +8,16 @@ import javax.crypto.Cipher.SECRET_KEY
 @Component
 class JwtUtils {
     companion object {
-        private const val EXPIRATION_TIME = 86400000 //1 day
-        private const val SECRET_KEY = "secret_key"
+        private const val EXPIRATION_TIME = 86400000 // 1 day
     }
 
     fun generateToken(email: String): String {
+        val key = Keys.secretKeyFor(io.jsonwebtoken.SignatureAlgorithm.HS256)
         return Jwts.builder()
             .setSubject(email)
             .setIssuedAt(Date())
             .setExpiration(Date(System.currentTimeMillis() + EXPIRATION_TIME))
-            .signWith(Keys.hmacShaKeyFor(SECRET_KEY.toByteArray()))
+            .signWith(key)
             .compact()
     }
 }
