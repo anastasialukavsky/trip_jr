@@ -24,22 +24,17 @@ class AuthService {
     @Autowired
     lateinit var jwtUtils: JwtUtils
 
-    fun signIn(email : String, password : String) : AuthSignInPayload {
+    fun signIn(email : String, password : String) : AuthSignInPayload? {
         try {
-            val userExists = authUtils.fetchUserEmail(email)
-            if(userExists) {
-                val hashedPassword = authUtils.fetchUserPassword(password)
-                if(passwordUtils.checkPassword(password, hashedPassword)) {
-                    val token = jwtUtils.generateToken(email)
 
-                    return AuthSignInPayload(token, email)
+            authUtils.fetchUserCredentials(email, password).let { (userEmail, userPassword) ->
+                if (userPassword?.let { passwordUtils.checkPassword(password, it) } == true) {
+                    val token = jwtUtils.generateToken(email)
+                    return userEmail?.let { AuthSignInPayload(token, it) }
                 } else {
                     throw RuntimeException("Incorrect password")
                 }
-            } else {
-                throw RuntimeException("User with email $email does not exist")
             }
-
 
         }catch(e: Exception) {
             throw e
