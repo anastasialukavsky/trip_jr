@@ -17,7 +17,7 @@ class AuthController {
     fun signIn(
         @Argument(name="email") email: String,
         @Argument(name="password") password: String
-    ) : AuthSignInPayload {
+    ) : AuthSignInPayload? {
         return authService.signIn(email, password)
     }
 }
