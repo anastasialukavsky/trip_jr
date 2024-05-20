@@ -47,14 +47,12 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.mindrot:jbcrypt:0.4")
-//    implementation ("org.springframework.boot:spring-boot-starter-security")
+    //TODO configure spring security
+    implementation ("org.springframework.boot:spring-boot-starter-security")
 //    implementation ("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("io.jsonwebtoken:jjwt-api:0.11.2")
-    implementation ("io.jsonwebtoken:jjwt-impl:0.11.2")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
-    implementation("io.jsonwebtoken:jjwt-impl:0.11.2")
-    implementation("io.jsonwebtoken:jjwt-impl:0.11.2")
-
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.2")
     //TODO configure liquibase
 //    implementation("org.liquibase:liquibase-core")
     implementation("org.postgresql:postgresql:42.6.2")
