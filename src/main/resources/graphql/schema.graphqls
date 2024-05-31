@@ -47,6 +47,12 @@ enum BedType {
     King
 }
 
+enum UserRole {
+    ADMIN
+    USER
+    OWNER
+}
+
 type RoomDTO {
     roomId: UUID
     hotelId: UUID
@@ -68,7 +74,6 @@ input RoomInput {
     hotelId: UUID!
 #    maybe remove or make new input that will hold room_id
     roomId: UUID!
-#    rateId: UUID
     rate: RateInput!
     roomNumber: Int!
     roomType: RoomType!
@@ -142,11 +147,6 @@ input AmenityInput {
     amenityName: String!
 }
 
-#enum UserRole {
-#    ADMIN
-#    USER
-#    OWNER
-#}
 
 type UserDTO {
     userId: UUID!
@@ -156,6 +156,7 @@ type UserDTO {
     passwordHash: String!
     reviews: [ReviewDTO]
     bookings: [BookingDTO]
+    role: UserRole
     createdAt: DateTime
     updatedAt: DateTime
 }
