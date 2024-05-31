@@ -4,6 +4,7 @@
 package com.trip_jr.tripJr.jooq.tables.records
 
 
+import com.trip_jr.tripJr.jooq.enums.UserRole
 import com.trip_jr.tripJr.jooq.tables.Users
 
 import java.time.OffsetDateTime
@@ -47,6 +48,10 @@ open class UsersRecord() : UpdatableRecordImpl<UsersRecord>(Users.USERS) {
         set(value): Unit = set(6, value)
         get(): OffsetDateTime? = get(6) as OffsetDateTime?
 
+    open var role: UserRole?
+        set(value): Unit = set(7, value)
+        get(): UserRole? = get(7) as UserRole?
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -56,7 +61,7 @@ open class UsersRecord() : UpdatableRecordImpl<UsersRecord>(Users.USERS) {
     /**
      * Create a detached, initialised UsersRecord
      */
-    constructor(userId: UUID? = null, email: String? = null, firstName: String? = null, lastName: String? = null, passwordHash: String? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null): this() {
+    constructor(userId: UUID? = null, email: String? = null, firstName: String? = null, lastName: String? = null, passwordHash: String? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null, role: UserRole? = null): this() {
         this.userId = userId
         this.email = email
         this.firstName = firstName
@@ -64,6 +69,7 @@ open class UsersRecord() : UpdatableRecordImpl<UsersRecord>(Users.USERS) {
         this.passwordHash = passwordHash
         this.createdAt = createdAt
         this.updatedAt = updatedAt
+        this.role = role
         resetChangedOnNotNull()
     }
 }

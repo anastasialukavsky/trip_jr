@@ -5,6 +5,7 @@ package com.trip_jr.tripJr.jooq.tables
 
 
 import com.trip_jr.tripJr.jooq.Public
+import com.trip_jr.tripJr.jooq.enums.UserRole
 import com.trip_jr.tripJr.jooq.keys.BOOKING__BOOKING_USER_ID_FKEY
 import com.trip_jr.tripJr.jooq.keys.REVIEW__REVIEW_USER_ID_FKEY
 import com.trip_jr.tripJr.jooq.keys.USERS_EMAIL_KEY
@@ -113,6 +114,11 @@ open class Users(
      * The column <code>public.users.updated_at</code>.
      */
     val UPDATED_AT: TableField<UsersRecord, OffsetDateTime?> = createField(DSL.name("updated_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).defaultValue(DSL.field(DSL.raw("CURRENT_TIMESTAMP"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
+
+    /**
+     * The column <code>public.users.role</code>.
+     */
+    val ROLE: TableField<UsersRecord, UserRole?> = createField(DSL.name("role"), SQLDataType.VARCHAR.defaultValue(DSL.field(DSL.raw("'USER'::user_role"), SQLDataType.VARCHAR)).asEnumDataType(UserRole::class.java), this, "")
 
     private constructor(alias: Name, aliased: Table<UsersRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<UsersRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
