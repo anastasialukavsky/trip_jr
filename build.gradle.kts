@@ -49,6 +49,10 @@ dependencies {
     implementation("org.mindrot:jbcrypt:0.4")
     //TODO configure spring security
     implementation ("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.security:spring-security-config")
+    implementation("org.springframework.security:spring-security-web")
+
+
 //    implementation ("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("io.jsonwebtoken:jjwt-api:0.11.2")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
