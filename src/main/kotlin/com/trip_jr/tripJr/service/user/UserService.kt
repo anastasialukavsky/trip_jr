@@ -40,11 +40,14 @@ class UserService {
                 val firstName = record[USERS.FIRST_NAME]
                 val lastName = record[USERS.LAST_NAME]
                 val passwordHash = record[USERS.PASSWORD_HASH]
+                val role = record[USERS.ROLE]
+
+
 
                 val userBookings = userId?.let { userUtils.fetchUserBookings(it) }
                 val userReviews = userId?.let { userUtils.fetchUserReviews(it) }
 
-                UserDTO(userId, email!!, firstName, lastName, passwordHash!!, userBookings, userReviews)
+                UserDTO(userId, email!!, firstName, lastName, passwordHash!!, userBookings, userReviews, role)
             }
         } catch (e: Exception) {
             throw e
@@ -68,7 +71,8 @@ class UserService {
                     lastName = usersRecord.lastName,
                     passwordHash = usersRecord.passwordHash,
                     bookings = bookingRecords,
-                    reviews = reviewRecords
+                    reviews = reviewRecords,
+                    role = usersRecord.role,
                 )
             }
 
