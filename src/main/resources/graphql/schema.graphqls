@@ -53,6 +53,14 @@ enum UserRole {
     OWNER
 }
 
+enum ClaimStatus {
+    APPROVED
+    REJECTED
+    UNCLAIMED
+    PENDING
+}
+
+
 type RoomDTO {
     roomId: UUID
     hotelId: UUID
@@ -115,6 +123,13 @@ type AmenityDTO {
     hotelId: UUID
     createdAt: DateTime
     updatedAt: DateTime
+}
+
+type HotelClaimDTO {
+    claimId: UUID
+    hotelId: UUID
+    userId: UUID
+    status: ClaimStatus
 }
 
 
@@ -312,6 +327,7 @@ type Mutation {
     createReview(review: ReviewInput): ReviewDTO
     createBooking(booking: BookingInput) : BookingDTO
     createRoom(hotelId: UUID!, room: RoomInput) : RoomDTO
+    createHotelClaim(hotelId:UUID, userId: UUID) : HotelClaimDTO
     updateRoom(hotelId:UUID, roomId: UUID, room: UpdateRoomInput): RoomDTO
     updateUser(id: UUID, user: UpdateUserInput) : UserDTO
     updateBooking(userId: UUID, bookingId: UUID, booking: UpdateBookingInput) : BookingDTO
