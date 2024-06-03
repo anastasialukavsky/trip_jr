@@ -7,10 +7,12 @@ package com.trip_jr.tripJr.jooq.tables
 import com.trip_jr.tripJr.jooq.Public
 import com.trip_jr.tripJr.jooq.enums.UserRole
 import com.trip_jr.tripJr.jooq.keys.BOOKING__BOOKING_USER_ID_FKEY
+import com.trip_jr.tripJr.jooq.keys.HOTEL_CLAIM__HOTEL_CLAIMS_USER_ID_FKEY
 import com.trip_jr.tripJr.jooq.keys.REVIEW__REVIEW_USER_ID_FKEY
 import com.trip_jr.tripJr.jooq.keys.USERS_EMAIL_KEY
 import com.trip_jr.tripJr.jooq.keys.USERS_PKEY
 import com.trip_jr.tripJr.jooq.tables.Booking.BookingPath
+import com.trip_jr.tripJr.jooq.tables.HotelClaim.HotelClaimPath
 import com.trip_jr.tripJr.jooq.tables.Review.ReviewPath
 import com.trip_jr.tripJr.jooq.tables.records.UsersRecord
 
@@ -170,6 +172,22 @@ open class Users(
 
     val booking: BookingPath
         get(): BookingPath = booking()
+
+    private lateinit var _hotelClaim: HotelClaimPath
+
+    /**
+     * Get the implicit to-many join path to the <code>public.hotel_claim</code>
+     * table
+     */
+    fun hotelClaim(): HotelClaimPath {
+        if (!this::_hotelClaim.isInitialized)
+            _hotelClaim = HotelClaimPath(this, null, HOTEL_CLAIM__HOTEL_CLAIMS_USER_ID_FKEY.inverseKey)
+
+        return _hotelClaim;
+    }
+
+    val hotelClaim: HotelClaimPath
+        get(): HotelClaimPath = hotelClaim()
 
     private lateinit var _review: ReviewPath
 
