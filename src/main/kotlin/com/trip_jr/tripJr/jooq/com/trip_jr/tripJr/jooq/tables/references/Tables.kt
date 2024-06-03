@@ -7,6 +7,7 @@ package com.trip_jr.tripJr.jooq.tables.references
 import com.trip_jr.tripJr.jooq.tables.Amenity
 import com.trip_jr.tripJr.jooq.tables.Booking
 import com.trip_jr.tripJr.jooq.tables.Hotel
+import com.trip_jr.tripJr.jooq.tables.HotelClaim
 import com.trip_jr.tripJr.jooq.tables.Location
 import com.trip_jr.tripJr.jooq.tables.Rate
 import com.trip_jr.tripJr.jooq.tables.Review
@@ -29,6 +30,11 @@ val BOOKING: Booking = Booking.BOOKING
  * The table <code>public.hotel</code>.
  */
 val HOTEL: Hotel = Hotel.HOTEL
+
+/**
+ * The table <code>public.hotel_claim</code>.
+ */
+val HOTEL_CLAIM: HotelClaim = HotelClaim.HOTEL_CLAIM
 
 /**
  * The table <code>public.location</code>.

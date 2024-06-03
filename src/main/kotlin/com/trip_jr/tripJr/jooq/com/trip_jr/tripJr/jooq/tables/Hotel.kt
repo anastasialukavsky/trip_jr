@@ -7,6 +7,7 @@ package com.trip_jr.tripJr.jooq.tables
 import com.trip_jr.tripJr.jooq.Public
 import com.trip_jr.tripJr.jooq.keys.AMENITY__AMENITY_HOTEL_ID_FKEY
 import com.trip_jr.tripJr.jooq.keys.BOOKING__BOOKING_HOTEL_ID_FKEY
+import com.trip_jr.tripJr.jooq.keys.HOTEL_CLAIM__HOTEL_CLAIMS_HOTEL_ID_FKEY
 import com.trip_jr.tripJr.jooq.keys.HOTEL_LOCATION_ID_KEY
 import com.trip_jr.tripJr.jooq.keys.HOTEL_PKEY
 import com.trip_jr.tripJr.jooq.keys.HOTEL__FK_LOCATION
@@ -15,6 +16,7 @@ import com.trip_jr.tripJr.jooq.keys.ROOM__FK_HOTEL_ID
 import com.trip_jr.tripJr.jooq.keys.ROOM__ROOM_HOTEL_ID_FKEY
 import com.trip_jr.tripJr.jooq.tables.Amenity.AmenityPath
 import com.trip_jr.tripJr.jooq.tables.Booking.BookingPath
+import com.trip_jr.tripJr.jooq.tables.HotelClaim.HotelClaimPath
 import com.trip_jr.tripJr.jooq.tables.Location.LocationPath
 import com.trip_jr.tripJr.jooq.tables.Review.ReviewPath
 import com.trip_jr.tripJr.jooq.tables.Room.RoomPath
@@ -203,6 +205,22 @@ open class Hotel(
 
     val booking: BookingPath
         get(): BookingPath = booking()
+
+    private lateinit var _hotelClaim: HotelClaimPath
+
+    /**
+     * Get the implicit to-many join path to the <code>public.hotel_claim</code>
+     * table
+     */
+    fun hotelClaim(): HotelClaimPath {
+        if (!this::_hotelClaim.isInitialized)
+            _hotelClaim = HotelClaimPath(this, null, HOTEL_CLAIM__HOTEL_CLAIMS_HOTEL_ID_FKEY.inverseKey)
+
+        return _hotelClaim;
+    }
+
+    val hotelClaim: HotelClaimPath
+        get(): HotelClaimPath = hotelClaim()
 
     private lateinit var _review: ReviewPath
 

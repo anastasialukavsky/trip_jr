@@ -7,6 +7,7 @@ package com.trip_jr.tripJr.jooq
 import com.trip_jr.tripJr.jooq.tables.Amenity
 import com.trip_jr.tripJr.jooq.tables.Booking
 import com.trip_jr.tripJr.jooq.tables.Hotel
+import com.trip_jr.tripJr.jooq.tables.HotelClaim
 import com.trip_jr.tripJr.jooq.tables.Location
 import com.trip_jr.tripJr.jooq.tables.Rate
 import com.trip_jr.tripJr.jooq.tables.Review
@@ -49,6 +50,11 @@ open class Public : SchemaImpl("public", DefaultCatalog.DEFAULT_CATALOG) {
     val HOTEL: Hotel get() = Hotel.HOTEL
 
     /**
+     * The table <code>public.hotel_claim</code>.
+     */
+    val HOTEL_CLAIM: HotelClaim get() = HotelClaim.HOTEL_CLAIM
+
+    /**
      * The table <code>public.location</code>.
      */
     val LOCATION: Location get() = Location.LOCATION
@@ -79,6 +85,7 @@ open class Public : SchemaImpl("public", DefaultCatalog.DEFAULT_CATALOG) {
         Amenity.AMENITY,
         Booking.BOOKING,
         Hotel.HOTEL,
+        HotelClaim.HOTEL_CLAIM,
         Location.LOCATION,
         Rate.RATE,
         Review.REVIEW,
