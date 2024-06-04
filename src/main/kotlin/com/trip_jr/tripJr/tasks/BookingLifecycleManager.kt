@@ -17,7 +17,8 @@ class BookingLifecycleManager(
 ) {
 
 
-    @Scheduled(cron = "0 0 11 * * ?", zone = "America/New_York") //checks db for expired bookings every 24hrs at 11am EST every day
+    @Scheduled(fixedRate=6000) //checks db for expired bookings every 24hrs at 11am EST every day
+//    @Scheduled(cron = "0 0 11 * * ?", zone = "America/New_York") //checks db for expired bookings every 24hrs at 11am EST every day
     fun removeExpiredBookings() {
         val currentDate = LocalDate.now()
 
