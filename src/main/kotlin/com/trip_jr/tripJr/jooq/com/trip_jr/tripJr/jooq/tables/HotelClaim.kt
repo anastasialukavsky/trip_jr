@@ -13,6 +13,7 @@ import com.trip_jr.tripJr.jooq.tables.Hotel.HotelPath
 import com.trip_jr.tripJr.jooq.tables.Users.UsersPath
 import com.trip_jr.tripJr.jooq.tables.records.HotelClaimRecord
 
+import java.time.OffsetDateTime
 import java.util.UUID
 
 import kotlin.collections.Collection
@@ -97,6 +98,16 @@ open class HotelClaim(
      * The column <code>public.hotel_claim.status</code>.
      */
     val STATUS: TableField<HotelClaimRecord, ClaimStatus?> = createField(DSL.name("status"), SQLDataType.VARCHAR.defaultValue(DSL.field(DSL.raw("'UNCLAIMED'::claim_status"), SQLDataType.VARCHAR)).asEnumDataType(ClaimStatus::class.java), this, "")
+
+    /**
+     * The column <code>public.hotel_claim.created_at</code>.
+     */
+    val CREATED_AT: TableField<HotelClaimRecord, OffsetDateTime?> = createField(DSL.name("created_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).defaultValue(DSL.field(DSL.raw("CURRENT_TIMESTAMP"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
+
+    /**
+     * The column <code>public.hotel_claim.updated_at</code>.
+     */
+    val UPDATED_AT: TableField<HotelClaimRecord, OffsetDateTime?> = createField(DSL.name("updated_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).defaultValue(DSL.field(DSL.raw("CURRENT_TIMESTAMP"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
 
     private constructor(alias: Name, aliased: Table<HotelClaimRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<HotelClaimRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
