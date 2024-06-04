@@ -1,6 +1,7 @@
 package com.trip_jr.tripJr.repository.hotel
 
 import com.trip_jr.tripJr.dto.hotel.HotelClaimDTO
+import com.trip_jr.tripJr.jooq.enums.ClaimStatus
 import com.trip_jr.tripJr.jooq.tables.references.HOTEL
 import com.trip_jr.tripJr.jooq.tables.references.HOTEL_CLAIM
 import org.jooq.DSLContext
@@ -19,7 +20,7 @@ class HotelClaimRepository(private val dslContext: DSLContext) {
             .set(HOTEL_CLAIM.STATUS, claim.status)
             .execute()
 
-
+    return mapToHotelClaimDTO(claim)
 
     }
 
@@ -35,5 +36,28 @@ class HotelClaimRepository(private val dslContext: DSLContext) {
             .fetchOneInto(HotelClaimDTO::class.java)
     }
 
+    fun findPendingClaims() : List<HotelClaimDTO> {
+        return dslContext.selectFrom(HOTEL_CLAIM)
+            .where(HOTEL_CLAIM.STATUS.eq(ClaimStatus.PENDING))
+            .fetchInto(HotelClaimDTO::class.java)
+    }
+
+
+    fun updateClaimStatus(claimId: UUID, status: ClaimStatus): Int {
+        return dslContext.update(HOTEL_CLAIM)
+            .set(HOTEL_CLAIM.STATUS, status)
+            .where(HOTEL_CLAIM.CLAIM_ID.eq(claimId))
+            .execute()
+    }
+
+
+    fun mapToHotelClaimDTO(hotelClaim: HotelClaimDTO): HotelClaimDTO {
+        return HotelClaimDTO(
+            claimId = hotelClaim.claimId,
+            userId = hotelClaim.userId,
+            hotelId = hotelClaim.hotelId,
+            status = hotelClaim.status,
+        )
+    }
 
 }
