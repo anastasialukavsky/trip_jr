@@ -7,6 +7,7 @@ package com.trip_jr.tripJr.jooq.tables.records
 import com.trip_jr.tripJr.jooq.enums.ClaimStatus
 import com.trip_jr.tripJr.jooq.tables.HotelClaim
 
+import java.time.OffsetDateTime
 import java.util.UUID
 
 import org.jooq.Record1
@@ -35,6 +36,14 @@ open class HotelClaimRecord() : UpdatableRecordImpl<HotelClaimRecord>(HotelClaim
         set(value): Unit = set(3, value)
         get(): ClaimStatus? = get(3) as ClaimStatus?
 
+    open var createdAt: OffsetDateTime?
+        set(value): Unit = set(4, value)
+        get(): OffsetDateTime? = get(4) as OffsetDateTime?
+
+    open var updatedAt: OffsetDateTime?
+        set(value): Unit = set(5, value)
+        get(): OffsetDateTime? = get(5) as OffsetDateTime?
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -44,11 +53,13 @@ open class HotelClaimRecord() : UpdatableRecordImpl<HotelClaimRecord>(HotelClaim
     /**
      * Create a detached, initialised HotelClaimRecord
      */
-    constructor(claimId: UUID? = null, userId: UUID? = null, hotelId: UUID? = null, status: ClaimStatus? = null): this() {
+    constructor(claimId: UUID? = null, userId: UUID? = null, hotelId: UUID? = null, status: ClaimStatus? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null): this() {
         this.claimId = claimId
         this.userId = userId
         this.hotelId = hotelId
         this.status = status
+        this.createdAt = createdAt
+        this.updatedAt = updatedAt
         resetChangedOnNotNull()
     }
 }
