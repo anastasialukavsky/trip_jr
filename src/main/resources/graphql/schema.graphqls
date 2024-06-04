@@ -130,6 +130,8 @@ type HotelClaimDTO {
     hotelId: UUID
     userId: UUID
     status: ClaimStatus
+    createdAt: DateTime
+    updatedAt: DateTime
 }
 
 
