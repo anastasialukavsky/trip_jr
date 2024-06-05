@@ -49,6 +49,7 @@ class HotelByIdUtils {
         try {
             val bookingsRecord = dslContext.select()
                 .from(BOOKING)
+                .join(ROOM).on(BOOKING.HOTEL_ID.eq(ROOM.HOTEL_ID))
                 .where(BOOKING.HOTEL_ID.eq(hotelId))
                 .fetchInto(BookingDTO::class.java)
 
