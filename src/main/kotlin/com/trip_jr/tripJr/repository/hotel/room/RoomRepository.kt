@@ -12,9 +12,15 @@ import java.util.UUID
 class RoomRepository(private val dsl: DSLContext) {
 
     fun updateRoomStatus(roomId: UUID, status: RoomStatus) {
-        dsl.update(ROOM)
+        val affectedRows = dsl.update(ROOM)
             .set(ROOM.ROOM_STATUS, status)
             .where(ROOM.ROOM_ID.eq(roomId))
             .execute()
+
+        if (affectedRows > 0) {
+            println("Rooms status updated successfully $status")
+        } else {
+            println("Rooms status update failed with status $status")
+        }
     }
 }
