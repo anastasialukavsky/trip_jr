@@ -5,6 +5,7 @@ import com.trip_jr.tripJr.dto.hotel.*
 import com.trip_jr.tripJr.dto.hotel.updateDTOs.UpdateHotelDTO
 import com.trip_jr.tripJr.dto.review.ReviewDTO
 import com.trip_jr.tripJr.jooq.tables.references.*
+import com.trip_jr.tripJr.repository.hotel.HotelRepository
 import com.trip_jr.tripJr.service.utils.HotelByIdUtils
 import com.trip_jr.tripJr.service.utils.UUIDUtils
 import org.jooq.DSLContext
@@ -20,6 +21,9 @@ class HotelService {
 
 
     @Autowired
+    private lateinit var hotelRepository: HotelRepository
+
+    @Autowired
     lateinit var dslContext: DSLContext
 
     @Autowired
@@ -31,48 +35,49 @@ class HotelService {
     private val logger = LoggerFactory.getLogger(HotelService::class.java)
 
 
-//    fun getAllHotels(): List<HotelDTO> {
-//        val hotels = dslContext
-//            .select()
-//            .from(HOTEL)
-//            .join(LOCATION).on(HOTEL.LOCATION_ID.eq(LOCATION.LOCATION_ID))
-//            .join(RATE).on(RATE.HOTEL_ID.eq(HOTEL.HOTEL_ID))
-//            .join(AMENITY).on(AMENITY.HOTEL_ID.eq(HOTEL.HOTEL_ID))
-//            .join(REVIEW).on(REVIEW.HOTEL_ID.eq(REVIEW.HOTEL_ID))
-//            .join(BOOKING).on(BOOKING.HOTEL_ID.eq(BOOKING.HOTEL_ID))
-//            .fetch()
-//
-//
-//        return hotels.map { record ->
-//            val hotelId = record[HOTEL.HOTEL_ID]
-//            val name = record[HOTEL.NAME]
-//            val numOfRooms = record[HOTEL.NUM_OF_ROOMS] ?: 1
-//            val description = record[HOTEL.DESCRIPTION] ?: ""
-//            val location = record[LOCATION.PHONE_NUMBER]?.let {
-//                record[LOCATION.ADDRESS]?.let { it1 ->
-//                    record[LOCATION.CITY]?.let { it2 ->
-//                        record[LOCATION.STATE]?.let { it3 ->
-//                            record[LOCATION.LATITUDE]?.let { it4 ->
-//                                record[LOCATION.LONGITUDE]?.let { it5 ->
-//                                    record[LOCATION.ZIP]?.let { it6 ->
-//                                        LocationDTO(
-//                                            locationId = record[LOCATION.LOCATION_ID],
-//                                            phoneNumber = it,
-//                                            address = it1,
-//                                            city = it2,
-//                                            state = it3,
-//                                            zip = it6,
-//                                            latitude = it4,
-//                                            longitude = it5
-//                                        )
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//
+    fun getAllHotels(): List<HotelDTO> {
+        val hotels = dslContext
+            .select()
+            .from(HOTEL)
+            .join(LOCATION).on(HOTEL.LOCATION_ID.eq(LOCATION.LOCATION_ID))
+            .join(AMENITY).on(AMENITY.HOTEL_ID.eq(HOTEL.HOTEL_ID))
+            .join(REVIEW).on(REVIEW.HOTEL_ID.eq(REVIEW.HOTEL_ID))
+            .join(BOOKING).on(BOOKING.HOTEL_ID.eq(BOOKING.HOTEL_ID))
+            .join(ROOM).on(HOTEL.HOTEL_ID.eq(ROOM.HOTEL_ID))
+            .join(RATE).on(ROOM.RATE_ID.eq(RATE.RATE_ID))
+            .fetch()
+
+
+        return hotels.map { record ->
+            val hotelId = record[HOTEL.HOTEL_ID]
+            val name = record[HOTEL.NAME]
+            val numOfRooms = record[HOTEL.NUM_OF_ROOMS] ?: 1
+            val description = record[HOTEL.DESCRIPTION] ?: ""
+            val location = record[LOCATION.PHONE_NUMBER]?.let {
+                record[LOCATION.ADDRESS]?.let { it1 ->
+                    record[LOCATION.CITY]?.let { it2 ->
+                        record[LOCATION.STATE]?.let { it3 ->
+                            record[LOCATION.LATITUDE]?.let { it4 ->
+                                record[LOCATION.LONGITUDE]?.let { it5 ->
+                                    record[LOCATION.ZIP]?.let { it6 ->
+                                        LocationDTO(
+                                            locationId = record[LOCATION.LOCATION_ID],
+                                            phoneNumber = it,
+                                            address = it1,
+                                            city = it2,
+                                            state = it3,
+                                            zip = it6,
+                                            latitude = it4,
+                                            longitude = it5
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
 //            val rates = mutableListOf<RateDTO>()
 //            if (record[RATE.RATE_ID] != null && record[RATE.RATE_] != null && record[RATE.MONTH] != null && record[RATE.DEFAULT_RATE] != null) {
 //                val rate = record[RATE.RATE_]?.let {
@@ -92,79 +97,121 @@ class HotelService {
 //                    rates.add(rate)
 //                }
 //            }
-//            val amenities = mutableListOf<AmenityDTO>()
-//            if (record[AMENITY.AMENITY_ID] != null && record[AMENITY.AMENITY_NAME] != null) {
-//                val amenity = record[AMENITY.AMENITY_NAME]?.let {
-//                    AmenityDTO(
-//                        amenityId = record[AMENITY.AMENITY_ID],
-//                        amenityName = it,
-//                        hotelId = record[AMENITY.HOTEL_ID],
-//                    )
-//                }
-//                if (amenity != null) {
-//                    amenities.add(amenity)
-//                }
-//            }
-//
-//
-//            val reviews = mutableListOf<ReviewDTO>()
-//            val review = record[REVIEW.RATING]?.let {
-//                record[REVIEW.REVIEW_TITLE]?.let { it1 ->
-//                    record[REVIEW.REVIEW_BODY]?.let { it2 ->
-//                        ReviewDTO(
-//                            reviewId = record[REVIEW.REVIEW_ID],
-//                            userId = record[REVIEW.USER_ID],
-//                            hotelId = record[REVIEW.HOTEL_ID],
-//                            rating = it,
-//                            reviewTitle = it1,
-//                            reviewBody = it2
-//                        )
-//                    }
-//                }
-//            }
-//            if (review != null) {
-//                reviews.add(review)
-//            }
-//
-//            val bookings = mutableListOf<BookingDTO>()
-//            val booking = record[BOOKING.CHECK_IN_DATE]?.let {
-//                record[BOOKING.CHECK_OUT_DATE]?.let { it1 ->
-//                    record[BOOKING.GUEST_FIRST_NAME]?.let { it2 ->
-//                        record[BOOKING.GUEST_LAST_NAME]?.let { it3 ->
-//                            record[BOOKING.NUM_OF_GUESTS]?.let { it4 ->
-//                                record[BOOKING.CREATED_AT]?.toLocalDateTime()?.let { it5 ->
-//                                    record[BOOKING.UPDATED_AT]?.toLocalDateTime()?.let { it6 ->
-//                                        BookingDTO(
-//                                            bookingId = record[BOOKING.BOOKING_ID],
-//                                            userId = record[BOOKING.USER_ID],
-//                                            hotelId = record[BOOKING.HOTEL_ID],
-//                                            guestFirstName = it2,
-//                                            guestLastName = it3,
-//                                            numOfGuests = it4,
-//                                            occasion = record[BOOKING.OCCASION],
-//                                            guestNotes = record[BOOKING.GUEST_NOTES],
-//                                            checkInDate = it,
-//                                            checkOutDate = it1,
-//                                            totalCost = record[BOOKING.TOTAL_COST],
-//                                            createdAt = it5,
-//                                            updatedAt = it6
-//                                        )
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//
-//            if (booking != null) {
-//                bookings.add(booking)
-//            }
-//
-//
-//            HotelDTO(hotelId, name!!, numOfRooms, description, location!!, rates, amenities, reviews, bookings)
-//        }
-//    }
+            val amenities = mutableListOf<AmenityDTO>()
+            if (record[AMENITY.AMENITY_ID] != null && record[AMENITY.AMENITY_NAME] != null) {
+                val amenity = record[AMENITY.AMENITY_NAME]?.let {
+                    AmenityDTO(
+                        amenityId = record[AMENITY.AMENITY_ID],
+                        amenityName = it,
+                        hotelId = record[AMENITY.HOTEL_ID],
+                    )
+                }
+                if (amenity != null) {
+                    amenities.add(amenity)
+                }
+            }
+
+
+            val reviews = mutableListOf<ReviewDTO>()
+            val review = record[REVIEW.RATING]?.let {
+                record[REVIEW.REVIEW_TITLE]?.let { it1 ->
+                    record[REVIEW.REVIEW_BODY]?.let { it2 ->
+                        ReviewDTO(
+                            reviewId = record[REVIEW.REVIEW_ID],
+                            userId = record[REVIEW.USER_ID],
+                            hotelId = record[REVIEW.HOTEL_ID],
+                            rating = it,
+                            reviewTitle = it1,
+                            reviewBody = it2
+                        )
+                    }
+                }
+            }
+            if (review != null) {
+                reviews.add(review)
+            }
+
+
+            val rooms = record[HOTEL.HOTEL_ID]?.let { hotelRepository.getHotelRoomsByHotelId(it) }
+            logger.info("Found rooms: $rooms")
+            val room: RoomDTO? = rooms?.map {
+                RoomDTO(
+                    roomId = it.roomId,
+                    hotelId = it.hotelId,
+                    rate = it.rate,
+                    roomNumber = it.roomNumber,
+                    roomType = it.roomType,
+                    roomStatus = it.roomStatus,
+                    bedType = it.bedType,
+                    maximumOccupancy = it.maximumOccupancy,
+                    description = it.description,
+                    floor = it.floor,
+                    availability = it.availability,
+                    lastCleaned = it.lastCleaned,
+                    createdAt = it.createdAt,
+                    updatedAt = it.updatedAt
+                )
+            }?.firstOrNull()
+            logger.info("Found room: $room")
+
+//            val rooms = mutableListOf<RoomDTO>()
+//            val room = RoomDTO(
+//                roomId = record[ROOM.ROOM_ID],
+//                hotelId = record[ROOM.HOTEL_ID],
+////                rate
+//                roomNumber = record[ROOM.ROOM_NUMBER],
+//                roomType = record[ROOM.ROOM_TYPE],
+//                roomStatus = record[ROOM.ROOM_STATUS],
+//                bedType = record[ROOM.BED_TYPE],
+//                maximumOccupancy = record[ROOM.MAXIMUM_OCCUPANCY],
+//                description = record[ROOM.DESCRIPTION],
+//                floor = record[ROOM.FLOOR],
+//                availability = record[ROOM.AVAILABILITY],
+//                lastCleaned = record[ROOM.LAST_CLEANED],
+//                createdAt = record[ROOM.CREATED_AT],
+//                updatedAt = record[ROOM.UPDATED_AT]
+//            )
+
+            val bookings = mutableListOf<BookingDTO>()
+            val booking = record[BOOKING.CHECK_IN_DATE]?.let {
+                record[BOOKING.CHECK_OUT_DATE]?.let { it1 ->
+                    record[BOOKING.GUEST_FIRST_NAME]?.let { it2 ->
+                        record[BOOKING.GUEST_LAST_NAME]?.let { it3 ->
+                            record[BOOKING.NUM_OF_GUESTS]?.let { it4 ->
+                                record[BOOKING.CREATED_AT]?.toLocalDateTime()?.let { it5 ->
+                                    record[BOOKING.UPDATED_AT]?.toLocalDateTime()?.let { it6 ->
+                                        BookingDTO(
+                                            bookingId = record[BOOKING.BOOKING_ID],
+                                            userId = record[BOOKING.USER_ID],
+                                            hotelId = record[BOOKING.HOTEL_ID],
+                                            guestFirstName = it2,
+                                            guestLastName = it3,
+                                            numOfGuests = it4,
+                                            occasion = record[BOOKING.OCCASION],
+                                            guestNotes = record[BOOKING.GUEST_NOTES],
+                                            checkInDate = it,
+                                            checkOutDate = it1,
+                                            totalCost = record[BOOKING.TOTAL_COST],
+                                            roomDetails = room,
+                                            createdAt = it5,
+                                            updatedAt = it6
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (booking != null) {
+                bookings.add(booking)
+            }
+
+
+            HotelDTO(hotelId, name!!, numOfRooms, description, location!!, amenities, reviews, bookings)
+        }
+    }
 
     fun getHotelById(id: UUID): HotelDTO? {
         try {
@@ -174,12 +221,9 @@ class HotelService {
                 .where(HOTEL.HOTEL_ID.eq(id))
                 .fetchOne()
 
-//            val rates = hotelByIdUtils.getHotelRates(id)
             val amenities = hotelByIdUtils.getHotelAmenities(id)
             val reviews = hotelByIdUtils.getHotelReviews(id)
-            val bookings = hotelByIdUtils.getHotelBookings(id)
-
-
+            val bookings = hotelRepository.getHotelBookings(id)
             val location = record?.into(LocationDTO::class.java)
 
             return location?.let {
@@ -189,7 +233,6 @@ class HotelService {
                     numOfRooms = record.get(HOTEL.NUM_OF_ROOMS) ?: 1,
                     description = record.get(HOTEL.DESCRIPTION) ?: "",
                     location = it,
-//                    rates = rates,
                     amenities = amenities,
                     reviews = reviews,
                     bookings = bookings
@@ -247,6 +290,17 @@ class HotelService {
                 throw Exception("Failed to create hotel")
             }
 
+
+//            hotelId: "38fce8f4-b5b6-4167-8e16-070be51419fe",
+//            room: {
+//                hotelId: "5098b1cc-d5e5-498b-81fd-dc13d0737a3e",
+//            "rate": {
+//                "rateId": "4b7233d4-6548-45ff-8483-0043fedaf235",
+//                "rate": 100,
+//                "month": 1,
+//                "defaultR
+//            6cb34a3b-a75b-49ef-a5cf-2ed474bc4165",
+//            "hotelId": "38fc
 //            val ratesRecords = hotel.rates.map { rate ->
 //                val rateId = rate.rateId ?: uuidUtils.generateUUID()
 //                dslContext.insertInto(RATE)
