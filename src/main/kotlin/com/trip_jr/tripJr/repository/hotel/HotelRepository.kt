@@ -3,6 +3,7 @@ package com.trip_jr.tripJr.repository.hotel
 import com.trip_jr.tripJr.dto.booking.BookingDTO
 import com.trip_jr.tripJr.dto.hotel.RateDTO
 import com.trip_jr.tripJr.dto.hotel.RoomDTO
+import com.trip_jr.tripJr.jooq.tables.Room
 import com.trip_jr.tripJr.jooq.tables.references.BOOKING
 import com.trip_jr.tripJr.jooq.tables.references.RATE
 import com.trip_jr.tripJr.jooq.tables.references.ROOM
@@ -68,9 +69,12 @@ class HotelRepository(
                                                             description = record.get(ROOM.DESCRIPTION)!!,
                                                             floor = record.get(ROOM.FLOOR)!!,
                                                             availability = it7,
-                                                            lastCleaned = record.get(ROOM.LAST_CLEANED)?.toLocalDateTime(),
-                                                            createdAt = record.get(ROOM.CREATED_AT)?.toLocalDateTime()!!,
-                                                            updatedAt = record.get(ROOM.UPDATED_AT)?.toLocalDateTime()!!,
+                                                            lastCleaned = record.get(ROOM.LAST_CLEANED)
+                                                                ?.toLocalDateTime(),
+                                                            createdAt = record.get(ROOM.CREATED_AT)
+                                                                ?.toLocalDateTime()!!,
+                                                            updatedAt = record.get(ROOM.UPDATED_AT)
+                                                                ?.toLocalDateTime()!!,
                                                         )
                                                     }
                                                 }
@@ -92,4 +96,70 @@ class HotelRepository(
             throw e
         }
     }
+
+
+    fun getBookingsForAllHotels(): Map<UUID, List<BookingDTO>> {
+
+        val bookingsRecords = dslContext.select()
+            .from(BOOKING)
+            .join(ROOM).on(BOOKING.ROOM_ID.eq(ROOM.ROOM_ID))
+            .join(RATE).on(ROOM.RATE_ID.eq(RATE.RATE_ID))
+            .fetch()
+
+        val bookingsMap = mutableMapOf<UUID, MutableList<BookingDTO>>()
+
+        bookingsRecords.forEach { record ->
+            val hotelId = record.get(BOOKING.HOTEL_ID)
+            val booking = record.get(BOOKING.GUEST_FIRST_NAME)?.let {
+                BookingDTO(
+                    bookingId = record.get(BOOKING.BOOKING_ID),
+                    userId = record.get(BOOKING.USER_ID),
+                    hotelId = hotelId,
+                    guestFirstName = it,
+                    guestLastName = record.get(BOOKING.GUEST_LAST_NAME)!!,
+                    numOfGuests = record.get(BOOKING.NUM_OF_GUESTS)!!,
+                    occasion = record.get(BOOKING.OCCASION),
+                    guestNotes = record.get(BOOKING.GUEST_NOTES)!!,
+                    checkInDate = record.get(BOOKING.CHECK_IN_DATE)!!,
+                    checkOutDate = record.get(BOOKING.CHECK_OUT_DATE)!!,
+                    totalCost = record.get(BOOKING.TOTAL_COST)!!,
+                    roomDetails = record.get(ROOM.HOTEL_ID)?.let { it1 ->
+                        RoomDTO(
+                            roomId = record.get(ROOM.ROOM_ID),
+                            hotelId = it1,
+                            rate = record.get(RATE.RATE_)?.let { it1 ->
+                                RateDTO(
+                                    rateId = record.get(RATE.RATE_ID),
+                                    rate = it1,
+                                    month = record.get(RATE.MONTH)!!,
+                                    defaultRate = record.get(RATE.DEFAULT_RATE)!!
+                                )
+                            },
+                            roomNumber = record.get(ROOM.ROOM_NUMBER)!!,
+                            roomType = record.get(ROOM.ROOM_TYPE)!!,
+                            roomStatus = record.get(ROOM.ROOM_STATUS)!!,
+                            bedType = record.get(ROOM.BED_TYPE)!!,
+                            maximumOccupancy = record.get(ROOM.MAXIMUM_OCCUPANCY)!!,
+                            description = record.get(ROOM.DESCRIPTION)!!,
+                            floor = record.get(ROOM.FLOOR)!!,
+                            availability = record.get(ROOM.AVAILABILITY)!!,
+                            lastCleaned = record.get(ROOM.LAST_CLEANED)!!.toLocalDateTime(),
+                            createdAt = record.get(ROOM.CREATED_AT)!!.toLocalDateTime(),
+                            updatedAt = record.get(ROOM.UPDATED_AT)!!.toLocalDateTime(),
+                        )
+                    },
+                    createdAt = record.get(BOOKING.CREATED_AT)!!.toLocalDateTime(),
+                    updatedAt = record.get(BOOKING.UPDATED_AT)!!.toLocalDateTime(),
+
+
+                    )
+            }
+            if (booking != null) {
+                bookingsMap.getOrPut(hotelId!!) { mutableListOf() }.add(booking)
+            }
+
+        }
+        return bookingsMap
+    }
+
 }
