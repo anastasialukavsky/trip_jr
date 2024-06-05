@@ -80,8 +80,6 @@ type RoomDTO {
 
 input RoomInput {
     hotelId: UUID!
-#    maybe remove or make new input that will hold room_id
-    roomId: UUID!
     rate: RateInput!
     roomNumber: Int!
     roomType: RoomType!
@@ -220,7 +218,7 @@ type BookingDTO {
     bookingId: UUID
     userId: UUID
     hotelId: UUID
-    roomDetails: RoomDTO!
+    roomDetails: RoomDTO
     guestFirstName: String!
     guestLastName: String!
     numOfGuests: Int!
