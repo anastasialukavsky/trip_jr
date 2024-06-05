@@ -78,25 +78,7 @@ class HotelService {
                 }
             }
 
-//            val rates = mutableListOf<RateDTO>()
-//            if (record[RATE.RATE_ID] != null && record[RATE.RATE_] != null && record[RATE.MONTH] != null && record[RATE.DEFAULT_RATE] != null) {
-//                val rate = record[RATE.RATE_]?.let {
-//                    record[RATE.MONTH]?.let { it1 ->
-//                        record[RATE.DEFAULT_RATE]?.let { it2 ->
-//                            RateDTO(
-//                                rateId = record[RATE.RATE_ID],
-//                                hotelId = record[RATE.HOTEL_ID],
-//                                rate = it,
-//                                month = it1,
-//                                defaultRate = it2,
-//                            )
-//                        }
-//                    }
-//                }
-//                if (rate != null) {
-//                    rates.add(rate)
-//                }
-//            }
+
             val amenities = mutableListOf<AmenityDTO>()
             if (record[AMENITY.AMENITY_ID] != null && record[AMENITY.AMENITY_NAME] != null) {
                 val amenity = record[AMENITY.AMENITY_NAME]?.let {
@@ -131,87 +113,13 @@ class HotelService {
                 reviews.add(review)
             }
 
+            val id = record.get(HOTEL.HOTEL_ID)
+            val bookings = id?.let { hotelRepository.getHotelBookings(it) }
 
-            val rooms = record[HOTEL.HOTEL_ID]?.let { hotelRepository.getHotelRoomsByHotelId(it) }
-            logger.info("Found rooms: $rooms")
-            val room: RoomDTO? = rooms?.map {
-                RoomDTO(
-                    roomId = it.roomId,
-                    hotelId = it.hotelId,
-                    rate = it.rate,
-                    roomNumber = it.roomNumber,
-                    roomType = it.roomType,
-                    roomStatus = it.roomStatus,
-                    bedType = it.bedType,
-                    maximumOccupancy = it.maximumOccupancy,
-                    description = it.description,
-                    floor = it.floor,
-                    availability = it.availability,
-                    lastCleaned = it.lastCleaned,
-                    createdAt = it.createdAt,
-                    updatedAt = it.updatedAt
-                )
-            }?.firstOrNull()
-            logger.info("Found room: $room")
-
-//            val rooms = mutableListOf<RoomDTO>()
-//            val room = RoomDTO(
-//                roomId = record[ROOM.ROOM_ID],
-//                hotelId = record[ROOM.HOTEL_ID],
-////                rate
-//                roomNumber = record[ROOM.ROOM_NUMBER],
-//                roomType = record[ROOM.ROOM_TYPE],
-//                roomStatus = record[ROOM.ROOM_STATUS],
-//                bedType = record[ROOM.BED_TYPE],
-//                maximumOccupancy = record[ROOM.MAXIMUM_OCCUPANCY],
-//                description = record[ROOM.DESCRIPTION],
-//                floor = record[ROOM.FLOOR],
-//                availability = record[ROOM.AVAILABILITY],
-//                lastCleaned = record[ROOM.LAST_CLEANED],
-//                createdAt = record[ROOM.CREATED_AT],
-//                updatedAt = record[ROOM.UPDATED_AT]
-//            )
-
-            val bookings = mutableListOf<BookingDTO>()
-            val booking = record[BOOKING.CHECK_IN_DATE]?.let {
-                record[BOOKING.CHECK_OUT_DATE]?.let { it1 ->
-                    record[BOOKING.GUEST_FIRST_NAME]?.let { it2 ->
-                        record[BOOKING.GUEST_LAST_NAME]?.let { it3 ->
-                            record[BOOKING.NUM_OF_GUESTS]?.let { it4 ->
-                                record[BOOKING.CREATED_AT]?.toLocalDateTime()?.let { it5 ->
-                                    record[BOOKING.UPDATED_AT]?.toLocalDateTime()?.let { it6 ->
-                                        BookingDTO(
-                                            bookingId = record[BOOKING.BOOKING_ID],
-                                            userId = record[BOOKING.USER_ID],
-                                            hotelId = record[BOOKING.HOTEL_ID],
-                                            guestFirstName = it2,
-                                            guestLastName = it3,
-                                            numOfGuests = it4,
-                                            occasion = record[BOOKING.OCCASION],
-                                            guestNotes = record[BOOKING.GUEST_NOTES],
-                                            checkInDate = it,
-                                            checkOutDate = it1,
-                                            totalCost = record[BOOKING.TOTAL_COST],
-                                            roomDetails = room,
-                                            createdAt = it5,
-                                            updatedAt = it6
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (booking != null) {
-                bookings.add(booking)
-            }
-
-
-            HotelDTO(hotelId, name!!, numOfRooms, description, location!!, amenities, reviews, bookings)
+            HotelDTO(hotelId, name!!, numOfRooms, description, location!!, amenities, reviews, bookings!!)
         }
     }
+
 
     fun getHotelById(id: UUID): HotelDTO? {
         try {
@@ -424,8 +332,7 @@ class HotelService {
                 .execute()
 
             return if (updateQuery == 1) updatedHotelRecord
-             else throw RuntimeException("Failed to update hotel record")
-
+            else throw RuntimeException("Failed to update hotel record")
 
 
         } catch (e: Exception) {
