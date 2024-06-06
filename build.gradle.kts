@@ -37,6 +37,7 @@ buildscript {
 repositories {
     mavenCentral()
     maven { url = uri("https://repo.spring.io/milestone") }
+    maven { url = uri("https://mvnrepository.com/artifact/software.amazon.awssdk") }
 }
 
 extra["springAiVersion"] = "0.8.1"
@@ -47,6 +48,10 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.mindrot:jbcrypt:0.4")
+    implementation("software.amazon.awssdk:s3:2.25.67")
+    implementation("org.springframework.cloud:spring-cloud-starter:4.1.3")
+    implementation("net.coobird:thumbnailator:0.4.20")
+
     //TODO configure spring security
 //    implementation ("org.springframework.boot:spring-boot-starter-security")
 //    implementation("org.springframework.security:spring-security-config")
