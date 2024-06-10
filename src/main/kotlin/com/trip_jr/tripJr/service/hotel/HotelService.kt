@@ -8,6 +8,7 @@ import com.trip_jr.tripJr.jooq.tables.Amenity
 import com.trip_jr.tripJr.jooq.tables.Hotel
 import com.trip_jr.tripJr.jooq.tables.references.*
 import com.trip_jr.tripJr.repository.hotel.HotelRepository
+import com.trip_jr.tripJr.service.aws.S3Service
 import com.trip_jr.tripJr.service.utils.HotelByIdUtils
 import com.trip_jr.tripJr.service.utils.UUIDUtils
 import org.jooq.DSLContext
@@ -15,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
 import org.slf4j.LoggerFactory
+import software.amazon.awssdk.services.s3.S3Client
+import software.amazon.awssdk.services.s3.presigner.S3Presigner
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
@@ -33,6 +36,12 @@ class HotelService {
 
     @Autowired
     lateinit var uuidUtils: UUIDUtils
+
+//    @Autowired
+//    lateinit var s3Client: S3Client
+//
+//    @Autowired
+//    lateinit var s3Presigner: S3Presigner
 
     private val logger = LoggerFactory.getLogger(HotelService::class.java)
 
@@ -125,110 +134,6 @@ class HotelService {
     }
 
 
-//    fun getAllHotels(): List<HotelDTO> {
-//        try {
-//            val hotels = dslContext.select()
-//                .from(HOTEL)
-//                .join(LOCATION).on(HOTEL.LOCATION_ID.eq(LOCATION.LOCATION_ID))
-//                .join(AMENITY).on(AMENITY.HOTEL_ID.eq(HOTEL.HOTEL_ID))
-//                .join(REVIEW).on(REVIEW.HOTEL_ID.eq(REVIEW.HOTEL_ID))
-//                .fetch()
-//
-//            val hotelMap = mutableMapOf<UUID, HotelDTO>()
-//
-//            hotels.forEach { record ->
-//                val hotelId = record[HOTEL.HOTEL_ID]
-//                val name = record[HOTEL.NAME]
-//                val numOfRooms = record[HOTEL.NUM_OF_ROOMS]
-//                val description = record[HOTEL.DESCRIPTION]
-//                val location = record[LOCATION.PHONE_NUMBER]?.let {
-//                    record[LOCATION.ADDRESS]?.let { it1 ->
-//                        record[LOCATION.CITY]?.let { it2 ->
-//                            record[LOCATION.STATE]?.let { it3 ->
-//                                record[LOCATION.ZIP]?.let { it4 ->
-//                                    record[LOCATION.LATITUDE]?.let { it5 ->
-//                                        record[LOCATION.LONGITUDE]?.let { it6 ->
-//                                            LocationDTO(
-//                                                locationId = record[LOCATION.LOCATION_ID],
-//                                                phoneNumber = it,
-//                                                address = it1,
-//                                                city = it2,
-//                                                state = it3,
-//                                                zip = it4,
-//                                                latitude = it5,
-//                                                longitude = it6,
-//                                                createdAt = record[LOCATION.CREATED_AT]?.toLocalDateTime()!!,
-//                                                updatedAt = record[LOCATION.UPDATED_AT]?.toLocalDateTime()!!,
-//                                            )
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//                val amenities = mutableListOf<AmenityDTO>()
-////                var amenity:AmenityDTO? = null
-//                if (record[AMENITY.AMENITY_ID] != null && record[AMENITY.AMENITY_NAME] != null) {
-//                    val amenity = record[AMENITY.AMENITY_NAME]?.let {
-//                        AmenityDTO(
-//                            amenityId = record[AMENITY.AMENITY_ID],
-//                            amenityName = it,
-//                            hotelId = record[AMENITY.HOTEL_ID],
-//                            createdAt = record[AMENITY.CREATED_AT]?.toLocalDateTime()!!,
-//                            updatedAt = record[AMENITY.UPDATED_AT]?.toLocalDateTime()!!,
-//                        )
-//                    }
-//                    if (amenity != null) {
-//                        amenities.add(amenity)
-//                    }
-//                }
-//
-//                val reviews = mutableListOf<ReviewDTO>()
-//                val review = record[REVIEW.RATING]?.let {
-//                    record[REVIEW.REVIEW_TITLE]?.let { it1 ->
-//                        record[REVIEW.REVIEW_BODY]?.let { it2 ->
-//                            ReviewDTO(
-//                                reviewId = record[REVIEW.REVIEW_ID],
-//                                userId = record[REVIEW.USER_ID],
-//                                hotelId = record[REVIEW.HOTEL_ID],
-//                                rating = it,
-//                                reviewTitle = it1,
-//                                reviewBody = it2
-//                            )
-//                        }
-//                    }
-//                }
-//
-//                if (review != null) {
-//                    reviews.add(review)
-//                }
-//
-//                hotelMap[hotelId!!] = HotelDTO(
-//                    hotelId = hotelId,
-//                    name = name!!,
-//                    numOfRooms = numOfRooms,
-//                    description = description!!,
-//                    location = location!!,
-//                    amenities = amenities,
-//                    reviews = reviews,
-//                    bookings = mutableListOf<BookingDTO>(),
-//
-//                    )
-//            }
-//
-//
-//            val bookingsMap = hotelRepository.getBookingsForAllHotels()
-//            bookingsMap.forEach { (hotelId, booking) ->
-//                hotelMap[hotelId]?.bookings?.addAll(booking)
-//            }
-//
-//            return hotelMap.values.toList()
-//        } catch (e: Exception) {
-//            throw e
-//        }
-//    }
-
     fun getHotelById(id: UUID): HotelDTO? {
         try {
             val record = dslContext.select()
@@ -261,7 +166,7 @@ class HotelService {
     }
 
 
-    fun createHotel(hotel: HotelDTO): HotelDTO? {
+    fun createHotel(hotel: HotelDTO, imageURLs: List<String>): HotelDTO? {
         try {
             val hotelId = uuidUtils.generateUUID()
             val locationId = uuidUtils.generateUUID()
@@ -290,13 +195,15 @@ class HotelService {
                 .returningResult(LOCATION.LOCATION_ID)
                 .fetchOne()
 
+
             val hotelRecord = dslContext.insertInto(HOTEL)
-                .columns(HOTEL.HOTEL_ID, HOTEL.NAME, HOTEL.NUM_OF_ROOMS, HOTEL.DESCRIPTION, HOTEL.LOCATION_ID)
+                .columns(HOTEL.HOTEL_ID, HOTEL.NAME, HOTEL.NUM_OF_ROOMS, HOTEL.DESCRIPTION, HOTEL.HOTEL_IMAGES, HOTEL.LOCATION_ID)
                 .values(
                     hotelId,
                     hotel.name,
                     hotel.numOfRooms,
                     hotel.description,
+                    hotel.hotelImageURLs?.joinToString(","),
                     locationRecord?.get(LOCATION.LOCATION_ID)
                 )
                 .returningResult(HOTEL.HOTEL_ID)
@@ -307,30 +214,6 @@ class HotelService {
             }
 
 
-//            hotelId: "38fce8f4-b5b6-4167-8e16-070be51419fe",
-//            room: {
-//                hotelId: "5098b1cc-d5e5-498b-81fd-dc13d0737a3e",
-//            "rate": {
-//                "rateId": "4b7233d4-6548-45ff-8483-0043fedaf235",
-//                "rate": 100,
-//                "month": 1,
-//                "defaultR
-//            6cb34a3b-a75b-49ef-a5cf-2ed474bc4165",
-//            "hotelId": "38fc
-//            val ratesRecords = hotel.rates.map { rate ->
-//                val rateId = rate.rateId ?: uuidUtils.generateUUID()
-//                dslContext.insertInto(RATE)
-//                    .columns(RATE.RATE_ID, RATE.HOTEL_ID, RATE.RATE_, RATE.MONTH, RATE.DEFAULT_RATE)
-//                    .values(
-//                        rateId,
-//                        hotelId,
-//                        rate.rate,
-//                        rate.month,
-//                        rate.defaultRate
-//                    )
-//                    .execute()
-//                rate.copy(rateId = rateId, hotelId = hotelId)
-//            }
 
             val amenitiesRecords = hotel.amenities.map { amenity ->
                 val amenityId = amenity.amenityId ?: uuidUtils.generateUUID()
@@ -356,20 +239,11 @@ class HotelService {
                 longitude = hotel.location.longitude
             )
 
-            //TODO figure out why graph query returns null for all records
-//            return HotelDTO(
-//                hotelId = hotelId,
-//                name = hotel.name ?: "",
-//                numOfRooms = hotel.numOfRooms,
-//                description = hotel.description,
-//                location = locationDTO,
-//                rates = ratesRecords,
-//                amenities = amenitiesRecords
-//            )
+
             return hotel.copy(
                 hotelId = hotelId,
                 location = locationDTO,
-//                rates = ratesRecords,
+                hotelImageURLs = imageURLs,
                 amenities = amenitiesRecords
             )
         } catch (e: Exception) {
@@ -491,3 +365,30 @@ class HotelService {
         }
     }
 }
+
+//
+//{
+//    "query": "mutation($hotel: HotelInput!, $hotelImageURLs: [Upload] { createHotel(hotel: $hotel, imageURLs: $hotelImageURLs) {hotelId, name, hotelImageURLs: $hotelImageURLs}) }",
+//    "variables" : {
+//        "hotel": {
+//            "name" : "Pic upload test",
+//            "numOfRooms" : 10,
+//            "description" : "I hope this works",
+//            "hotelImageURLs" : [null, null],
+//        "location" : {
+//            "phoneNumber": "1234567890",
+//            "address": "123 Test street",
+//            "city": "Test City",
+//            "state": "TS",
+//            "zip": "11223",
+//            "latitude": 12.34,
+//            "longitude": 12.34
+//},
+//    "amenities": [
+//    {
+//        "amenityName" : "free wifi"
+//    }
+//    ]
+//}
+//}
+//}
