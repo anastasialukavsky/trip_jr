@@ -1,6 +1,7 @@
 scalar UUID
 scalar Date
 scalar DateTime
+scalar Upload
 
 type Query {
     hotels: [HotelDTO]
@@ -20,6 +21,7 @@ type HotelDTO {
     name: String
     numOfRooms: Int
     description: String
+    hotelImageURLs: [String]
     location: LocationDTO
     amenities: [AmenityDTO]
     reviews: [ReviewDTO]
@@ -89,7 +91,7 @@ input RoomInput {
     description: String!
     floor: Int!
     availability: Boolean!
-#    lastCleaned: DateTime
+    #    lastCleaned: DateTime
 }
 
 
@@ -109,7 +111,7 @@ type LocationDTO {
 
 type RateDTO {
     rateId: UUID
-#    hotelId: UUID
+    #    hotelId: UUID
     rate: Float!
     month: Int!
     defaultRate: Float!
@@ -138,7 +140,6 @@ input HotelInput {
     numOfRooms: Int
     description: String
     location: LocationInput
-#    rates: [RateInput]
     amenities: [AmenityInput]
 }
 
@@ -253,8 +254,8 @@ input UpdateRateInput {
 }
 
 input UpdateRoomInput {
-#    roomId: UUID
-#    hotelId: UUID
+    #    roomId: UUID
+    #    hotelId: UUID
     roomNumber: Int
     roomType: RoomType
     roomStatus: RoomStatus
@@ -322,7 +323,7 @@ type AuthSignInPayload {
 }
 
 type Mutation {
-    createHotel(hotel: HotelInput) : HotelDTO
+    createHotel(hotel: HotelInput, hotelImageURLs: [Upload]) : HotelDTO
     createUser(user: UserInput) : UserDTO
     createReview(review: ReviewInput): ReviewDTO
     createBooking(booking: BookingInput) : BookingDTO
