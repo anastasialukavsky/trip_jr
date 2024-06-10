@@ -2,6 +2,7 @@ package com.trip_jr.tripJr.service.aws
 
 import net.coobird.thumbnailator.Thumbnails
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
@@ -10,6 +11,8 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest
 import java.io.File
 import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.time.Duration
 import java.util.*
 
@@ -72,5 +75,16 @@ class S3Service(
         }
 
         return urls
+    }
+
+    fun uploadImages(imageFiles: List<MultipartFile>): List<String> {
+        return imageFiles.flatMap { file ->
+            val tempFilePath = Paths.get(System.getProperty("java.io.tmpdir"), file.originalFilename)
+
+            Files.write(tempFilePath, file.bytes)
+
+            val s3Service = S3Service(s3Client, s3Presigner)
+            s3Service.resizeAndUploadImage("photos", tempFilePath.toFile()).values
+        }
     }
 }
