@@ -123,6 +123,11 @@ open class Hotel(
      */
     val UPDATED_AT: TableField<HotelRecord, OffsetDateTime?> = createField(DSL.name("updated_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).defaultValue(DSL.field(DSL.raw("CURRENT_TIMESTAMP"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
 
+    /**
+     * The column <code>public.hotel.hotel_images</code>.
+     */
+    val HOTEL_IMAGES: TableField<HotelRecord, String?> = createField(DSL.name("hotel_images"), SQLDataType.CLOB, this, "")
+
     private constructor(alias: Name, aliased: Table<HotelRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<HotelRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
     private constructor(alias: Name, aliased: Table<HotelRecord>?, where: Condition?): this(alias, null, null, null, aliased, null, where)
