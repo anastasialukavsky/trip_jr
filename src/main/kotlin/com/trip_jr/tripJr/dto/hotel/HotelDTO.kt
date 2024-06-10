@@ -10,6 +10,7 @@ data class HotelDTO(
     val name: String = "",
     val numOfRooms: Int? = 1,
     val description: String? = "",
+    val hotelImageURLs: List<String>? = listOf(),
     var location: LocationDTO,
     val amenities: List<AmenityDTO> = listOf(),
     val reviews: List<ReviewDTO> = listOf(),
