@@ -43,13 +43,29 @@ repositories {
 extra["springAiVersion"] = "0.8.1"
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-graphql")
+    implementation("com.graphql-java-kickstart:graphql-spring-boot-starter:15.1.0") {
+        exclude(group = "com.graphql-java", module = "graphql-java-extended-scalars")
+    }
+    implementation("com.graphql-java:graphql-java-extended-scalars:21.0")
+    implementation("com.graphql-java-kickstart:graphql-java-tools:13.1.1") {
+        exclude(group = "com.graphql-java", module = "graphql-java-extended-scalars")
+    }
+    implementation("com.graphql-java:graphql-java-extended-scalars:21.0") {
+        version {
+            strictly("[21.0]")
+        }
+    }
+
     implementation("org.springframework.boot:spring-boot-starter-jooq")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.mindrot:jbcrypt:0.4")
     implementation("software.amazon.awssdk:s3:2.25.67")
-    implementation("org.springframework.cloud:spring-cloud-starter:4.1.3")
+    implementation("org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE")
+    implementation("commons-fileupload:commons-fileupload:1.5")
+
+//    implementation("org.springframework.cloud:spring-cloud-starter:4.1.3")
     implementation("net.coobird:thumbnailator:0.4.20")
 
     //TODO configure spring security
