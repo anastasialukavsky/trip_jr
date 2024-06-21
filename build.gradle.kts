@@ -1,7 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jooq.codegen.GenerationTool
-import org.jooq.meta.jaxb.Target
 import org.jooq.meta.jaxb.*
+import org.jooq.meta.jaxb.Configuration
+import org.jooq.meta.jaxb.Target
 
 plugins {
     id("org.springframework.boot") version "3.2.5"
@@ -46,6 +47,7 @@ dependencies {
     implementation("com.graphql-java-kickstart:graphql-spring-boot-starter:15.1.0") {
         exclude(group = "com.graphql-java", module = "graphql-java-extended-scalars")
     }
+//    implementation("com.graphql-java-kickstart:graphiql-upload-spring-boot-starter:15.1.0")
     implementation("com.graphql-java:graphql-java-extended-scalars:21.0")
     implementation("com.graphql-java-kickstart:graphql-java-tools:13.1.1") {
         exclude(group = "com.graphql-java", module = "graphql-java-extended-scalars")
