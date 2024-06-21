@@ -13,8 +13,17 @@ type Query {
     roomById(id: UUID!): RoomDTO
     bookingsByUserId(userId: UUID): [BookingDTO]
     bookingByIdForUserById(userId: UUID, bookingId: UUID): BookingDTO
+    hotelSearch(location: String, checkInDate: Date, checkOutDate: Date ): HotelSearchDTO
 }
 
+type HotelSearchDTO {
+    hotelId: UUID!
+    name: String!
+    amenities: [AmenityDTO]!
+    roomType: RoomType!
+    bedType: BedType!
+    rate: RateDTO!
+}
 
 type HotelDTO {
     hotelId: UUID
@@ -345,4 +354,5 @@ type Mutation {
     deleteBooking(id:UUID): Boolean
     deleteRate(id: UUID): Boolean
     signIn(email: String!, password: String!): AuthSignInPayload
+    signUp(user: UserInput): AuthSignInPayload
 }
