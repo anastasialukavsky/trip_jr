@@ -1,6 +1,6 @@
 package com.trip_jr.tripJr.service.auth
 
-import com.trip_jr.tripJr.dto.auth.AuthSignInPayload
+//import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import com.trip_jr.tripJr.service.utils.auth.AuthUtils
 import com.trip_jr.tripJr.service.utils.auth.PasswordUtils
 import com.trip_jr.tripJr.service.utils.jwt.JwtUtils
@@ -11,6 +11,12 @@ import org.springframework.stereotype.Service
 @Service
 class AuthService {
 
+
+//    @Autowired
+//    private lateinit var customUserDetailsService: CustomUserDetailsService
+
+//    @Autowired
+//    private lateinit var authenticationManagerBuilder: AuthenticationManagerBuilder
 
     @Autowired
     lateinit var dslContext: DSLContext
@@ -24,20 +30,24 @@ class AuthService {
     @Autowired
     lateinit var jwtUtils: JwtUtils
 
-    fun signIn(email : String, password : String) : AuthSignInPayload? {
-        try {
 
-            authUtils.fetchUserCredentials(email, password).let { (userEmail, userPassword) ->
-                if (userPassword?.let { passwordUtils.checkPassword(password, it) } == true) {
-                    val token = jwtUtils.generateToken(email)
-                    return userEmail?.let { AuthSignInPayload(token, it) }
-                } else {
-                    throw RuntimeException("Incorrect password")
-                }
-            }
+//    fun signIn(email: String, password: String): AuthSignInPayload? {
+//        try {
+//            val userDetails = customUserDetailsService.getUserByEmail(email)
+//                ?: throw RuntimeException("User with email $email not found")
+//
+//            if (passwordUtils.checkPassword(password, userDetails.passwordHash)) {
+//                val token = generateToken(userDetails)
+//                return AuthSignInPayload(token, userDetails.email)
+//            } else {
+//                throw RuntimeException("Incorrect password")
+//            }
+//        } catch (e: Exception) {
+//            throw e
+//        }
+//    }
 
-        }catch(e: Exception) {
-            throw e
-        }
-    }
+
+
+
 }
