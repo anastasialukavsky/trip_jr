@@ -1,5 +1,7 @@
 //package com.trip_jr.tripJr.config
 //
+//import com.trip_jr.tripJr.service.user.CustomUserDetailsService
+//import org.springframework.boot.autoconfigure.security.SecurityProperties
 //import org.springframework.context.annotation.Bean
 //import org.springframework.context.annotation.Configuration
 //import org.springframework.http.HttpMethod
@@ -28,4 +30,5 @@
 //        return http.build()
 //
 //    }
+//
 //}
