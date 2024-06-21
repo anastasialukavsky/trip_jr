@@ -2,12 +2,10 @@ package com.trip_jr.tripJr.repository.user
 
 import com.trip_jr.tripJr.dto.user.UserDTO
 import com.trip_jr.tripJr.jooq.enums.UserRole
-import com.trip_jr.tripJr.jooq.tables.Users
 import com.trip_jr.tripJr.jooq.tables.references.USERS
 import org.jooq.DSLContext
-import org.jooq.Role
 import org.springframework.stereotype.Repository
-import java.util.UUID
+import java.util.*
 
 @Repository
 class UserRepository(private val dslContext: DSLContext) {
@@ -23,6 +21,12 @@ class UserRepository(private val dslContext: DSLContext) {
             .set(USERS.ROLE, role)
             .where(USERS.USER_ID.eq(userId))
             .execute()
+    }
+
+    fun getUserByEmail(email: String): UserDTO? {
+        return dslContext.selectFrom(USERS)
+            .where(USERS.EMAIL.eq(email))
+            .fetchOneInto(UserDTO::class.java)
     }
 
 
