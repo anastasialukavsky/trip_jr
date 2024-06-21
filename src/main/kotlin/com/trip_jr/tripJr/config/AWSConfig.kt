@@ -17,7 +17,7 @@ class AWSConfig {
     @Bean
     fun s3Client(): S3Client {
         return S3Client.builder()
-            .region(Region.of("us-east-1"))
+            .region(Region.US_EAST_1)
             .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create("accesskey", "secretkey")))
             .endpointOverride(URI.create("http://localhost:4566"))
             .serviceConfiguration(S3Configuration.builder().pathStyleAccessEnabled(true).build())
@@ -27,7 +27,7 @@ class AWSConfig {
     @Bean
     fun s3Presigner(): S3Presigner {
         return S3Presigner.builder()
-            .region(Region.of("us-east-1"))
+            .region(Region.US_EAST_1)
             .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create("accesskey", "secretkey")))
             .endpointOverride(URI.create("http://localhost:4566"))
             .build()
