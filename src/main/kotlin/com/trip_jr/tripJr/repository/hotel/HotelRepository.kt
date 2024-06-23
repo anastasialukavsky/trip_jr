@@ -1,15 +1,16 @@
 package com.trip_jr.tripJr.repository.hotel
 
+import com.trip_jr.tripJr.dto.amenities.AmenitySummarySearchDTO
 import com.trip_jr.tripJr.dto.booking.BookingDTO
+import com.trip_jr.tripJr.dto.hotel.HotelSearchDTO
 import com.trip_jr.tripJr.dto.hotel.RateDTO
 import com.trip_jr.tripJr.dto.hotel.RoomDTO
-import com.trip_jr.tripJr.jooq.tables.Room
-import com.trip_jr.tripJr.jooq.tables.references.BOOKING
-import com.trip_jr.tripJr.jooq.tables.references.RATE
-import com.trip_jr.tripJr.jooq.tables.references.ROOM
+import com.trip_jr.tripJr.dto.hotel.room.RoomSummarySearchDTO
+import com.trip_jr.tripJr.dto.location.LocationSummarySearchDTO
+import com.trip_jr.tripJr.jooq.tables.references.*
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
-import java.util.UUID
+import java.util.*
 
 @Repository
 class HotelRepository(
@@ -171,5 +172,110 @@ class HotelRepository(
             throw e
         }
     }
+
+
+//    fun getAllAvailableHotels(): MutableList<HotelSearchDTO> {
+//        try {
+//            val availableHotels = dslContext.select()
+//                .from(HOTEL)
+//                .join(AMENITY).on(HOTEL.HOTEL_ID.eq(AMENITY.HOTEL_ID))
+//                .join(ROOM).on(HOTEL.HOTEL_ID.eq(ROOM.HOTEL_ID))
+//                .join(RATE).on(ROOM.RATE_ID.eq(RATE.RATE_ID))
+//                .fetch { record ->
+//                    record.get(HOTEL.HOTEL_ID)?.let {
+//                        record.get(HOTEL.NAME)?.let { it1 ->
+//                            record.get(ROOM.ROOM_TYPE)?.let { it2 ->
+//                                record.get(ROOM.BED_TYPE)?.let { it3 ->
+//                                    record.get(ROOM.AVAILABILITY)?.let { it4 ->
+//                                        RoomSummarySearchDTO(
+//                                            roomId = record.get(ROOM.ROOM_ID)!!,
+//                                            roomType = it2,
+//                                            bedType = it3,
+//                                            availability = it4
+//                                        )
+//                                    }
+//                                }
+//                            }?.let { it3 ->
+//                                record.get(RATE.RATE_)?.let { it2 ->
+//                                    RateDTO(
+//                                        rateId = record.get(ROOM.RATE_ID),
+//                                        rate = it2,
+//                                        month = record.get(RATE.MONTH)!!,
+//                                        defaultRate = record.get(RATE.DEFAULT_RATE)!!
+//                                    )
+//                                }?.let { it4 ->
+//                                    HotelSearchDTO(
+//                                        hotelId = it,
+//                                        name = it1,
+//                                        amenities = AmenitySummarySearchDTO(
+//                                            amenityId = record.get(AMENITY.AMENITY_ID)!!,
+//                                            amenityName = record.get(AMENITY.AMENITY_NAME)!!
+//                                        ),
+//                                        roomSummary = it3,
+//                                        rate = it4
+//
+//                                    )
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//
+//            return availableHotels
+//        }catch(e: Exception) {
+//            e.printStackTrace()
+//            throw e
+//        }
+//    }
+fun getAllAvailableHotels(): List<HotelSearchDTO> {
+    try {
+        val availableHotels = dslContext.select()
+            .from(HOTEL)
+            .join(AMENITY).on(HOTEL.HOTEL_ID.eq(AMENITY.HOTEL_ID))
+            .join(ROOM).on(HOTEL.HOTEL_ID.eq(ROOM.HOTEL_ID))
+            .join(RATE).on(ROOM.RATE_ID.eq(RATE.RATE_ID))
+            .join(LOCATION).on(HOTEL.LOCATION_ID.eq(LOCATION.LOCATION_ID))
+            .where(ROOM.AVAILABILITY.eq(true))
+            .fetchGroups(HOTEL.HOTEL_ID) { record ->
+                val roomSummary = RoomSummarySearchDTO(
+                    roomId = record.get(ROOM.ROOM_ID)!!,
+                    roomType = record.get(ROOM.ROOM_TYPE)!!,
+                    bedType = record.get(ROOM.BED_TYPE)!!,
+                    availability = record.get(ROOM.AVAILABILITY)!!
+                )
+
+                val rateDTO = RateDTO(
+                    rateId = record.get(RATE.RATE_ID)!!,
+                    rate = record.get(RATE.RATE_)!!,
+                    month = record.get(RATE.MONTH)!!,
+                    defaultRate = record.get(RATE.DEFAULT_RATE)!!
+                )
+
+                val location = LocationSummarySearchDTO(
+                    locationId = record.get(LOCATION.LOCATION_ID)!!,
+                    city = record.get(LOCATION.CITY)!!,
+                )
+                HotelSearchDTO(
+                    hotelId = record.get(HOTEL.HOTEL_ID)!!,
+                    name = record.get(HOTEL.NAME)!!,
+                    amenities = listOf(
+                        AmenitySummarySearchDTO(
+                            amenityId = record.get(AMENITY.AMENITY_ID)!!,
+                            amenityName = record.get(AMENITY.AMENITY_NAME)!!
+                        )
+                    ),
+                    roomSummary = roomSummary,
+                    location = location,
+                    rate = rateDTO
+                )
+            }
+
+        return availableHotels.values.flatten()
+    } catch (e: Exception) {
+        e.printStackTrace()
+        throw e
+    }
+}
+
 
 }
