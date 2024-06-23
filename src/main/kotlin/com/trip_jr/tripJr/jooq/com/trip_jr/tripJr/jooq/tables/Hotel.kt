@@ -5,15 +5,7 @@ package com.trip_jr.tripJr.jooq.tables
 
 
 import com.trip_jr.tripJr.jooq.Public
-import com.trip_jr.tripJr.jooq.keys.AMENITY__AMENITY_HOTEL_ID_FKEY
-import com.trip_jr.tripJr.jooq.keys.BOOKING__BOOKING_HOTEL_ID_FKEY
-import com.trip_jr.tripJr.jooq.keys.HOTEL_CLAIM__HOTEL_CLAIMS_HOTEL_ID_FKEY
-import com.trip_jr.tripJr.jooq.keys.HOTEL_LOCATION_ID_KEY
-import com.trip_jr.tripJr.jooq.keys.HOTEL_PKEY
-import com.trip_jr.tripJr.jooq.keys.HOTEL__FK_LOCATION
-import com.trip_jr.tripJr.jooq.keys.REVIEW__REVIEW_HOTEL_ID_FKEY
-import com.trip_jr.tripJr.jooq.keys.ROOM__FK_HOTEL_ID
-import com.trip_jr.tripJr.jooq.keys.ROOM__ROOM_HOTEL_ID_FKEY
+import com.trip_jr.tripJr.jooq.keys.*
 import com.trip_jr.tripJr.jooq.tables.Amenity.AmenityPath
 import com.trip_jr.tripJr.jooq.tables.Booking.BookingPath
 import com.trip_jr.tripJr.jooq.tables.HotelClaim.HotelClaimPath
@@ -21,34 +13,13 @@ import com.trip_jr.tripJr.jooq.tables.Location.LocationPath
 import com.trip_jr.tripJr.jooq.tables.Review.ReviewPath
 import com.trip_jr.tripJr.jooq.tables.Room.RoomPath
 import com.trip_jr.tripJr.jooq.tables.records.HotelRecord
-
-import java.time.OffsetDateTime
-import java.util.UUID
-
-import kotlin.collections.Collection
-import kotlin.collections.List
-
-import org.jooq.Condition
-import org.jooq.Field
-import org.jooq.ForeignKey
-import org.jooq.InverseForeignKey
-import org.jooq.Name
-import org.jooq.Path
-import org.jooq.PlainSQL
-import org.jooq.QueryPart
-import org.jooq.Record
-import org.jooq.SQL
-import org.jooq.Schema
-import org.jooq.Select
-import org.jooq.Stringly
-import org.jooq.Table
-import org.jooq.TableField
-import org.jooq.TableOptions
-import org.jooq.UniqueKey
+import org.jooq.*
 import org.jooq.impl.DSL
 import org.jooq.impl.Internal
 import org.jooq.impl.SQLDataType
 import org.jooq.impl.TableImpl
+import java.time.OffsetDateTime
+import java.util.*
 
 
 /**
@@ -122,11 +93,6 @@ open class Hotel(
      * The column <code>public.hotel.updated_at</code>.
      */
     val UPDATED_AT: TableField<HotelRecord, OffsetDateTime?> = createField(DSL.name("updated_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).defaultValue(DSL.field(DSL.raw("CURRENT_TIMESTAMP"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
-
-    /**
-     * The column <code>public.hotel.hotel_images</code>.
-     */
-    val HOTEL_IMAGES: TableField<HotelRecord, String?> = createField(DSL.name("hotel_images"), SQLDataType.CLOB, this, "")
 
     private constructor(alias: Name, aliased: Table<HotelRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<HotelRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
