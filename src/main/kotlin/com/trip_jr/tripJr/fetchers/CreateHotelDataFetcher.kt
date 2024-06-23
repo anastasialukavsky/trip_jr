@@ -24,7 +24,7 @@ class CreateHotelDataFetcher(
         val hotel = convertToHotelDTO(hotelInput)
         val imageURLs = s3Service.uploadImages(files)
 
-        return hotelService.createHotel(hotel, imageURLs)
+        return hotelService.createHotel(hotel)
     }
 
     private fun convertToHotelDTO(hotelInput: Map<String, Any>): HotelDTO {
