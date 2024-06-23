@@ -1,25 +1,23 @@
 package com.trip_jr.tripJr.service.hotel
 
-import com.trip_jr.tripJr.dto.booking.BookingDTO
-import com.trip_jr.tripJr.dto.hotel.*
+import com.trip_jr.tripJr.dto.hotel.AmenityDTO
+import com.trip_jr.tripJr.dto.hotel.HotelDTO
+import com.trip_jr.tripJr.dto.hotel.HotelSearchDTO
+import com.trip_jr.tripJr.dto.hotel.LocationDTO
 import com.trip_jr.tripJr.dto.hotel.updateDTOs.UpdateHotelDTO
 import com.trip_jr.tripJr.dto.review.ReviewDTO
-import com.trip_jr.tripJr.jooq.tables.Amenity
-import com.trip_jr.tripJr.jooq.tables.Hotel
 import com.trip_jr.tripJr.jooq.tables.references.*
 import com.trip_jr.tripJr.repository.hotel.HotelRepository
-import com.trip_jr.tripJr.service.aws.S3Service
 import com.trip_jr.tripJr.service.utils.HotelByIdUtils
 import com.trip_jr.tripJr.service.utils.UUIDUtils
 import org.jooq.DSLContext
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.util.*
-import org.slf4j.LoggerFactory
-import software.amazon.awssdk.services.s3.S3Client
-import software.amazon.awssdk.services.s3.presigner.S3Presigner
+import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
+import java.util.*
 
 @Service
 class HotelService {
@@ -59,7 +57,7 @@ class HotelService {
             .fetch()
 
 
-      val hotelDTOList =    hotels.map { record ->
+        val hotelDTOList = hotels.map { record ->
             val hotelId = record[HOTEL.HOTEL_ID]
             val name = record[HOTEL.NAME]
             val numOfRooms = record[HOTEL.NUM_OF_ROOMS] ?: 1
@@ -127,8 +125,17 @@ class HotelService {
             val id = record.get(HOTEL.HOTEL_ID)
 //            val bookings = id?.let { hotelRepository.getHotelBookings(it) }
 
-          val bookings = hotelRepository.getBookingsForAllHotels()
-            HotelDTO(hotelId = hotelId, name = name!!, numOfRooms = numOfRooms, description = description, location =location!!, amenities = amenities, reviews = reviews, bookings = bookings!!)
+            val bookings = hotelRepository.getBookingsForAllHotels()
+            HotelDTO(
+                hotelId = hotelId,
+                name = name!!,
+                numOfRooms = numOfRooms,
+                description = description,
+                location = location!!,
+                amenities = amenities,
+                reviews = reviews,
+                bookings = bookings!!
+            )
         }
         return hotelDTOList
     }
@@ -166,7 +173,7 @@ class HotelService {
     }
 
 
-    fun createHotel(hotel: HotelDTO, imageURLs: List<String>): HotelDTO? {
+    fun createHotel(hotel: HotelDTO): HotelDTO? {
         try {
             val hotelId = uuidUtils.generateUUID()
             val locationId = uuidUtils.generateUUID()
@@ -197,13 +204,20 @@ class HotelService {
 
 
             val hotelRecord = dslContext.insertInto(HOTEL)
-                .columns(HOTEL.HOTEL_ID, HOTEL.NAME, HOTEL.NUM_OF_ROOMS, HOTEL.DESCRIPTION, HOTEL.HOTEL_IMAGES, HOTEL.LOCATION_ID)
+                .columns(
+                    HOTEL.HOTEL_ID,
+                    HOTEL.NAME,
+                    HOTEL.NUM_OF_ROOMS,
+                    HOTEL.DESCRIPTION,
+//                    HOTEL.HOTEL_IMAGES,
+                    HOTEL.LOCATION_ID
+                )
                 .values(
                     hotelId,
                     hotel.name,
                     hotel.numOfRooms,
                     hotel.description,
-                    hotel.hotelImageURLs?.joinToString(","),
+//                    hotel.hotelImageURLs?.joinToString(","),
                     locationRecord?.get(LOCATION.LOCATION_ID)
                 )
                 .returningResult(HOTEL.HOTEL_ID)
@@ -212,7 +226,6 @@ class HotelService {
             if (hotelRecord == null) {
                 throw Exception("Failed to create hotel")
             }
-
 
 
             val amenitiesRecords = hotel.amenities.map { amenity ->
@@ -243,7 +256,7 @@ class HotelService {
             return hotel.copy(
                 hotelId = hotelId,
                 location = locationDTO,
-                hotelImageURLs = imageURLs,
+//                hotelImageURLs = imageURLs,
                 amenities = amenitiesRecords
             )
         } catch (e: Exception) {
@@ -339,18 +352,6 @@ class HotelService {
                     .where(AMENITY.HOTEL_ID.eq(id))
                     .execute()
 
-//                dslContext.deleteFrom(RATE)
-//                    .where(RATE.HOTEL_ID.eq(id))
-//                    .execute()
-
-//                val locationId = dslContext.select(HOTEL.LOCATION_ID)
-//                    .from(HOTEL)
-//                    .where(HOTEL.HOTEL_ID.eq(id))
-//                    .fetchOne(HOTEL.LOCATION_ID) ?: throw RuntimeException("Location with ID $locationId not found")
-//
-//                dslContext.deleteFrom(LOCATION)
-//                    .where(LOCATION.LOCATION_ID.eq(locationId))
-//                    .execute()
 
                 val deletedHotelCount = dslContext.deleteFrom(HOTEL)
                     .where(HOTEL.HOTEL_ID.eq(id))
@@ -364,31 +365,31 @@ class HotelService {
             throw e
         }
     }
-}
 
-//
-//{
-//    "query": "mutation($hotel: HotelInput!, $hotelImageURLs: [Upload] { createHotel(hotel: $hotel, imageURLs: $hotelImageURLs) {hotelId, name, hotelImageURLs: $hotelImageURLs}) }",
-//    "variables" : {
-//        "hotel": {
-//            "name" : "Pic upload test",
-//            "numOfRooms" : 10,
-//            "description" : "I hope this works",
-//            "hotelImageURLs" : [null, null],
-//        "location" : {
-//            "phoneNumber": "1234567890",
-//            "address": "123 Test street",
-//            "city": "Test City",
-//            "state": "TS",
-//            "zip": "11223",
-//            "latitude": 12.34,
-//            "longitude": 12.34
-//},
-//    "amenities": [
-//    {
-//        "amenityName" : "free wifi"
-//    }
-//    ]
-//}
-//}
-//}
+    fun hotelSearch(location: String, checkInDate: LocalDate, checkOutDate: LocalDate): List<HotelSearchDTO> {
+        try {
+            logger.debug("Searching hotels for location: $location, check-in: $checkInDate, check-out: $checkOutDate")
+
+            val availableHotels = hotelRepository.getAllAvailableHotels().filter { hotel ->
+                val matchesLocation = hotel.location.city.contains(location, ignoreCase = true)
+                logger.info("matches location: $matchesLocation")
+                val isAvailable = hotel.roomSummary.availability
+                logger.info("isAvailable: $isAvailable")
+                val isValidDateRange = checkInDate <= checkOutDate
+                logger.info("isValidDateRange: $isValidDateRange")
+
+                logger.debug("Checking hotel ${hotel.name}, matchesLocation: $matchesLocation, isAvailable: $isAvailable, isValidDateRange: $isValidDateRange")
+
+                matchesLocation && isAvailable && isValidDateRange
+            }
+
+            logger.debug("Found ${availableHotels.size} hotels matching criteria")
+
+            return availableHotels
+        } catch (e: Exception) {
+            logger.error("Error searching hotels: ${e.message}", e)
+            throw e
+        }
+    }
+
+}
